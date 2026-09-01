@@ -1,0 +1,142 @@
+<template>
+    <lightning-card title="Omnishift" icon-name="custom:custom63">
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium panel">
+            <!-- Identity strip -->
+            <div class="identity slds-m-bottom_medium">
+                <div class="identity__head">
+                    <span class="identity__name">{sampleName}</span>
+                    <lightning-badge label="SAMPLE DATA" class="slds-m-left_small"></lightning-badge>
+                </div>
+                <p class="identity__sub slds-text-body_small">{sampleSubtitle}</p>
+                <lightning-layout multiple-rows class="slds-m-top_x-small">
+                    <template for:each={identityStrip} for:item="row">
+                        <lightning-layout-item key={row.id} size="6" small-device-size="6" medium-device-size="3" padding="around-xx-small">
+                            <div class="id-pill">
+                                <span class="id-pill__label">{row.label}</span>
+                                <span class="id-pill__value">{row.value}</span>
+                            </div>
+                        </lightning-layout-item>
+                    </template>
+                </lightning-layout>
+            </div>
+
+            <!-- Recommended action -->
+            <div class="reco slds-m-bottom_medium">
+                <p class="section-label">Recommended action</p>
+                <div class="reco__action">
+                    <lightning-badge label={recommendedAction} class="reco-badge"></lightning-badge>
+                    <span class="slds-text-body_small slds-m-left_small">Priority · Call window open</span>
+                </div>
+            </div>
+
+            <!-- Why Now -->
+            <div class="slds-m-bottom_medium">
+                <p class="section-label">Why Now</p>
+                <div class="chip-row">
+                    <template for:each={whyNowItems} for:item="chip">
+                        <span key={chip.id} class={chip.className}>{chip.label}</span>
+                    </template>
+                </div>
+            </div>
+
+            <!-- 2018 note -->
+            <div class="note-box slds-m-bottom_medium">
+                <p class="section-label">Historical note</p>
+                <p class="slds-text-body_regular">{note2018}</p>
+            </div>
+
+            <!-- VisitIQ journey -->
+            <div class="slds-m-bottom_medium">
+                <p class="section-label">VisitIQ journey (SAMPLE)</p>
+                <div class="journey">
+                    <template for:each={journeyItems} for:item="step">
+                        <div key={step.id} class={step.className}>
+                            <strong>{step.label}</strong>
+                            <span class="slds-text-body_small">{step.detail}</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Talk track -->
+            <div class="slds-m-bottom_medium">
+                <p class="section-label">Talk track</p>
+                <p class="talk-track">{talkTrack}</p>
+            </div>
+
+            <!-- Compliance -->
+            <div class="slds-m-bottom_medium">
+                <p class="section-label">Compliance checks</p>
+                <ul class="slds-list_dotted compliance">
+                    <template for:each={complianceItems} for:item="check">
+                        <li key={check.id}>
+                            <lightning-icon icon-name={check.icon} size="xx-small" alternative-text={check.variant} class="slds-m-right_xx-small"></lightning-icon>
+                            {check.label}
+                        </li>
+                    </template>
+                </ul>
+            </div>
+
+            <!-- Draft email -->
+            <div class="slds-m-bottom_medium">
+                <lightning-button
+                    label={draftButtonLabel}
+                    variant="neutral"
+                    onclick={handleToggleDraft}
+                    class="slds-m-bottom_x-small"
+                ></lightning-button>
+                <template if:true={showDraft}>
+                    <pre class="draft-box">{draftEmail}</pre>
+                </template>
+            </div>
+
+            <!-- Disposition buttons -->
+            <div class="slds-m-bottom_small">
+                <p class="section-label">Disposition</p>
+                <div class="disp-row">
+                    <lightning-button
+                        label="Call logged"
+                        variant="brand"
+                        data-disposition="Call logged"
+                        onclick={handleDisposition}
+                        disabled={isSaving}
+                        class="slds-m-right_xx-small slds-m-bottom_xx-small"
+                    ></lightning-button>
+                    <lightning-button
+                        label="Send approved email"
+                        variant="brand-outline"
+                        data-disposition="Send approved email"
+                        onclick={handleDisposition}
+                        disabled={isSaving}
+                        class="slds-m-right_xx-small slds-m-bottom_xx-small"
+                    ></lightning-button>
+                    <lightning-button
+                        label="Snooze"
+                        variant="neutral"
+                        data-disposition="Snooze"
+                        onclick={handleDisposition}
+                        disabled={isSaving}
+                        class="slds-m-right_xx-small slds-m-bottom_xx-small"
+                    ></lightning-button>
+                    <lightning-button
+                        label="Wrong person"
+                        variant="destructive-text"
+                        data-disposition="Wrong person"
+                        onclick={handleDisposition}
+                        disabled={isSaving}
+                        class="slds-m-bottom_xx-small"
+                    ></lightning-button>
+                </div>
+                <template if:true={lastDisposition}>
+                    <p class="slds-text-body_small slds-m-top_x-small last-disp">
+                        Last saved: {lastDisposition}
+                    </p>
+                </template>
+            </div>
+
+            <p class="footer-note slds-text-body_small">
+                Engine preview · sample data · Phase 1 — not wired to WealthFeed / VisitIQ yet.
+            </p>
+        </div>
+    </lightning-card>
+</template>

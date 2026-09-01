@@ -1,0 +1,17 @@
+{
+  "name": "omnishift-sf",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Omnishift Salesforce DX prototype — record tab + Today Queue for Dev Edition",
+  "scripts": {
+    "login": "sf org login web --alias omnishift-dev",
+    "deploy": "sf project deploy start --target-org omnishift-dev",
+    "open": "sf org open --target-org omnishift-dev"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@salesforce/cli": "^2.76.7"
+  }
+}

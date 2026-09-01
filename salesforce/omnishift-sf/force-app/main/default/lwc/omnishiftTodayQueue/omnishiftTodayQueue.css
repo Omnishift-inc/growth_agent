@@ -1,0 +1,116 @@
+.queue {
+    color: #181818;
+}
+.greeting {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0176d3;
+}
+.work-count {
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+}
+.section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #0176d3;
+    margin: 0 0 0.4rem;
+}
+.score-chip {
+    background: #eef4ff;
+    border: 1px solid #d8e6f8;
+    border-radius: 0.35rem;
+    padding: 0.55rem 0.65rem;
+    text-align: center;
+}
+.score-chip__value {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0176d3;
+    line-height: 1.1;
+}
+.score-chip__label {
+    display: block;
+    font-size: 0.7rem;
+    color: #706e6b;
+    text-transform: uppercase;
+    margin-top: 0.15rem;
+}
+.queue-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.queue-row {
+    border: 1px solid #e5e5e5;
+    border-radius: 0.35rem;
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 0.45rem;
+    background: #fff;
+    border-left: 3px solid #0176d3;
+}
+.queue-row__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.queue-row__name {
+    font-size: 0.95rem;
+}
+.queue-row__reason {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+}
+.queue-row__detail {
+    margin: 0.15rem 0 0;
+    color: #706e6b;
+}
+.queue-row__action {
+    margin: 0.35rem 0 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.action-label {
+    color: #0176d3;
+}
+.tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.15rem 0.45rem;
+    border-radius: 0.2rem;
+}
+.tag_red {
+    background: #feded8;
+    color: #ba0517;
+}
+.tag_blue {
+    background: #eef4ff;
+    color: #0176d3;
+}
+.tag_gold {
+    background: #fbf3e0;
+    color: #8c4b02;
+}
+.tag_gray {
+    background: #e5e5e5;
+    color: #3e3e3c;
+}
+.tag_green {
+    background: #eaf5ea;
+    color: #2e844a;
+}
+.footer-note {
+    color: #706e6b;
+    border-top: 1px solid #e5e5e5;
+    padding-top: 0.65rem;
+    margin-bottom: 0;
+}

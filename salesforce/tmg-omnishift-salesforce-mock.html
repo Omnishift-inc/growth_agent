@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pamela Whitaker | Lead | TMG Sales</title>
+<style>
+:root {
+  --sf-brand: #0176D3;
+  --sf-brand-dark: #014486;
+  --sf-brand-darker: #032D60;
+  --sf-brand-soft: #EEF4FF;
+  --sf-brand-wash: #F3F9FD;
+  --sf-navy: #16325C;
+  --sf-bg: #F3F2F2;
+  --sf-white: #FFFFFF;
+  --sf-border: #DDDBDA;
+  --sf-border-strong: #C9C9C9;
+  --sf-text: #181818;
+  --sf-text-2: #3E3E3C;
+  --sf-text-3: #706E6B;
+  --sf-text-4: #747474;
+  --sf-link: #0176D3;
+  --sf-success: #2E844A;
+  --sf-success-soft: #EBF7E6;
+  --sf-success-dark: #194E31;
+  --sf-warn: #DD7A01;
+  --sf-warn-soft: #FEF7E6;
+  --sf-warn-border: #F5D480;
+  --sf-error: #BA0517;
+  --sf-error-soft: #FEDAD7;
+  --sf-error-dark: #8E030F;
+  --sf-purple: #7526C8;
+  --sf-purple-soft: #F3E8FD;
+  --sf-header-h: 50px;
+  --sf-nav-w: 224px;
+  --sf-util-h: 40px;
+  --sf-radius: 4px;
+  --sf-shadow: 0 2px 2px 0 rgba(0,0,0,.10);
+  --sf-shadow-3: 0 8px 24px rgba(0,0,0,.18);
+  --font: "Salesforce Sans", Lato, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Liberation Sans", system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+html { color-scheme: light; }
+body {
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--sf-text);
+  background: var(--sf-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+button, input { font-family: inherit; }
+button { cursor: pointer; }
+a { color: var(--sf-link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.hidden { display: none !important; }
+
+.app {
+  display: grid;
+  grid-template-rows: var(--sf-header-h) 1fr var(--sf-util-h);
+  grid-template-columns: var(--sf-nav-w) 1fr;
+  grid-template-areas:
+    "header header"
+    "nav    main"
+    "util   util";
+  height: 100%;
+  min-width: 1180px;
+}
+
+.sf-header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 0 8px;
+  background: var(--sf-white);
+  border-bottom: 1px solid var(--sf-border);
+  box-shadow: 0 2px 4px rgba(0,0,0,.06);
+  z-index: 40;
+  overflow: visible;
+}
+.sf-waffle {
+  width: 40px; height: 40px;
+  border: 0; background: transparent;
+  border-radius: var(--sf-radius);
+  display: grid; place-items: center;
+  color: var(--sf-text-2);
+}
+.sf-waffle:hover { background: var(--sf-bg); }
+.sf-appname {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 8px; border-radius: var(--sf-radius);
+  font-size: 18px; font-weight: 700; letter-spacing: -.01em;
+  color: var(--sf-text); white-space: nowrap;
+}
+.sf-appname:hover { background: var(--sf-bg); }
+.sf-caret { color: var(--sf-text-3); display: flex; }
+.sf-search {
+  flex: 1; max-width: 560px; margin: 0 auto;
+  display: flex; align-items: center; gap: 8px;
+  height: 32px; padding: 0 12px 0 14px;
+  background: var(--sf-bg); border: 1px solid transparent;
+  border-radius: 16px; color: var(--sf-text-3);
+}
+.sf-search:focus-within { background: var(--sf-white); border-color: var(--sf-brand); box-shadow: 0 0 0 1px var(--sf-brand); }
+.sf-search input {
+  flex: 1; border: 0; background: transparent; outline: none;
+  font-size: 13px; color: var(--sf-text);
+}
+.sf-search input::placeholder { color: var(--sf-text-4); }
+.sf-header-right { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.sf-iconbtn {
+  width: 36px; height: 36px; border: 0; background: transparent;
+  border-radius: var(--sf-radius); color: var(--sf-text-2);
+  display: grid; place-items: center; position: relative;
+}
+.sf-iconbtn:hover { background: var(--sf-bg); }
+.sf-iconbtn.is-open { background: var(--sf-brand-soft); color: var(--sf-brand); }
+.sf-badge {
+  position: absolute; top: 4px; right: 4px;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  background: var(--sf-error); color: #fff;
+  border-radius: 8px; font-size: 10px; font-weight: 700;
+  display: grid; place-items: center; line-height: 1;
+  border: 2px solid #fff;
+}
+.sf-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+  background: #0B5CAB; user-select: none;
+}
+.sf-avatar.sm { width: 24px; height: 24px; font-size: 10px; }
+.sf-avatar.lg { width: 52px; height: 52px; font-size: 18px; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--sf-border); }
+.sf-avatar.green { background: #2E844A; }
+.sf-avatar.navy { background: #16325C; }
+.sf-avatar.teal { background: #0B827C; }
+.sf-avatar.purple { background: #7526C8; }
+.sf-avatar.amber { background: #A86403; }
+.sf-avatar.red { background: #BA0517; }
+.sf-avatar.slate { background: #5C5C5C; }
+.sf-avatar.btn { border: 0; padding: 0; margin-left: 4px; }
+
+.sf-nav {
+  grid-area: nav;
+  background: var(--sf-white);
+  border-right: 1px solid var(--sf-border);
+  display: flex; flex-direction: column;
+  padding: 8px 0 12px;
+  overflow: auto;
+  z-index: 20;
+}
+.sf-nav-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--sf-text-3);
+  padding: 10px 16px 6px;
+}
+.sf-nav-item {
+  display: flex; align-items: center; gap: 12px;
+  height: 40px; padding: 0 16px; margin: 0 8px;
+  border: 0; background: transparent; width: calc(100% - 16px);
+  border-radius: var(--sf-radius); color: var(--sf-text);
+  font-size: 13px; font-weight: 400; text-align: left;
+}
+.sf-nav-item svg { flex: none; color: var(--sf-text-3); }
+.sf-nav-item:hover { background: var(--sf-bg); }
+.sf-nav-item.is-active {
+  background: var(--sf-brand-soft);
+  color: var(--sf-brand-darker);
+  font-weight: 700;
+  box-shadow: inset 4px 0 0 var(--sf-brand);
+  padding-left: 12px;
+}
+.sf-nav-item.is-active svg { color: var(--sf-brand); }
+.sf-nav-item.is-muted { color: var(--sf-text-3); }
+.sf-nav-foot {
+  margin-top: auto; padding: 12px 16px 4px;
+  font-size: 11px; color: var(--sf-text-4); line-height: 1.4;
+  border-top: 1px solid var(--sf-border);
+}
+
+.sf-main {
+  grid-area: main;
+  overflow: auto;
+  background: var(--sf-bg);
+  position: relative;
+}
+
+.sf-util {
+  grid-area: util;
+  background: var(--sf-white);
+  border-top: 1px solid var(--sf-border);
+  display: flex; align-items: center; gap: 2px;
+  padding: 0 8px;
+  z-index: 30;
+  box-shadow: 0 -1px 3px rgba(0,0,0,.04);
+}
+.sf-util-item {
+  display: flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 10px;
+  border: 0; background: transparent; border-radius: var(--sf-radius);
+  color: var(--sf-text-2); font-size: 12px;
+}
+.sf-util-item:hover { background: var(--sf-bg); }
+.sf-util-item svg { color: var(--sf-text-3); }
+.sf-util-spacer { flex: 1; }
+.sf-util-note {
+  font-size: 11px; color: var(--sf-text-4);
+  display: flex; align-items: center; gap: 10px; padding-right: 8px;
+}
+.sf-util-note a {
+  color: var(--sf-text-3); text-decoration: none;
+  padding: 3px 8px; border-radius: 3px; border: 1px solid var(--sf-border);
+  background: var(--sf-bg); font-weight: 600; font-size: 11px;
+}
+.sf-util-note a:hover { color: var(--sf-brand); border-color: var(--sf-brand); background: var(--sf-brand-soft); text-decoration: none; }
+.sf-util-note a.is-on { color: var(--sf-brand-darker); border-color: var(--sf-brand); background: var(--sf-brand-soft); }
+
+.rec { display: flex; flex-direction: column; min-height: 100%; }
+.rec-crumb {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px 0; font-size: 12px; color: var(--sf-text-3);
+}
+.rec-highlights {
+  background: var(--sf-white);
+  margin: 8px 12px 0;
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+  box-shadow: var(--sf-shadow);
+  padding: 14px 16px 12px;
+}
+.rec-top { display: flex; gap: 14px; align-items: flex-start; }
+.rec-id { flex: 1; min-width: 0; }
+.rec-kicker {
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--sf-text-3);
+  display: flex; align-items: center; gap: 8px;
+}
+.rec-kicker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sf-success); }
+.rec-name-row { display: flex; align-items: center; gap: 8px; margin: 2px 0 2px; }
+.rec-name { font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin: 0; }
+.rec-star { border: 0; background: transparent; color: var(--sf-text-3); padding: 2px; display: flex; }
+.rec-star:hover { color: var(--sf-warn); }
+.rec-sub { color: var(--sf-text-2); font-size: 13px; }
+.rec-sub b { font-weight: 600; color: var(--sf-text); }
+.rec-actions { display: flex; gap: 8px; flex: none; padding-top: 18px; }
+.sf-btn {
+  height: 32px; padding: 0 14px;
+  border-radius: var(--sf-radius); font-size: 13px; font-weight: 400;
+  border: 1px solid var(--sf-border-strong); background: var(--sf-white); color: var(--sf-text);
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.sf-btn:hover { background: var(--sf-bg); }
+.sf-btn.brand { background: var(--sf-brand); border-color: var(--sf-brand); color: #fff; }
+.sf-btn.brand:hover { background: var(--sf-brand-dark); border-color: var(--sf-brand-dark); }
+.sf-btn.success { background: var(--sf-success); border-color: var(--sf-success); color: #fff; }
+.sf-btn.success:hover { background: var(--sf-success-dark); }
+.sf-btn.outline-brand { color: var(--sf-brand); border-color: var(--sf-brand); background: #fff; }
+.sf-btn.outline-brand:hover { background: var(--sf-brand-soft); }
+.sf-btn.danger { color: var(--sf-error); border-color: var(--sf-border-strong); }
+.sf-btn.danger:hover { background: var(--sf-error-soft); border-color: var(--sf-error); }
+.sf-btn.sm { height: 28px; padding: 0 10px; font-size: 12px; }
+
+.rec-fields {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 4px 24px; margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid var(--sf-border);
+}
+.sf-field .lbl { font-size: 12px; color: var(--sf-text-4); display: block; margin-bottom: 1px; }
+.sf-field .val { font-size: 13px; color: var(--sf-text); }
+
+.sf-path {
+  display: flex; gap: 3px; margin-top: 12px; height: 32px; list-style: none; padding: 0; margin-left: 0; margin-bottom: 0;
+}
+.sf-path li {
+  flex: 1; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: #ECEBEA; color: var(--sf-text-2);
+  font-size: 12px; font-weight: 700;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%, 10px 50%);
+  margin-left: -6px;
+}
+.sf-path li:first-child {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+  margin-left: 0; border-radius: 4px 0 0 4px;
+}
+.sf-path li:last-child {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10px 50%);
+  border-radius: 0 4px 4px 0;
+}
+.sf-path li.is-complete { background: var(--sf-success); color: #fff; }
+.sf-path li.is-current { background: var(--sf-brand); color: #fff; }
+
+.sf-tabs {
+  display: flex; gap: 0; padding: 0 12px;
+  border-bottom: 1px solid var(--sf-border);
+  background: transparent; margin: 0 12px;
+}
+.sf-tab {
+  height: 40px; padding: 0 14px;
+  border: 0; background: transparent;
+  font-size: 13px; color: var(--sf-text-2); font-weight: 400;
+  position: relative; white-space: nowrap;
+}
+.sf-tab:hover { color: var(--sf-text); background: rgba(0,0,0,.03); }
+.sf-tab.is-active { color: var(--sf-brand); font-weight: 700; }
+.sf-tab.is-active::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 3px; background: var(--sf-brand); border-radius: 2px 2px 0 0;
+}
+.sf-tab .new {
+  display: inline-block; margin-left: 6px;
+  font-size: 9px; font-weight: 700; letter-spacing: .04em;
+  background: var(--sf-brand); color: #fff;
+  padding: 1px 5px; border-radius: 3px; vertical-align: 1px;
+}
+.rec-body { padding: 12px; }
+
+.sf-card {
+  background: var(--sf-white);
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+  box-shadow: var(--sf-shadow);
+}
+.sf-card-h {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--sf-border);
+  font-size: 14px; font-weight: 700;
+}
+.sf-card-h .meta { margin-left: auto; font-size: 11px; font-weight: 400; color: var(--sf-text-3); }
+.sf-card-b { padding: 14px; }
+
+.os-action {
+  background: var(--sf-white);
+  border: 1px solid var(--sf-border);
+  border-left: 4px solid var(--sf-brand);
+  border-radius: var(--sf-radius);
+  box-shadow: var(--sf-shadow);
+  padding: 14px 16px 12px;
+  margin-bottom: 12px;
+}
+.os-action-top { display: flex; align-items: flex-start; gap: 14px; }
+.os-call-icon {
+  width: 40px; height: 40px; border-radius: 50%; flex: none;
+  background: var(--sf-brand-soft); color: var(--sf-brand);
+  display: grid; place-items: center;
+}
+.os-action h2 {
+  margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -.01em;
+}
+.os-action h2 em { font-style: normal; color: var(--sf-brand); }
+.os-action .lede { margin: 4px 0 0; color: var(--sf-text-2); font-size: 13px; max-width: 72ch; }
+.os-window {
+  margin-left: auto; flex: none; flex-shrink: 0; text-align: right;
+  background: var(--sf-brand-soft); color: var(--sf-brand-darker);
+  border: 1px solid #D4E5F7; border-radius: var(--sf-radius);
+  padding: 6px 10px; min-width: 132px;
+}
+.os-window b { display: block; font-size: 12px; font-weight: 700; }
+.os-window span { font-size: 11px; color: var(--sf-text-3); }
+.os-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.os-caption {
+  margin: 8px 0 0;
+  font-size: 11.5px; color: var(--sf-text-3); line-height: 1.4;
+}
+.os-caption code {
+  font-family: ui-monospace, "Liberation Mono", Menlo, monospace;
+  font-size: 11px; background: var(--sf-bg); padding: 1px 5px;
+  border-radius: 3px; color: var(--sf-navy); border: 1px solid var(--sf-border);
+}
+
+.os-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; align-items: center; }
+.os-chips .k {
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--sf-text-3); margin-right: 4px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 24px; padding: 0 10px;
+  border-radius: 12px; font-size: 12px; font-weight: 600;
+  background: var(--sf-brand-soft); color: var(--sf-brand-darker);
+  border: 1px solid #D4E5F7;
+}
+.chip.ok { background: var(--sf-success-soft); color: var(--sf-success-dark); border-color: #C7E5B8; }
+.chip.warn { background: var(--sf-warn-soft); color: #A86403; border-color: var(--sf-warn-border); }
+.chip.neutral { background: var(--sf-bg); color: var(--sf-text-2); border-color: var(--sf-border); }
+
+.os-grid {
+  display: grid;
+  grid-template-columns: 1.15fr .95fr;
+  gap: 12px;
+  align-items: start;
+}
+@media (max-width: 1280px) {
+  .os-grid { grid-template-columns: 1fr; }
+}
+.os-sec { margin-bottom: 14px; }
+.os-sec:last-child { margin-bottom: 0; }
+.os-sec h3 {
+  margin: 0 0 6px; font-size: 11px; font-weight: 700;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--sf-text-3);
+}
+.note {
+  background: #FBFBFB; border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius); padding: 10px 12px;
+}
+.note .who { font-size: 12px; color: var(--sf-text-3); margin-bottom: 4px; display: flex; gap: 8px; }
+.note .who b { color: var(--sf-text); font-weight: 600; }
+.note p { margin: 0; color: var(--sf-text); font-size: 13px; line-height: 1.5; }
+.note p em { font-style: italic; color: var(--sf-text-2); }
+
+.journey { list-style: none; padding: 0; margin: 0; }
+.journey li {
+  display: grid; grid-template-columns: 14px 1fr auto;
+  gap: 8px; align-items: start; position: relative;
+  padding: 0 0 10px 0; font-size: 13px;
+}
+.journey li:last-child { padding-bottom: 0; }
+.journey .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--sf-brand); margin-top: 4px;
+  box-shadow: 0 0 0 3px var(--sf-brand-soft);
+  z-index: 1;
+}
+.journey li:not(:last-child) .dot::after {
+  content: ""; position: absolute; left: 4px; top: 16px; bottom: 0;
+  width: 2px; background: #D4E5F7;
+}
+.journey .pg { font-weight: 600; }
+.journey .pg span { font-weight: 400; color: var(--sf-text-3); }
+.journey .tm { color: var(--sf-text-3); font-size: 12px; }
+
+.talk {
+  background: var(--sf-brand-wash);
+  border: 1px solid #D4E5F7;
+  border-radius: var(--sf-radius);
+  padding: 10px 12px;
+  font-size: 13px; line-height: 1.5; color: var(--sf-text);
+}
+.talk .lbl {
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--sf-brand);
+  margin-bottom: 4px;
+}
+.checks { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.checks li { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: var(--sf-text); }
+.check-ok {
+  width: 16px; height: 16px; border-radius: 50%; flex: none; margin-top: 1px;
+  background: var(--sf-success); color: #fff;
+  display: grid; place-items: center;
+}
+.checks .sub { color: var(--sf-text-3); font-size: 11.5px; display: block; }
+
+.email {
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+  overflow: hidden; background: #FAFAF9;
+}
+.email-h {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: #fff;
+  border-bottom: 1px solid var(--sf-border);
+  font-size: 12px; color: var(--sf-text-2);
+}
+.email-h b { color: var(--sf-text); font-weight: 600; }
+.email-body {
+  padding: 12px 14px; font-size: 13px; line-height: 1.55; color: var(--sf-text);
+  background: #fff;
+}
+.email-body p { margin: 0 0 10px; }
+.email-body p:last-child { margin-bottom: 0; }
+.email-disc {
+  padding: 10px 14px; background: #F7F7F7;
+  border-top: 1px dashed var(--sf-border-strong);
+  font-size: 11px; line-height: 1.45; color: var(--sf-text-3);
+}
+.email-disc b { color: var(--sf-text-2); font-weight: 700; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.email-foot {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: #fff; border-top: 1px solid var(--sf-border);
+}
+
+.id-strip {
+  margin-top: 12px;
+  background: var(--sf-white);
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+  padding: 8px 14px;
+  display: flex; flex-wrap: wrap; gap: 4px 20px;
+  font-size: 11.5px; color: var(--sf-text-3);
+  box-shadow: var(--sf-shadow);
+}
+.id-strip b { color: var(--sf-text-2); font-weight: 600; }
+.id-strip .ok { color: var(--sf-success-dark); }
+.id-strip code {
+  font-family: ui-monospace, "Liberation Mono", Menlo, monospace;
+  font-size: 11px; color: var(--sf-navy);
+}
+.panel { display: none; }
+.panel.is-on { display: block; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dl { display: grid; grid-template-columns: 160px 1fr; gap: 6px 12px; font-size: 13px; }
+.dl dt { color: var(--sf-text-4); }
+.dl dd { margin: 0; }
+.chatter-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--sf-border); }
+.chatter-item:last-child { border-bottom: 0; }
+.composer {
+  display: flex; gap: 8px; padding: 10px 12px;
+  border: 1px solid var(--sf-border); border-radius: var(--sf-radius);
+  background: #fff; margin-bottom: 12px; color: var(--sf-text-4);
+}
+.placeholder-tab { color: var(--sf-text-3); font-size: 13px; }
+.placeholder-tab h3 { color: var(--sf-text); font-size: 14px; margin: 0 0 6px; }
+.fake-row {
+  display: flex; justify-content: space-between;
+  padding: 8px 0; border-bottom: 1px solid var(--sf-border);
+  color: var(--sf-text-2);
+}
+
+.dash { padding: 16px 16px 24px; }
+.dash-h { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 12px; }
+.dash-h h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.dash-h h1 span { color: var(--sf-brand); }
+.dash-h .sub { margin: 4px 0 0; color: var(--sf-text-3); font-size: 13px; }
+.scoreboard {
+  margin-left: auto; flex: none;
+  background: var(--sf-white);
+  border: 1px dashed var(--sf-border-strong);
+  border-radius: var(--sf-radius);
+  padding: 8px 12px;
+  min-width: 280px;
+}
+.scoreboard .k {
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--sf-text-3); margin-bottom: 4px;
+}
+.scoreboard .nums { display: flex; gap: 14px; }
+.scoreboard .n { font-size: 16px; font-weight: 700; color: var(--sf-text); line-height: 1.1; }
+.scoreboard .n span { display: block; font-size: 10.5px; font-weight: 400; color: var(--sf-text-3); margin-top: 2px; }
+.scoreboard .ex { margin-top: 4px; font-size: 10.5px; color: var(--sf-text-4); font-style: italic; }
+
+.q-card { overflow: hidden; }
+.q-tools {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-bottom: 1px solid var(--sf-border);
+  background: #FAFAF9;
+}
+.q-pill {
+  height: 28px; padding: 0 10px; border-radius: 14px;
+  border: 1px solid var(--sf-border); background: #fff;
+  font-size: 12px; color: var(--sf-text-2);
+  display: inline-flex; align-items: center;
+}
+.q-pill.is-on { background: var(--sf-brand-soft); border-color: #D4E5F7; color: var(--sf-brand-darker); font-weight: 600; }
+
+table.q { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.q th {
+  text-align: left; font-size: 11px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--sf-text-3); background: #FAFAF9;
+  padding: 8px 12px; border-bottom: 1px solid var(--sf-border);
+  white-space: nowrap;
+}
+table.q td {
+  padding: 10px 12px; border-bottom: 1px solid var(--sf-border);
+  vertical-align: middle; color: var(--sf-text);
+}
+table.q tr:last-child td { border-bottom: 0; }
+table.q tbody tr.clickable { cursor: pointer; }
+table.q tbody tr.clickable:hover td { background: var(--sf-brand-wash); }
+table.q tr.is-pam td { background: #F4F9FD; }
+table.q tr.is-pam:hover td { background: #EAF4FB; }
+table.q tr.is-hot td { background: #FFF6F5; }
+table.q tr.is-hold td { background: var(--sf-warn-soft); }
+table.q tr.is-q td { background: #F7F7F7; }
+table.q tr.is-pulse td { outline: 2px solid var(--sf-error); outline-offset: -2px; }
+.rank {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-weight: 700; font-size: 12px;
+  background: var(--sf-bg); color: var(--sf-text-2);
+}
+.rank.one { background: var(--sf-brand); color: #fff; }
+.who-cell { display: flex; align-items: center; gap: 10px; }
+.who-cell .nm { font-weight: 700; }
+.who-cell .nm a { color: var(--sf-text); font-weight: 700; }
+.who-cell .nm a:hover { color: var(--sf-brand); }
+.who-cell .meta { font-size: 11.5px; color: var(--sf-text-3); }
+.why { font-size: 12.5px; color: var(--sf-text-2); line-height: 1.35; max-width: 280px; }
+.ch-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11.5px; font-weight: 700; padding: 2px 8px;
+  border-radius: 10px; white-space: nowrap;
+}
+.ch-badge.viq { background: var(--sf-brand-soft); color: var(--sf-brand-darker); }
+.ch-badge.web { background: var(--sf-error-soft); color: var(--sf-error-dark); }
+.ch-badge.ref { background: var(--sf-purple-soft); color: #401075; }
+.ch-badge.wf { background: var(--sf-success-soft); color: var(--sf-success-dark); }
+.ch-badge.q { background: #EEE; color: #5C5C5C; }
+.ch-badge.ex { background: var(--sf-warn-soft); color: #A86403; }
+.sla { font-weight: 700; font-variant-numeric: tabular-nums; }
+.sla.hot { color: var(--sf-error); }
+.sla.now { color: var(--sf-purple); }
+.more-row td {
+  text-align: center; color: var(--sf-text-3); font-size: 12px;
+  background: #FAFAF9 !important; cursor: default;
+}
+
+.notif-wrap { position: relative; }
+.notif-panel {
+  display: none;
+  position: absolute; top: calc(100% + 6px); right: -8px;
+  width: 400px; max-height: 480px;
+  background: #fff; border: 1px solid var(--sf-border);
+  border-radius: 6px; box-shadow: var(--sf-shadow-3);
+  z-index: 80; overflow: hidden;
+}
+.notif-panel.is-open { display: block; }
+.notif-h {
+  display: flex; align-items: center; padding: 10px 14px;
+  border-bottom: 1px solid var(--sf-border);
+  font-size: 14px; font-weight: 700; background: #fff;
+}
+.notif-h span { margin-left: auto; font-size: 12px; font-weight: 400; color: var(--sf-brand); cursor: pointer; }
+.notif-item {
+  display: grid; grid-template-columns: 36px 1fr; gap: 10px;
+  padding: 12px 14px; border-bottom: 1px solid var(--sf-border);
+  cursor: pointer; background: #fff;
+}
+.notif-item:hover { background: var(--sf-brand-wash); }
+.notif-item:last-child { border-bottom: 0; }
+.notif-item.unread { background: #F8FBFE; }
+.notif-item.urgent { background: #FFF8F7; }
+.notif-item.urgent:hover { background: #FFF1F0; }
+.notif-ico {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center;
+}
+.notif-item h4 { margin: 0 0 2px; font-size: 13px; font-weight: 700; }
+.notif-item p { margin: 0; font-size: 12.5px; color: var(--sf-text-2); line-height: 1.4; }
+.notif-item time { display: block; margin-top: 4px; font-size: 11px; color: var(--sf-text-3); }
+
+.toast-slot {
+  position: fixed; top: 58px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 90; pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  min-width: 340px; max-width: 420px;
+  background: #fff; border-radius: var(--sf-radius);
+  box-shadow: var(--sf-shadow-3);
+  border-left: 4px solid var(--sf-success);
+  display: grid; grid-template-columns: 28px 1fr auto;
+  gap: 8px; align-items: start;
+  padding: 10px 12px;
+  animation: toastIn .25s ease;
+}
+.toast.warn { border-left-color: var(--sf-warn); }
+.toast.error { border-left-color: var(--sf-error); }
+.toast.info { border-left-color: var(--sf-brand); }
+.toast h4 { margin: 0; font-size: 13px; font-weight: 700; }
+.toast p { margin: 2px 0 0; font-size: 12.5px; color: var(--sf-text-2); }
+.toast .x { border: 0; background: transparent; color: var(--sf-text-3); padding: 2px; display: flex; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+.modal-back {
+  display: none; position: fixed; inset: 0;
+  background: rgba(8,7,7,.42); z-index: 100;
+  align-items: center; justify-content: center;
+}
+.modal-back.is-open { display: flex; }
+.modal {
+  width: 440px; background: #fff; border-radius: var(--sf-radius);
+  box-shadow: var(--sf-shadow-3); overflow: hidden;
+}
+.modal h3 { margin: 0; padding: 12px 16px; font-size: 16px; border-bottom: 1px solid var(--sf-border); }
+.modal .body { padding: 14px 16px; font-size: 13px; color: var(--sf-text-2); }
+.modal .body p { margin: 0 0 10px; }
+.modal label { display: block; font-size: 12px; color: var(--sf-text-3); margin-bottom: 4px; }
+.modal select, .modal textarea {
+  width: 100%; font-family: inherit; font-size: 13px;
+  border: 1px solid var(--sf-border-strong); border-radius: var(--sf-radius);
+  padding: 6px 8px; color: var(--sf-text);
+}
+.modal .foot {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 10px 16px; border-top: 1px solid var(--sf-border); background: #FAFAF9;
+}
+.modal .hint { font-size: 11.5px; color: var(--sf-text-3); margin-top: 8px; }
+.modal .hint code {
+  font-family: ui-monospace, "Liberation Mono", Menlo, monospace;
+  font-size: 11px; background: var(--sf-bg); padding: 1px 4px; border-radius: 3px;
+}
+.flags { display: flex; flex-direction: column; gap: 6px; }
+.flag { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--sf-text); }
+.flag i { width: 8px; height: 8px; border-radius: 50%; background: var(--sf-success); flex: none; }
+.flag.no i { background: var(--sf-text-4); }
+.why-this {
+  background: #FAFBFC; border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius); padding: 8px 10px;
+  font-size: 12.5px; color: var(--sf-text-2);
+}
+.why-this ol { margin: 4px 0 0; padding-left: 18px; }
+.why-this li { margin: 2px 0; }
+</style>
+</head>
+<body data-view="record">
+
+<div class="app" id="app">
+  <header class="sf-header">
+    <button class="sf-waffle" title="App Launcher" type="button" aria-label="App Launcher">
+      <svg width="20" height="20" viewBox="0 0 52 52" fill="currentColor" aria-hidden="true">
+        <circle cx="8" cy="8" r="4"/><circle cx="26" cy="8" r="4"/><circle cx="44" cy="8" r="4"/>
+        <circle cx="8" cy="26" r="4"/><circle cx="26" cy="26" r="4"/><circle cx="44" cy="26" r="4"/>
+        <circle cx="8" cy="44" r="4"/><circle cx="26" cy="44" r="4"/><circle cx="44" cy="44" r="4"/>
+      </svg>
+    </button>
+    <div class="sf-appname" title="Lightning app">
+      TMG Sales
+      <span class="sf-caret" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+      </span>
+    </div>
+    <div class="sf-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input type="search" placeholder="Search Salesforce" aria-label="Search Salesforce" />
+    </div>
+    <div class="sf-header-right">
+      <button class="sf-iconbtn" type="button" title="Favorites" aria-label="Favorites">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3.5l2.7 5.5 6 .9-4.4 4.3 1 6-5.3-2.8L6.7 20.2l1-6L3.3 9.9l6-.9L12 3.5z"/></svg>
+      </button>
+      <div class="notif-wrap">
+        <button class="sf-iconbtn" id="bellBtn" type="button" title="Notifications" aria-label="Notifications" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+          <span class="sf-badge" id="bellBadge">2</span>
+        </button>
+        <div class="notif-panel" id="notifPanel" role="dialog" aria-label="Notifications">
+          <div class="notif-h">Notifications <span id="markRead">Mark all as read</span></div>
+          <div class="notif-item urgent" data-go="queue" data-pulse="elena">
+            <div class="notif-ico" style="background:#FEDAD7;color:#BA0517">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+            </div>
+            <div>
+              <h4>New website lead · CA contact due in 4 min</h4>
+              <p>Elena Vasquez submitted the Atlanta contact form. SLA under 5 minutes.</p>
+              <time>8:10 AM ET</time>
+            </div>
+          </div>
+          <div class="notif-item unread" data-go="record">
+            <div class="notif-ico" style="background:#EEF4FF;color:#0176D3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+            </div>
+            <div>
+              <h4>Pam Whitaker returned to the site yesterday. Call today.</h4>
+              <p>VisitIQ identified a LinkedIn visitor. Open retirement question since 2018. Opens her Omnishift tab.</p>
+              <time>Yesterday · 4:22 PM ET</time>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="sf-iconbtn" type="button" title="Salesforce Help" aria-label="Help">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.8.4-1.4 1-1.4 1.7V14"/><path d="M12 17h.01"/></svg>
+      </button>
+      <button class="sf-iconbtn" type="button" title="Setup" aria-label="Setup">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.7 7.7 0 0 0 .1-2l2-1.2-2-3.4-2.2.6a7.5 7.5 0 0 0-1.7-1L15.2 3h-6.4l-.4 2.8a7.5 7.5 0 0 0-1.7 1L4.5 6.4l-2 3.4 2 1.2a7.7 7.7 0 0 0 .1 2l-2 1.2 2 3.4 2.2-.6a7.5 7.5 0 0 0 1.7 1L8.8 21h6.4l.4-2.8a7.5 7.5 0 0 0 1.7-1l2.2.6 2-3.4-2-1.2z"/></svg>
+      </button>
+      <button class="sf-avatar btn" type="button" title="Marcus Cole" aria-label="Marcus Cole">MC</button>
+    </div>
+  </header>
+
+  <nav class="sf-nav" aria-label="App navigation">
+    <div class="sf-nav-label">TMG Sales</div>
+    <button class="sf-nav-item" data-nav="queue" id="navHome" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-8.5z"/></svg>
+      Home
+    </button>
+    <button class="sf-nav-item is-active" data-nav="record" id="navLeads" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M20 8v6M17 11h6"/></svg>
+      Leads
+    </button>
+    <button class="sf-nav-item is-muted" type="button" title="Standard Salesforce — unchanged in this preview">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M17 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM23 21v-2a3.5 3.5 0 0 0-2.5-3.3"/></svg>
+      Contacts
+    </button>
+    <button class="sf-nav-item is-muted" type="button" title="Standard Salesforce — unchanged in this preview">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg>
+      Accounts
+    </button>
+    <button class="sf-nav-item is-muted" type="button" title="Standard Salesforce — unchanged in this preview">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19h16M7 19V8l5-3 5 3v11"/><path d="M10 19v-5h4v5"/></svg>
+      Opportunities
+    </button>
+    <button class="sf-nav-item is-muted" type="button" title="Standard Salesforce — unchanged in this preview">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>
+      Tasks
+    </button>
+    <div class="sf-nav-label">Reports</div>
+    <button class="sf-nav-item is-muted" type="button" title="Standard Salesforce — unchanged in this preview">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+      Reports
+    </button>
+    <button class="sf-nav-item is-muted" type="button" title="Standard Salesforce — unchanged in this preview">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></svg>
+      Dashboards
+    </button>
+    <div class="sf-nav-foot">
+      Omnishift is not an app in this org.<br/>It is a tab, an alert, and a Home list.
+    </div>
+  </nav>
+  <main class="sf-main" id="main">
+    <section class="rec" id="surface-record">
+      <div class="rec-crumb">
+        <a href="#queue" data-nav="queue">Leads</a>
+        <span aria-hidden="true">›</span>
+        <span>Pamela Whitaker</span>
+      </div>
+      <div class="rec-highlights">
+        <div class="rec-top">
+          <div class="sf-avatar lg navy" aria-hidden="true">PW</div>
+          <div class="rec-id">
+            <div class="rec-kicker"><span class="dot" title="Clean match"></span> Lead · Atlanta</div>
+            <div class="rec-name-row">
+              <h1 class="rec-name">Pamela Whitaker</h1>
+              <button class="rec-star" type="button" title="Follow" aria-label="Follow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3.5l2.7 5.5 6 .9-4.4 4.3 1 6-5.3-2.8L6.7 20.2l1-6L3.3 9.9l6-.9L12 3.5z"/></svg>
+              </button>
+            </div>
+            <div class="rec-sub">Pam · EVP, Operations (retiring) · <b>Meridian Health Systems</b> · Atlanta, GA</div>
+          </div>
+          <div class="rec-actions">
+            <button class="sf-btn" type="button">Follow</button>
+            <button class="sf-btn" type="button">Edit</button>
+            <button class="sf-btn brand" type="button">Convert</button>
+            <button class="sf-btn" type="button">Clone</button>
+          </div>
+        </div>
+        <div class="rec-fields">
+          <div class="sf-field"><span class="lbl">Phone</span><span class="val"><a href="#">(404) 555-0192</a></span></div>
+          <div class="sf-field"><span class="lbl">Email</span><span class="val"><a href="#">pwhitaker.atl@example.com</a></span></div>
+          <div class="sf-field"><span class="lbl">Owner</span><span class="val"><a href="#">Marcus Cole</a> · Atlanta</span></div>
+          <div class="sf-field"><span class="lbl">Lead Source</span><span class="val">VisitIQ · LinkedIn</span></div>
+        </div>
+        <ol class="sf-path" aria-label="Lead path">
+          <li class="is-complete">Open</li>
+          <li class="is-complete">Working</li>
+          <li class="is-current">Nurturing</li>
+          <li>Qualified</li>
+          <li>Converted</li>
+        </ol>
+      </div>
+      <div class="sf-tabs" role="tablist">
+        <button class="sf-tab" data-tab="details" type="button">Details</button>
+        <button class="sf-tab" data-tab="chatter" type="button">Chatter</button>
+        <button class="sf-tab" data-tab="pardot" type="button">Pardot</button>
+        <button class="sf-tab" data-tab="survey" type="button">Annual Survey</button>
+        <button class="sf-tab is-active" data-tab="omnishift" type="button">Omnishift <span class="new">TAB</span></button>
+      </div>
+      <div class="rec-body">
+        <div class="panel is-on" id="tab-omnishift">
+          <div class="os-action">
+            <div class="os-action-top">
+              <div class="os-call-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h4l2 5-2.5 1.5a12 12 0 0 0 6 6L17 14l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 2-2z"/></svg>
+              </div>
+              <div style="flex:1;min-width:0">
+                <h2>Recommended action · <em>Call today</em></h2>
+                <p class="lede">Open with the 2018 retirement question. Reference the Team page and the family-office / legacy section she viewed yesterday — not a generic drip.</p>
+              </div>
+              <div class="os-window">
+                <b>This morning</b>
+                <span>Phone · Atlanta owner</span>
+              </div>
+            </div>
+            <div class="os-btns">
+              <button class="sf-btn brand" type="button" data-disp="Call_Logged">Call logged</button>
+              <button class="sf-btn outline-brand" type="button" id="btnEmail">Send approved email</button>
+              <button class="sf-btn" type="button" data-disp="Snoozed">Snooze</button>
+              <button class="sf-btn danger" type="button" id="btnWrong">Wrong person</button>
+            </div>
+            <p class="os-caption">Writes to Salesforce fields — the loop does not work if this is only in our UI. Disposition lands on <code>OmniShift_Disposition__c</code>.</p>
+          </div>
+          <div class="os-chips">
+            <span class="k">Why now</span>
+            <span class="chip">Return visit</span>
+            <span class="chip">Retirement unanswered since 2018</span>
+            <span class="chip">LinkedIn → site</span>
+            <span class="chip ok">Atlanta owner match</span>
+          </div>
+          <div class="os-grid">
+            <div class="sf-card">
+              <div class="sf-card-h">Super Profile<span class="meta">One person, resolved · Phase 1</span></div>
+              <div class="sf-card-b">
+                <div class="os-sec">
+                  <h3>ICP / wealth band</h3>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <span class="chip ok">ICP fit</span>
+                    <span class="chip">$2.5–5M investable · range</span>
+                    <span class="chip neutral">Retiring executive · Atlanta</span>
+                  </div>
+                  <p style="margin:8px 0 0;font-size:12.5px;color:var(--sf-text-3)">Band only — not a scraped net worth. Employer is self-reported / public persona, not a WealthFeed exact figure.</p>
+                </div>
+                <div class="os-sec">
+                  <h3>Salesforce · 2018 note</h3>
+                  <div class="note">
+                    <div class="who"><b>L. Harper</b> · Activity · Jun 14, 2018</div>
+                    <p>Spoke with Pam. She said she had <em>no idea when she can retire</em>. Seemed pretty nice. Had a ton of people on the line and had to go. Sending a follow-up email.</p>
+                  </div>
+                </div>
+                <div class="os-sec">
+                  <h3>VisitIQ journey · yesterday</h3>
+                  <p style="margin:0 0 8px;font-size:12.5px;color:var(--sf-text-3)">Identified from LinkedIn · return visitor · 8 min on site</p>
+                  <ol class="journey">
+                    <li><span class="dot"></span><div class="pg">Home <span>· themathergroup.com</span></div><span class="tm">1:42</span></li>
+                    <li><span class="dot"></span><div class="pg">Team <span>· /our-team</span></div><span class="tm">3:10</span></li>
+                    <li><span class="dot"></span><div class="pg">Family office / legacy <span>· /family-office</span></div><span class="tm">2:48</span></li>
+                  </ol>
+                </div>
+                <div class="os-sec">
+                  <h3>Fit flags</h3>
+                  <div class="flags">
+                    <div class="flag"><i></i> Suppression passed — not an existing client</div>
+                    <div class="flag"><i></i> Clean identity match · no quarantine</div>
+                    <div class="flag"><i></i> Geo matches lead owner (Atlanta)</div>
+                    <div class="flag no"><i></i> Below-ICP — no</div>
+                    <div class="flag no"><i></i> Incomplete cookie — no</div>
+                  </div>
+                </div>
+                <div class="os-sec">
+                  <h3>Why she is #1 on Marcus’s list this morning</h3>
+                  <div class="why-this">
+                    Engine combination — not a black-box score.
+                    <ol>
+                      <li>Open question in Salesforce since 2018 (retirement timing)</li>
+                      <li>Identified return visit yesterday, LinkedIn → site</li>
+                      <li>Pages signal planning (Team + family-office / legacy), not a bounce</li>
+                      <li>ICP band + Atlanta owner already on the record</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sf-card" id="draftCard">
+              <div class="sf-card-h">Draft and checks<span class="meta">Visible to the CA · editable</span></div>
+              <div class="sf-card-b">
+                <div class="os-sec">
+                  <h3>Talk track · before you dial</h3>
+                  <div class="talk">
+                    <div class="lbl">Say this</div>
+                    “Pam — Marcus Cole, The Mather Group in Atlanta. We spoke in 2018; you weren’t sure when you could retire and had to jump. I saw you back on the site yesterday — the team page and the family-office / legacy section. I wanted to pick up that retirement question, not sell you anything this morning. Do you have ten minutes?”
+                  </div>
+                </div>
+                <div class="os-sec">
+                  <h3>Compliance checks</h3>
+                  <ul class="checks">
+                    <li>
+                      <span class="check-ok" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg></span>
+                      <span>Firm disclosure included<span class="sub">The Mather Group, LLC · SEC-registered investment adviser</span></span>
+                    </li>
+                    <li>
+                      <span class="check-ok" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg></span>
+                      <span>Do-not-guarantee language<span class="sub">No promise on retirement timing, income, or outcomes</span></span>
+                    </li>
+                    <li>
+                      <span class="check-ok" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg></span>
+                      <span>SEC / ADV language<span class="sub">Form ADV pointer · informational, not an offer</span></span>
+                    </li>
+                  </ul>
+                </div>
+                <div class="os-sec" id="emailSec">
+                  <h3>Post-call follow-up email <span style="font-weight:400;letter-spacing:0;text-transform:none;color:var(--sf-text-4)">(Tom’s P1 ask)</span></h3>
+                  <div class="email" id="emailBox">
+                    <div class="email-h"><span>To <b>pwhitaker.atl@example.com</b></span><span style="margin-left:auto">From <b>Marcus Cole</b></span></div>
+                    <div class="email-h" style="border-bottom:0;padding-top:0">Subject <b>Following up — retirement timing, not a pitch</b></div>
+                    <div class="email-body" id="emailBody" hidden>
+                      <p>Hi Pam,</p>
+                      <p>It’s Marcus Cole with The Mather Group in Atlanta. We spoke briefly in 2018 — you mentioned you weren’t sure when you’d be able to retire, and we never quite finished that conversation.</p>
+                      <p>I noticed you spent time on our team page and the family-office / legacy planning section yesterday. Those two pages together usually mean someone is thinking about the next chapter — not just the portfolio, but who they want in the room when the decisions get more personal.</p>
+                      <p>If that’s you, I have 20 minutes tomorrow afternoon. No pitch. Just a conversation about timing.</p>
+                      <p>Marcus Cole<br/>Client Associate · The Mather Group<br/>Atlanta · (404) 555-0108</p>
+                    </div>
+                    <div class="email-disc" id="emailDisc" hidden>
+                      <b>Disclosures (visible on send)</b>
+                      The Mather Group, LLC is an SEC-registered investment adviser. This message is for informational purposes only and does not constitute an offer to sell or a solicitation to buy any security. There is no guarantee that any investment strategy, retirement date, or income target will be achieved. Past performance is not indicative of future results. Please refer to our Form ADV for additional disclosures.
+                    </div>
+                    <div class="email-foot">
+                      <button class="sf-btn sm outline-brand" type="button" id="btnExpandEmail">Show draft and disclosures</button>
+                      <button class="sf-btn sm success hidden" type="button" id="btnApproveEmail" data-disp="Email_Approved">Approve and write to Salesforce</button>
+                      <span style="margin-left:auto;font-size:11px;color:var(--sf-text-4)">Not mass mail · post-call only</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="id-strip">
+            <span>Salesforce Lead Id <code>00Q8b00000K4mWxEAJ</code></span>
+            <span>WealthFeed person key <code>WF-P-7A29C4</code></span>
+            <span>VisitIQ id <code>VIQ-338401</code></span>
+            <span>Match confidence <b>94%</b> · clean</span>
+            <span class="ok">Suppression: not an existing client</span>
+          </div>
+        </div>
+        <div class="panel" id="tab-details">
+          <div class="detail-grid">
+            <div class="sf-card">
+              <div class="sf-card-h">Lead information</div>
+              <div class="sf-card-b">
+                <dl class="dl">
+                  <dt>Name</dt><dd>Pamela Whitaker</dd>
+                  <dt>Title</dt><dd>EVP, Operations (retiring)</dd>
+                  <dt>Company</dt><dd>Meridian Health Systems</dd>
+                  <dt>Phone</dt><dd>(404) 555-0192</dd>
+                  <dt>Email</dt><dd>pwhitaker.atl@example.com</dd>
+                  <dt>City / State</dt><dd>Atlanta, GA</dd>
+                  <dt>Lead Source</dt><dd>VisitIQ · LinkedIn</dd>
+                  <dt>Status</dt><dd>Nurturing</dd>
+                  <dt>Owner</dt><dd>Marcus Cole (Atlanta)</dd>
+                  <dt>Created</dt><dd>June 14, 2018</dd>
+                </dl>
+              </div>
+            </div>
+            <div class="sf-card">
+              <div class="sf-card-h">Existing TMG fields</div>
+              <div class="sf-card-b">
+                <dl class="dl">
+                  <dt>Office</dt><dd>Atlanta</dd>
+                  <dt>ICP band</dt><dd>$2.5–5M (range)</dd>
+                  <dt>Do not contact</dt><dd>No</dd>
+                  <dt>Existing client</dt><dd>No</dd>
+                  <dt>OmniShift_Disposition__c</dt><dd>— (empty until CA acts)</dd>
+                </dl>
+                <p style="margin:12px 0 0;font-size:12px;color:var(--sf-text-3)">Standard compact layout. Omnishift does not replace this tab — it sits beside Pardot and Annual Survey.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" id="tab-chatter">
+          <div class="sf-card">
+            <div class="sf-card-h">Chatter</div>
+            <div class="sf-card-b">
+              <div class="composer">Share an update…</div>
+              <div class="chatter-item">
+                <div class="sf-avatar sm slate">LH</div>
+                <div>
+                  <b>L. Harper</b> <span style="color:var(--sf-text-3)">· Jun 14, 2018</span>
+                  <p style="margin:4px 0 0">Spoke with Pam. She said she had no idea when she can retire. Seemed pretty nice. Had a ton of people on the line and had to go. Sending a follow-up email.</p>
+                </div>
+              </div>
+              <div class="chatter-item">
+                <div class="sf-avatar sm green">MC</div>
+                <div>
+                  <b>Marcus Cole</b> <span style="color:var(--sf-text-3)">· this morning</span>
+                  <p style="margin:4px 0 0;color:var(--sf-text-3)">Omnishift recommended a call. No activity logged yet.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" id="tab-pardot">
+          <div class="sf-card">
+            <div class="sf-card-h">Pardot · Engagement History <span class="meta">Existing TMG tab</span></div>
+            <div class="sf-card-b placeholder-tab">
+              <h3>Same pattern Deana already uses</h3>
+              <p>Pardot lives on the person as a tab. Omnishift is the next one — not a new app the CA has to learn.</p>
+              <div class="fake-row"><span>List membership</span><span>Atlanta Executives · ICP</span></div>
+              <div class="fake-row"><span>Last email</span><span>None this quarter</span></div>
+              <div class="fake-row"><span>Score</span><span>—</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" id="tab-survey">
+          <div class="sf-card">
+            <div class="sf-card-h">Annual Survey <span class="meta">Existing TMG tab</span></div>
+            <div class="sf-card-b placeholder-tab">
+              <h3>Existing capability on the person</h3>
+              <p>Shown here so the prototype matches Deana’s rule: new work is a tab on the record, the same way Annual Survey and Pardot already are.</p>
+              <div class="fake-row"><span>Survey status</span><span>Not a client — n/a</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="dash hidden" id="surface-queue">
+      <div class="dash-h">
+        <div>
+          <h1>Good morning, Marcus · Today you should work <span>17 people</span></h1>
+          <p class="sub">Monday, August 31, 2026 · 8:14 AM ET · Atlanta office · ranked for you, not a firm-wide board</p>
+        </div>
+        <div class="scoreboard" title="Placeholders only">
+          <div class="k">Scoreboard · example data</div>
+          <div class="nums">
+            <div class="n">4<span>meetings booked this week</span></div>
+            <div class="n">41%<span>contact rate</span></div>
+            <div class="n">6.5h<span>hours saved</span></div>
+          </div>
+          <div class="ex">Example placeholders — not a promised lift.</div>
+        </div>
+      </div>
+      <div class="sf-card q-card">
+        <div class="sf-card-h">Today Queue<span class="meta">Who · why now · channel · window · existing Salesforce owner / geo only</span></div>
+        <div class="q-tools">
+          <span class="q-pill is-on">My list · 17</span>
+          <span class="q-pill">Website SLA</span>
+          <span class="q-pill">VisitIQ</span>
+          <span class="q-pill">WealthFeed</span>
+          <span class="q-pill">Quarantine (1)</span>
+          <span style="margin-left:auto;font-size:12px;color:var(--sf-text-3)">Phase 1 · no CA-matching column</span>
+        </div>
+        <table class="q">
+          <thead>
+            <tr>
+              <th style="width:48px">Rank</th>
+              <th>Name</th>
+              <th>Why now</th>
+              <th>Channel</th>
+              <th>Suggested action</th>
+              <th>Window</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="is-pam clickable" data-go="record">
+              <td><div class="rank one">1</div></td>
+              <td><div class="who-cell"><div class="sf-avatar sm navy">PW</div><div><div class="nm"><a href="#record">Pamela Whitaker</a></div><div class="meta">Lead · Atlanta · Marcus Cole</div></div></div></td>
+              <td class="why">Return visit · retirement unanswered since 2018 · LinkedIn → site · Atlanta owner match</td>
+              <td><span class="ch-badge viq">VisitIQ</span></td>
+              <td>Call today</td>
+              <td>This morning</td>
+            </tr>
+            <tr class="is-hot clickable" id="row-elena" data-go="queue">
+              <td><div class="rank">2</div></td>
+              <td><div class="who-cell"><div class="sf-avatar sm red">EV</div><div><div class="nm">Elena Vasquez</div><div class="meta">Lead · Atlanta · website form 8:10 AM</div></div></div></td>
+              <td class="why">New website form. Journey on the opener. SLA under 5 minutes.</td>
+              <td><span class="ch-badge web">Website form</span></td>
+              <td>Call now</td>
+              <td class="sla hot" id="slaClock">4:12 left</td>
+            </tr>
+            <tr>
+              <td><div class="rank">3</div></td>
+              <td><div class="who-cell"><div class="sf-avatar sm purple">DO</div><div><div class="nm">David Okonkwo</div><div class="meta">Lead · named by client Jordan Hale</div></div></div></td>
+              <td class="why">Referral — named advisor already on the record. Skip the ranker (rule).</td>
+              <td><span class="ch-badge ref">Referral</span></td>
+              <td>Call now · skip ranker</td>
+              <td class="sla now">Immediate</td>
+            </tr>
+            <tr>
+              <td><div class="rank">4</div></td>
+              <td><div class="who-cell"><div class="sf-avatar sm green">HC</div><div><div class="nm">Helen Cho</div><div class="meta">Lead · Atlanta · WealthFeed catalyst</div></div></div></td>
+              <td class="why">Job change · retired as CFO. ICP band. Suppression passed.</td>
+              <td><span class="ch-badge wf">WealthFeed</span></td>
+              <td>Call + email</td>
+              <td>Today</td>
+            </tr>
+            <tr>
+              <td><div class="rank">5</div></td>
+              <td><div class="who-cell"><div class="sf-avatar sm teal">RH</div><div><div class="nm">Robert Hale</div><div class="meta">Lead · Atlanta · return visitor</div></div></div></td>
+              <td class="why">Second session this month. Viewed fees and the team page.</td>
+              <td><span class="ch-badge viq">VisitIQ</span></td>
+              <td>Call today</td>
+              <td>Today PM</td>
+            </tr>
+            <tr class="is-q">
+              <td><div class="rank">6</div></td>
+              <td><div class="who-cell"><div class="sf-avatar sm slate">MB</div><div><div class="nm">Michael Brennan</div><div class="meta">Quarantine · existing SF Contact 0038b00000Xx12A</div></div></div></td>
+              <td class="why">Identity collision — this person is already a Salesforce contact in a WealthFeed export. Do not create a duplicate.</td>
+              <td><span class="ch-badge q">Quarantine</span></td>
+              <td>Review · do not call</td>
+              <td>Hold</td>
+            </tr>
+            <tr class="is-hold">
+              <td><div class="rank">7</div></td>
+              <td><div class="who-cell"><div class="sf-avatar sm amber">CE</div><div><div class="nm">Catherine Ellison</div><div class="meta">Lead · $10M+ band</div></div></div></td>
+              <td class="why">$10M+ · John/Deana review. This is a rule, not matching. No CA auto-assign.</td>
+              <td><span class="ch-badge ex">Exception</span></td>
+              <td>Hold for John / Deana</td>
+              <td>Rule</td>
+            </tr>
+            <tr>
+              <td><div class="rank">8</div></td>
+              <td><div class="who-cell"><div class="sf-avatar sm navy">JW</div><div><div class="nm">James Whitfield</div><div class="meta">Lead · Atlanta · relocation catalyst</div></div></div></td>
+              <td class="why">WealthFeed · relocating to Atlanta. Geo already matches Marcus as owner.</td>
+              <td><span class="ch-badge wf">WealthFeed</span></td>
+              <td>Call today</td>
+              <td>Today</td>
+            </tr>
+            <tr class="more-row">
+              <td colspan="6">+9 more in today’s queue · preview shows 8 of 17 · CAs never leave Salesforce</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <footer class="sf-util">
+    <button class="sf-util-item" type="button">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16l-7-3-7 3V4z"/></svg>
+      Notes
+    </button>
+    <button class="sf-util-item" type="button">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h16"/></svg>
+      History
+    </button>
+    <button class="sf-util-item" type="button">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+      New Task
+    </button>
+    <div class="sf-util-spacer"></div>
+    <div class="sf-util-note">
+      Engine preview · not a Salesforce install · Phase 1
+      <a href="#queue" data-nav="queue" id="jumpQueue">Today Queue</a>
+      <a href="#record" data-nav="record" id="jumpRecord">Pam Record</a>
+      <a href="#alert" data-nav="alert" id="jumpAlert">Alerts</a>
+    </div>
+  </footer>
+</div>
+<div class="toast-slot" id="toasts"></div>
+<div class="modal-back" id="wrongModal">
+  <div class="modal" role="dialog" aria-labelledby="wrongTitle">
+    <h3 id="wrongTitle">Wrong person</h3>
+    <div class="body">
+      <p>This is the learning loop. The CA says why, similar records drop, and the reason stays on the Salesforce record — not only in our UI.</p>
+      <label for="wrongReason">Reason</label>
+      <select id="wrongReason">
+        <option>Not this person — identity mismatch</option>
+        <option>Already a client / household</option>
+        <option>Do not contact</option>
+        <option>Other</option>
+      </select>
+      <div class="hint">Writes <code>OmniShift_Disposition__c = Wrong_Person</code> and <code>OmniShift_WrongPersonReason__c</code>.</div>
+    </div>
+    <div class="foot">
+      <button class="sf-btn" type="button" id="wrongCancel">Cancel</button>
+      <button class="sf-btn brand" type="button" id="wrongConfirm">Confirm and write field</button>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  const body = document.body;
+  const surfaceRecord = document.getElementById("surface-record");
+  const surfaceQueue = document.getElementById("surface-queue");
+  const navHome = document.getElementById("navHome");
+  const navLeads = document.getElementById("navLeads");
+  const bellBtn = document.getElementById("bellBtn");
+  const notifPanel = document.getElementById("notifPanel");
+  const toasts = document.getElementById("toasts");
+  const jumpQ = document.getElementById("jumpQueue");
+  const jumpR = document.getElementById("jumpRecord");
+  const jumpA = document.getElementById("jumpAlert");
+
+  function closeNotif() {
+    notifPanel.classList.remove("is-open");
+    bellBtn.classList.remove("is-open");
+    bellBtn.setAttribute("aria-expanded", "false");
+  }
+  function openNotif() {
+    notifPanel.classList.add("is-open");
+    bellBtn.classList.add("is-open");
+    bellBtn.setAttribute("aria-expanded", "true");
+  }
+
+  function setView(name, opts) {
+    opts = opts || {};
+    const view = name === "alert" ? "queue" : name;
+    body.dataset.view = name;
+    surfaceRecord.classList.toggle("hidden", view !== "record");
+    surfaceQueue.classList.toggle("hidden", view !== "queue");
+    navHome.classList.toggle("is-active", view === "queue");
+    navLeads.classList.toggle("is-active", view === "record");
+    jumpQ.classList.toggle("is-on", name === "queue");
+    jumpR.classList.toggle("is-on", name === "record");
+    jumpA.classList.toggle("is-on", name === "alert");
+    document.title = view === "record"
+      ? "Pamela Whitaker | Lead | TMG Sales"
+      : "Home | TMG Sales";
+
+    if (name === "alert") {
+      openNotif();
+      if (!opts.skipToast) showSlaToast();
+    } else if (!opts.keepNotif) {
+      closeNotif();
+    }
+    if (opts.pulse === "elena") {
+      const row = document.getElementById("row-elena");
+      if (row) {
+        row.classList.add("is-pulse");
+        setTimeout(function () { row.classList.remove("is-pulse"); }, 3500);
+        row.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+    }
+    try { history.replaceState(null, "", "#" + name); } catch (e) {}
+    if (view === "record" && !opts.keepScroll) {
+      document.getElementById("main").scrollTop = 0;
+    }
+  }
+
+  function iconSvg() {
+    var ns = "http://www.w3.org/2000/svg";
+    var s = document.createElementNS(ns, "svg");
+    s.setAttribute("width", "18");
+    s.setAttribute("height", "18");
+    s.setAttribute("viewBox", "0 0 24 24");
+    s.setAttribute("fill", "none");
+    s.setAttribute("stroke", "currentColor");
+    s.setAttribute("stroke-width", "2");
+    var c = document.createElementNS(ns, "circle");
+    c.setAttribute("cx", "12"); c.setAttribute("cy", "12"); c.setAttribute("r", "9");
+    var p1 = document.createElementNS(ns, "path");
+    p1.setAttribute("d", "M12 8v5");
+    var p2 = document.createElementNS(ns, "path");
+    p2.setAttribute("d", "M12 16h.01");
+    s.appendChild(c); s.appendChild(p1); s.appendChild(p2);
+    return s;
+  }
+  function fillToast(el, color, title, text) {
+    var ico = document.createElement("div");
+    ico.style.color = color;
+    ico.appendChild(iconSvg());
+    var mid = document.createElement("div");
+    var h = document.createElement("h4");
+    h.textContent = title;
+    mid.appendChild(h);
+    if (text) {
+      var p = document.createElement("p");
+      p.textContent = text;
+      mid.appendChild(p);
+    }
+    var x = document.createElement("button");
+    x.className = "x";
+    x.type = "button";
+    x.setAttribute("aria-label", "Dismiss");
+    x.textContent = "\u2715";
+    x.addEventListener("click", function () { el.remove(); });
+    el.appendChild(ico);
+    el.appendChild(mid);
+    el.appendChild(x);
+  }
+  function showToast(kind, title, text) {
+    var el = document.createElement("div");
+    el.className = "toast " + (kind || "info");
+    var color = kind === "error" ? "#BA0517" : kind === "warn" ? "#DD7A01" : kind === "success" ? "#2E844A" : "#0176D3";
+    fillToast(el, color, title, text);
+    toasts.appendChild(el);
+    setTimeout(function () { if (el.parentNode) el.remove(); }, 5200);
+  }
+
+  function showSlaToast() {
+    if (document.getElementById("slaToast")) return;
+    var el = document.createElement("div");
+    el.className = "toast error";
+    el.id = "slaToast";
+    fillToast(el, "#BA0517", "New website lead · CA contact due in 4 min", "Elena Vasquez · Atlanta contact form. Open the Today Queue.");
+    el.addEventListener("click", function (e) {
+      if (e.target.closest(".x")) return;
+      setView("queue", { pulse: "elena" });
+      el.remove();
+    });
+    toasts.appendChild(el);
+  }
+
+  function logged(disp) {
+    showToast("success", "Logged · will write OmniShift_Disposition__c", disp ? ("Value: " + disp) : "Disposition saved on the Lead.");
+  }
+
+  bellBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    if (notifPanel.classList.contains("is-open")) closeNotif();
+    else openNotif();
+  });
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest(".notif-wrap")) closeNotif();
+  });
+
+  document.getElementById("markRead").addEventListener("click", function (e) {
+    e.stopPropagation();
+    document.getElementById("bellBadge").style.display = "none";
+    document.querySelectorAll(".notif-item").forEach(function (n) { n.classList.remove("unread", "urgent"); });
+  });
+
+  notifPanel.querySelectorAll(".notif-item").forEach(function (item) {
+    item.addEventListener("click", function () {
+      setView(item.getAttribute("data-go"), { pulse: item.getAttribute("data-pulse") });
+    });
+  });
+
+  document.querySelectorAll("[data-nav]").forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.preventDefault();
+      setView(el.getAttribute("data-nav"));
+    });
+  });
+
+  document.querySelectorAll("tr[data-go]").forEach(function (tr) {
+    tr.addEventListener("click", function () { setView(tr.getAttribute("data-go")); });
+  });
+
+  document.querySelectorAll(".sf-tab").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      document.querySelectorAll(".sf-tab").forEach(function (t) { t.classList.remove("is-active"); });
+      tab.classList.add("is-active");
+      var id = tab.getAttribute("data-tab");
+      document.querySelectorAll(".rec-body .panel").forEach(function (p) { p.classList.remove("is-on"); });
+      document.getElementById("tab-" + id).classList.add("is-on");
+    });
+  });
+
+  document.querySelectorAll("[data-disp]").forEach(function (btn) {
+    if (btn.id === "btnApproveEmail") return;
+    btn.addEventListener("click", function () { logged(btn.getAttribute("data-disp")); });
+  });
+
+  var emailBody = document.getElementById("emailBody");
+  var emailDisc = document.getElementById("emailDisc");
+  var btnExpand = document.getElementById("btnExpandEmail");
+  var btnApprove = document.getElementById("btnApproveEmail");
+  document.getElementById("btnEmail").addEventListener("click", function () {
+    emailBody.hidden = false;
+    emailDisc.hidden = false;
+    btnExpand.classList.add("hidden");
+    btnApprove.classList.remove("hidden");
+    document.getElementById("emailSec").scrollIntoView({ block: "center", behavior: "smooth" });
+  });
+  btnExpand.addEventListener("click", function () {
+    emailBody.hidden = false;
+    emailDisc.hidden = false;
+    btnExpand.classList.add("hidden");
+    btnApprove.classList.remove("hidden");
+  });
+  btnApprove.addEventListener("click", function () { logged("Email_Approved"); });
+
+  var wrongModal = document.getElementById("wrongModal");
+  document.getElementById("btnWrong").addEventListener("click", function () { wrongModal.classList.add("is-open"); });
+  document.getElementById("wrongCancel").addEventListener("click", function () { wrongModal.classList.remove("is-open"); });
+  document.getElementById("wrongConfirm").addEventListener("click", function () {
+    wrongModal.classList.remove("is-open");
+    logged("Wrong_Person");
+  });
+  wrongModal.addEventListener("click", function (e) {
+    if (e.target === wrongModal) wrongModal.classList.remove("is-open");
+  });
+
+  var remain = 4 * 60 + 12;
+  var slaEl = document.getElementById("slaClock");
+  setInterval(function () {
+    if (remain <= 0) { slaEl.textContent = "SLA breached"; return; }
+    remain -= 1;
+    var m = Math.floor(remain / 60);
+    var s = String(remain % 60).padStart(2, "0");
+    slaEl.textContent = m + ":" + s + " left";
+  }, 1000);
+
+  function boot() {
+    var q = new URLSearchParams(location.search).get("view");
+    var h = (location.hash || "").replace("#", "");
+    var view = q || h || "record";
+    setView(view, { skipToast: view !== "alert" });
+    if (view === "alert") showSlaToast();
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

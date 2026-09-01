@@ -1,0 +1,299 @@
+<!doctype html><html><head><!-- frame-runtime --><base href="/_f/1787692801-9153/"><script>window.__FRAME_PREAMBLE={"v":1,"capabilities":{"artifact":"artifact.D_F1mx8d.js","assets":"assets.8Gk803W0.js","comments":"comments.GLuHR3zP.js","db":"db.h-3sndFg.js","downloads":"downloads.C3GSvEDP.js","embed":"embed.CxGAyc-v.js","mcp":"mcp.Bvma3qD7.js","network":"network.B5UA9Su4.js","notifications":"notifications.ssU4jy7G.js","permissions":"permissions.BNySkLV5.js","room":"room.BMMoe2BY.js","sample":"sample.BW2Uysoh.js","self":"artifact.D_F1mx8d.js","user":"user.BpKav-Rf.js"},"transforms":"_transforms.DSB5x63f.js","comments":"_comments.BoakUwmM.js","translate":"_translate.5HCW4BJh.js"}</script><script>(function(){"use strict";var te=["light","dark","system"],re=/^[A-Za-z0-9_-]{1,64}$/,$=/^[a-zA-Z_:][a-zA-Z0-9_:.-]{0,127}$/,ne=new Set(["class","hidden","value","checked","style","title","alt","placeholder","lang","dir","role","tabindex","disabled","readonly","contenteditable","open","colspan","rowspan"]);function oe(e){const t=e.toLowerCase();return t.startsWith("data-")||t.startsWith("aria-")||ne.has(t)}var Be="http://www.w3.org/1999/xhtml",se="http://www.w3.org/2000/svg",ae=new Set(["script","style","iframe","noscript","noframes","noembed","xmp","plaintext","template","title","textarea","object","embed"]),ie=new Set(["script","style"]);function ce(e){const t=e.localName.toLowerCase();return e.namespaceURI==="http://www.w3.org/1999/xhtml"?!ae.has(t):e.namespaceURI===se?!ie.has(t):!1}function M(e,t){return e===t||(e===160||e===32)&&(t===160||t===32)}function le(e,t){const r=e.length,n=t.length;let s=0;for(;s<r&&s<n&&M(e.charCodeAt(s),t.charCodeAt(s));)s++;let o=0;for(;o<r-s&&o<n-s&&M(e.charCodeAt(r-1-o),t.charCodeAt(n-1-o));)o++;return{p:s,s:o}}function ue(e,t){const r=e.firstChild;if(e.childNodes.length!==1||r===null||r.nodeType!==Node.TEXT_NODE){e.textContent=t;return}const n=r.data,s=n.length,o=t.length,{p:i,s:c}=le(n,t);i===s&&c===0&&s===o||r.replaceData(i,s-i-c,t.slice(i,o-c));const h=r.data,p=e.ownerDocument.getSelection?.()??null,w=p!==null&&p.rangeCount>0&&(p.anchorNode===r||p.focusNode===r)?{anchor:p.anchorNode,anchorOffset:p.anchorOffset,focus:p.focusNode,focusOffset:p.focusOffset}:null;let m=-1,g=-1;for(let f=0;f<h.length&&f<t.length;f++){const v=h.charCodeAt(f),b=t.charCodeAt(f);v!==b&&M(v,b)&&(m<0&&(m=f),g=f)}const a=m>=0;if(a&&r.replaceData(m,g-m+1,t.slice(m,g+1)),a&&w!==null&&w.anchor!==null&&w.focus!==null)try{p.setBaseAndExtent(w.anchor,w.anchorOffset,w.focus,w.focusOffset)}catch{}}var fe=new Set(["html","head","body","frameset"]);function de(e){return e.namespaceURI==="http://www.w3.org/1999/xhtml"&&fe.has(e.localName)}function pe(e){if(e===null||typeof e!="object")return!1;const t=e;if(typeof t.target!="string"||!re.test(t.target)||t.text!==void 0&&typeof t.text!="string")return!1;if(t.attrsSet!==void 0){if(t.attrsSet===null||typeof t.attrsSet!="object")return!1;for(const[r,n]of Object.entries(t.attrsSet))if(!$.test(r)||typeof n!="string")return!1}if(t.attrsRemoved!==void 0){if(!Array.isArray(t.attrsRemoved))return!1;for(const r of t.attrsRemoved)if(typeof r!="string"||!$.test(r))return!1}return!0}function me(e,t){if(e===null||typeof e!="object")return!1;const{seq:r,elements:n}=e;if(typeof r!="number"||!Number.isSafeInteger(r)||!Array.isArray(n)||n.length===0||n.length>64)return!1;for(let s=0;s<n.length;s++)if(!t(n[s]))return!1;return!0}function he(e){return e===null||typeof e!="object"?!1:me(e.__frame_patch,pe)}function _e(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_init;return t!==null&&typeof t=="object"}function ve(e){return e!==null&&typeof e=="object"&&e.__frame_size_poke===!0}function ye(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_theme;if(t===null||typeof t!="object")return!1;const r=t.theme;return typeof r=="string"&&te.includes(r)}var A=/^[\w.-]+\.js$/;function we(e,t,r){return r?"inert":typeof t=="string"&&A.test(t)?e?[t]:"inert":e?"inert":"framed"}function ge(){return{post(e,t){parent.postMessage(e,t)},on(e){const t=r=>{r.source===parent&&e(r.data,r.origin,r.isTrusted)};return addEventListener("message",t),()=>removeEventListener("message",t)}}}function be(){return{post:()=>{},on:()=>()=>{}}}var j="__frame_scroll",Ee=150,Ae=310,Se=160,Te=3e4;function ke(){let e=0,t=!1,r=!1,n=!1,s=0,o=null;const i=l=>{try{sessionStorage.setItem(j,JSON.stringify({y:l}))}catch{}},c=()=>{if(clearTimeout(e),o===null)return;const l=o;o=null,i(l)},h=()=>{if(t){t=!1;return}r=!0,o=scrollY,clearTimeout(e),e=setTimeout(c,Ee)};try{addEventListener("scroll",h,{passive:!0}),addEventListener("pagehide",c)}catch{}const p=()=>{let l;try{l=sessionStorage.getItem(j)}catch{return null}if(l===null)return null;let _;try{_=JSON.parse(l)}catch{_=null}const d=_?.y;if(!(typeof d=="number"&&Number.isFinite(d)&&d>=0)){try{sessionStorage.removeItem(j)}catch{}return null}return d};let w=!1;const m=l=>{try{const _=scrollY;scrollTo({top:l,left:0,behavior:"instant"}),s=l,n=!0,clearTimeout(e),o=null,i(l);const d=scrollY;d!==_&&(t=!0),d!==l&&!w&&(w=!0,addEventListener("load",()=>{try{if(scrollY===d){const T=p();m(T!==null?T:s)}}catch{}},{once:!0}))}catch{}},g=()=>{try{return!!location.hash}catch{return!0}};let a=!1;const f=()=>{try{if(a||innerWidth>Ae||innerHeight>Se)return;a=!0;const l=Date.now(),_=()=>{try{removeEventListener("resize",_)}catch{}if(Date.now()-l>Te||r||g())return;const d=p();m(d!==null?d:s)};addEventListener("resize",_)}catch{}};let v=!1,b=!1;return{restore(){if(v||(v=!0,g()))return;const l=p();l!==null&&(m(l),f())},promoted(){if(b||(b=!0,g()))return;const l=p();l!==null?(m(l),f()):n&&m(s)}}}function Re(e,t,r,n){let s=null;try{s=window.trustedTypes?.createPolicy("frame-runtime",{createScriptURL:h=>h})??null}catch{}const o=window.Worker,i=o?.prototype,c=Object.freeze({Worker:o,workerOn:i?.addEventListener,workerPost:i?.postMessage,workerTerminate:i?.terminate,fetch:window.fetch.bind(window),preventDefault:Event.prototype.preventDefault,policy:s,origins:t});r(e).then(h=>h?.bootTopLevel?h.bootTopLevel(c,n):n.settle()).catch(()=>n.settle())}var De="modulepreload",Ie=function(e){return"/"+e},Ue={},Le=function(t,r,n){let s=Promise.resolve();function o(i){const c=new Event("vite:preloadError",{cancelable:!0});if(c.payload=i,window.dispatchEvent(c),!c.defaultPrevented)throw i}return s.then(i=>{for(const c of i||[])c.status==="rejected"&&o(c.reason);return t().catch(o)})},Oe=window===top,q=Object.getOwnPropertyDescriptor(window,"claude"),k=we(Oe,window.__FRAME_PREAMBLE?.topLevel,q?.writable===!1),N=typeof k=="object"&&k[0],y=N?be():ge();(function(){const e=Object.defineProperty,t=globalThis,r=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let n=0;for(let s=0;s<r.length;s++){const o=r[s];try{e(t,o,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[o]}catch{}try{e(t,o,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[o]=="function"&&n++}if(n&&k==="framed")try{y.post({__frame_rtc_lockdown_failed:n},"*")}catch{}})();var Pe=1e4,Y=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function X(e){for(const t of Y)if(t.endsWith(":*"))try{const r=new URL(e);if(`${r.protocol}//${r.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}var R=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities}),B=window.__FRAME_PREAMBLE?.transforms,D=window.__FRAME_PREAMBLE?.comments,I=window.__FRAME_PREAMBLE?.translate;function S(e){return Le(()=>import("/_runtime/"+e),void 0)}function G(e,t){return{contract:e.contract,changes:new Set(e.changes??[]),flags:new Set(e.flags??[]),capabilities:e.capabilities??{},capBudgets:e.capBudgets??{},transforms:new Map,shellOrigin:t,mount:x,hooks:O,pipe:()=>({wrap:(r,n)=>(...s)=>{try{return n(...s)}catch(o){return Promise.reject(o)}}})}}var L=null,E=null;function V(e,t,r){try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!0,enumerable:!0})}catch{}}}var U=!1,O={editBefore:null,edit:null};function Ce(e,t,r=!1){const n=[];let s;if(r)try{O.editBefore?.(e)}catch{}for(const o of e.elements){const i=document.querySelector(`[data-id="${o.target}"]`);if(!i){s=o.target;break}if([...Object.keys(o.attrsSet??{}),...o.attrsRemoved??[]].some(c=>!oe(c))){s=o.target;break}if(o.text!==void 0&&(!ce(i)||de(i))){s=o.target;break}for(const[c,h]of Object.entries(o.attrsSet??{}))if(!J(i,c)){try{i.setAttribute(c,h)}catch{}Z(i,c,h)}for(const c of o.attrsRemoved??[])J(i,c)||(i.removeAttribute(c),Z(i,c,null));typeof o.text=="string"&&ue(i,o.text),n.push(o.target)}if(r)try{O.edit?.(e.seq,n,s)}catch{}if(s!==void 0){y.post({__frame_patch_miss:{seq:e.seq}},t);return}try{document.dispatchEvent(new CustomEvent("claude:edit",{detail:{seq:e.seq,targets:n}}))}catch{}}function Z(e,t,r){if(!(e instanceof HTMLInputElement))return;const n=t.toLowerCase();n==="checked"?e.checked=r!==null:n==="value"&&e.type!=="file"&&(e.value=r??"")}function J(e,t){const r=t.toLowerCase(),n=e;return r==="data-id"||(r==="value"||r==="checked")&&(n.__artifactSecret===!0||/^(password|hidden|file)$/.test(n.type??"")||/(^|\s)(cc-|one-time-code|current-password|new-password)/i.test(`${e.getAttribute("autocomplete")??""} ${n.autocomplete??""}`))}function Q(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,U=!0):U&&(delete t.dataset.theme,t.style.colorScheme="",U=!1)}var P=new Map;function Me(){let e;const t={u:new Promise(r=>{e=r}),r:r=>{t.done=!0,e(r)},done:!1,nulled:!1};return t}function F(){for(const e of P.values())e.done||(e.nulled=!0,e.r(null))}var je=Object.freeze(Object.assign(Object.create(null),{call:Function.prototype.call,apply:Function.prototype.apply,bind:Function.prototype.bind})),x=(e,t)=>{const r=P.get(e);if(!r||r.done){r?.nulled&&E&&y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:e}},E);return}const n=typeof t=="function"?Object.setPrototypeOf(t,je):Object.assign(Object.create(null),t);typeof n.then=="function"&&delete n.then,r.r(Object.freeze(n))};function ee(){const e=q?.value??{};V(window,"claude",e);for(const t of Object.keys(R)){if(e[t]!==void 0){V(e,t,e[t]);continue}P.set(t,Me())}if(e.use===void 0){const t=r=>{if(typeof r!="string"||!Object.hasOwn(R,r))return Promise.resolve(null);const n=P.get(r);return n?n.u:Promise.resolve(e[r]??null)};try{Object.defineProperty(e,"use",{value:t,writable:!0,configurable:!0,enumerable:!1})}catch{}}}if(k==="framed"){const e=B&&A.test(B)?S(B).catch(()=>{}):Promise.resolve(void 0),t=a=>{if(a.type==="auxclick"&&a.button!==1)return;const f=a.target,v=f&&f.closest?f.closest("a[href],area[href]"):null;if(!v)return;const b=v.getAttribute("href");if(!b)return;let l;try{l=new URL(b,document.baseURI)}catch{return}if((l.protocol==="http:"||l.protocol==="https:")&&l.origin!==location.origin){a.preventDefault();const _=(v.getAttribute("target")??"").toLowerCase(),d=a.type==="auxclick"||a.metaKey||a.ctrlKey||a.shiftKey||a.altKey||!["","_self","_top","_parent"].includes(_);y.post({__frame_nav:!0,url:l.href,newTab:d},"*")}};addEventListener("click",t,!0),addEventListener("auxclick",t,!0);const r={},n=a=>{a.isTrusted&&(r.pointer=!0)},s=a=>{a.isTrusted&&(r.click=!0)};addEventListener("pointermove",n,{capture:!0,passive:!0}),addEventListener("click",s,{capture:!0,passive:!0}),e.then(a=>{a?.wireNav&&(a.wireNav(),removeEventListener("click",t,!0),removeEventListener("auxclick",t,!0),removeEventListener("pointermove",n,!0),removeEventListener("click",s,!0),a.wireEngagement?.(r))});let o=null;try{o=ke()}catch{}ee();let i=null,c=null,h=0;const p=y.on((a,f)=>{X(f)&&_e(a)&&(i=a.__frame_init,E=f,p(),clearTimeout(h),c?.())});y.post({__frame_connect:!0},"*");const w=new Promise(a=>{c=a,h=setTimeout(()=>{p(),a()},Pe)}),m=document.readyState==="loading"?new Promise(a=>document.addEventListener("DOMContentLoaded",()=>a(),{once:!0})):Promise.resolve();m.then(()=>{try{o?.restore()}catch{}});const g={cb:null};y.on((a,f)=>{if(X(f)&&ve(a)){try{o?.promoted()}catch{}g.cb?.()}}),w.then(async()=>{if(!i||!E){F();return}Q(i.theme);const a=E;let f=!1,v=!1;y.on((u,z,C)=>{if(z!==a)return;ye(u)&&Q(u.__frame_theme.theme),he(u)&&Ce(u.__frame_patch,a,C);const H=u?.__fc_mode;H&&typeof H=="object"&&!f&&D&&A.test(D)&&(f=!0,S(D).then(K=>K.install?.(a,H.on===!0)).catch(()=>{}));const W=u?.__ft_cmd;W&&typeof W=="object"&&!v&&I&&A.test(I)&&(v=!0,S(I).then(K=>K.install?.(a,W)).catch(()=>{}))});const b=Object.keys(i.capabilities??{}).filter(u=>Object.hasOwn(R,u)).map(u=>[u,R[u]]).filter(u=>typeof u[1]=="string"&&A.test(u[1])),l=await Promise.allSettled(b.map(([,u])=>S(u))),_=await e,d=E;if(_?.buildBoot||y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},d),_?.buildBoot)try{L=_.buildBoot(i,_.TRANSFORMS??{},{shellOrigin:d,mount:x,hooks:O},u=>y.post({__frame_cap_telemetry:u},d))}catch{y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},d),L=G(i,d)}else L=G(i,d);const T=u=>y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:u}},d),Ne=L;l.forEach((u,z)=>{const C=b[z][0];if(u.status!=="fulfilled"){T(C);return}try{u.value?.install?.(Ne)}catch{T(C)}}),F(),await m,y.post({__frame_ready:!0},E),e.then(u=>u?.installSizeReporter?.(d,g))})}else N&&(ee(),Re(N,Y,S,{settle:F,mount:x}))})();</script><!-- /frame-runtime --><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>TMG Discovery Debrief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F7F9FA; --surface:#FFFFFF; --surface-2:#F0F4F6;
+  --ink:#111D26; --ink-2:#3D4C58; --ink-3:#6B7B87;
+  --rule:#DAE2E7; --rule-strong:#B9C6CE;
+  --accent:#0E6455; --accent-soft:#E2EFEC;
+  --warn:#8A5307; --warn-soft:#FAF0DC; --warn-rule:#E4CB9B;
+  --alert:#9C2A2E; --alert-soft:#FAEAEA; --alert-rule:#E5BCBC;
+  --shadow:0 1px 2px rgba(17,29,38,.05), 0 8px 24px -12px rgba(17,29,38,.14);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B1217; --surface:#121C22; --surface-2:#18242B;
+    --ink:#E6EDF1; --ink-2:#B3C1CB; --ink-3:#8496A2;
+    --rule:#243239; --rule-strong:#37474F;
+    --accent:#4FC0A8; --accent-soft:#10302A;
+    --warn:#DDA455; --warn-soft:#2C2415; --warn-rule:#4A3B1E;
+    --alert:#E3817C; --alert-soft:#2C1A1A; --alert-rule:#4C2A2A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B1217; --surface:#121C22; --surface-2:#18242B;
+  --ink:#E6EDF1; --ink-2:#B3C1CB; --ink-3:#8496A2;
+  --rule:#243239; --rule-strong:#37474F;
+  --accent:#4FC0A8; --accent-soft:#10302A;
+  --warn:#DDA455; --warn-soft:#2C2415; --warn-rule:#4A3B1E;
+  --alert:#E3817C; --alert-soft:#2C1A1A; --alert-rule:#4C2A2A;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"Public Sans","Helvetica Neue",Arial,sans-serif;
+  font-size:15.5px;line-height:1.58;-webkit-font-smoothing:antialiased}
+.eyebrow{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.67rem;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.shell{max-width:980px;margin:0 auto;padding:0 26px 84px}
+.masthead{border-bottom:1px solid var(--rule);padding:44px 0 22px;margin-bottom:32px}
+.masthead h1{font-family:Newsreader,Georgia,serif;font-weight:500;
+  font-size:clamp(1.95rem,4vw,2.9rem);line-height:1.08;letter-spacing:-.015em;
+  margin:.38em 0 .26em;max-width:16ch;text-wrap:balance}
+.standfirst{font-family:Newsreader,Georgia,serif;font-size:clamp(1.02rem,1.7vw,1.22rem);
+  line-height:1.48;color:var(--ink-2);max-width:56ch;margin:0 0 20px}
+.metabar{display:flex;flex-wrap:wrap;gap:0 26px;font-family:"IBM Plex Mono",monospace;
+  font-size:.72rem;color:var(--ink-3)}
+.metabar b{color:var(--ink-2);font-weight:500}
+h2{font-family:Newsreader,Georgia,serif;font-weight:500;font-size:clamp(1.4rem,2.4vw,1.8rem);
+  line-height:1.2;margin:0;padding-bottom:10px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:baseline;gap:12px;text-wrap:balance}
+h2 em{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:var(--accent);
+  letter-spacing:.1em;flex:none;font-weight:600;padding-top:3px}
+h3{font-weight:700;font-size:1rem;margin:0}
+p{margin:0;max-width:72ch}
+ul,ol{margin:0;padding-left:1.1em;max-width:72ch;display:flex;flex-direction:column;gap:6px}
+li::marker{color:var(--ink-3)}
+strong{font-weight:700;color:var(--ink)}
+main{display:flex;flex-direction:column;gap:44px}
+section{display:flex;flex-direction:column;gap:14px}
+.lede{background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--accent);
+  border-radius:4px;padding:20px 24px;display:flex;flex-direction:column;gap:11px;box-shadow:var(--shadow)}
+.call{border-radius:4px;padding:14px 17px;display:flex;flex-direction:column;gap:7px;
+  border:1px solid var(--rule);background:var(--surface-2)}
+.call .eyebrow{color:var(--ink-2)}
+.call p{font-size:.93rem;max-width:68ch}
+.call.warn{background:var(--warn-soft);border-color:var(--warn-rule)}
+.call.warn .eyebrow{color:var(--warn)}
+.call.alert{background:var(--alert-soft);border-color:var(--alert-rule)}
+.call.alert .eyebrow{color:var(--alert)}
+.say{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);
+  border-radius:4px;padding:13px 16px;display:flex;flex-direction:column;gap:6px}
+.say .eyebrow{color:var(--accent)}
+.say p{font-family:Newsreader,Georgia,serif;font-size:1.02rem;line-height:1.5;color:var(--ink)}
+.chg{display:flex;flex-direction:column;gap:9px;background:var(--surface);border:1px solid var(--rule);
+  border-radius:4px;padding:17px 20px;box-shadow:var(--shadow)}
+.chg .n{font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:var(--accent);font-weight:600}
+.chg h3{font-size:1.02rem}
+.chg p{font-size:.94rem;color:var(--ink-2)}
+.chg .then{display:grid;grid-template-columns:74px minmax(0,1fr);gap:12px;font-size:.885rem;
+  padding-top:9px;border-top:1px solid var(--rule)}
+.chg .then b{font-family:"IBM Plex Mono",monospace;font-size:.67rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3);padding-top:3px}
+.chg .then span{color:var(--ink-2)}
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:4px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.885rem}
+th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:9px 14px;
+  border-bottom:1px solid var(--rule-strong);background:var(--surface-2)}
+td{padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-2);line-height:1.45}
+tbody tr:last-child td{border-bottom:0}
+td:first-child{color:var(--ink);font-weight:600}
+.qbox{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:18px 22px;
+  display:flex;flex-direction:column;gap:11px;box-shadow:var(--shadow)}
+.qbox h3{font-size:1.02rem;display:flex;align-items:baseline;gap:9px}
+.qbox h3 span{font-family:"IBM Plex Mono",monospace;font-size:.66rem;color:var(--ink-3);
+  letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.qbox ol{padding-left:1.3em;gap:5px}
+.qbox li{font-size:.925rem;color:var(--ink-2);line-height:1.5}
+.qbox li b{color:var(--ink)}
+.grp{font-size:.72rem;font-family:"IBM Plex Mono",monospace;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--accent);font-weight:600;margin-top:5px}
+</style>
+
+<div class="shell">
+<header class="masthead">
+  <div class="eyebrow">Debrief &#xB7; discovery call held</div>
+  <h1>TMG Discovery Debrief</h1>
+  <p class="standfirst">Six things in that call move the plan. One of them changes what you are building, and one changes how you will be measured.</p>
+  <div class="metabar">
+    <span>Present <b>John, Deanna, Stuart, Tom Hagerman</b></span>
+    <span>Absent <b>Stu Maggs, Adam</b></span>
+    <span>Next <b>back half of next week</b></span>
+  </div>
+</header>
+
+<main>
+
+<section>
+  <h2><em>00</em>The two that matter most</h2>
+  <div class="lede">
+    <p><strong>They rejected a standalone product.</strong> John, Tom and Deanna all said it independently: nobody learns a new system. What ships is an OmniShift <em>tab</em> on the Salesforce record, plus alerts and a dashboard. John: <em>"This is like the engine behind that they don't even necessarily need to see."</em> Your prototype is now the design spec for the engine, not the delivery surface.</p>
+    <p><strong>The number they quoted is not the number you move.</strong> John gave you 34% &#x2014; initial meeting held to agreement signed. That conversion happens <em>after</em> a BD advisor is already in a four-meeting sales process. The agent operates upstream of that. If 34% becomes the success metric, you will be judged on something you barely touch.</p>
+  </div>
+</section>
+
+<section>
+  <h2><em>01</em>What changed</h2>
+
+  <div class="chg">
+    <span class="n">CHANGE 01</span>
+    <h3>The delivery surface is Salesforce, and Salesforce is a tangled web</h3>
+    <p>Deanna was blunt: <em>"even for us to make small integration changes, I have to hire a consultant for 100 hours&#x2026; the infrastructure in Salesforce is a tangled web."</em> That moves Salesforce integration from a late-stage detail onto the critical path, and it makes Stu Maggs the most important person you have not yet met.</p>
+    <p>The hardest consequence is not display &#x2014; it is <strong>feedback capture</strong>. Your learning loop depends on recording what the CA did with each recommendation. In a standalone app that is a button. Inside Salesforce it is custom fields, page layout changes and adoption discipline. Design for it now.</p>
+    <div class="then"><b>Do</b><span>Get Stu Maggs on the next call. Ask what a new tab, a custom object and a dashboard component actually cost in his environment before you promise any of it.</span></div>
+  </div>
+
+  <div class="chg">
+    <span class="n">CHANGE 02</span>
+    <h3>A second product appeared: lead-to-advisor matching</h3>
+    <p>John led with it and it is not in any scope you have written. He wants the agent to route each lead to the person most likely to convert it: <em>"Gus is really good dealing with this type of person&#x2026; Claire is the best at closing this type of executive."</em> Deanna offered to build the input &#x2014; a database of the BD and CA teams with certifications, strengths and geography.</p>
+    <p>This is a genuinely different model from prospect ranking. It needs per-person historical conversion broken down by segment, and TMG almost certainly has not assembled that. Tom's current routing is geography plus a lead-owner field.</p>
+    <div class="then"><b>Do</b><span>Scope it separately and say so. It is a strong second phase, and it will stall Phase 1 if it gets bundled in.</span></div>
+  </div>
+
+  <div class="chg">
+    <span class="n">CHANGE 03</span>
+    <h3>The bottleneck has a name, and it may not be yours to fix</h3>
+    <p>Tom named it twice, unprompted: <strong>there is no suppression between WealthFeed and Salesforce.</strong> Every CA manually cross-references each prospect to check they are not already in the database. Marketing hits the same wall on ABM campaigns. Deanna hits it again in VisitIQ &#x2014; <em>"clients are being suppressed out of here, we're still figuring that out."</em></p>
+    <p>This is your Phase 0, now validated by the user rather than hypothesised. But note the awkward part: <strong>suppression is arguably WealthFeed's job</strong>, and Deanna has the CEO's mobile. Raise it with them first. Winning by making the client's existing vendor fix their own gap buys more trust than building around it.</p>
+    <div class="then"><b>Do</b><span>Put suppression at the top of the WealthFeed vendor call. If they will not ship it, you build it and it is a fast, provable win.</span></div>
+  </div>
+
+  <div class="chg">
+    <span class="n">CHANGE 04</span>
+    <h3>WealthFeed is narrower than feared &#x2014; the overlap risk is largely gone</h3>
+    <p>The question you most needed answered got answered. WealthFeed is used for <strong>identification only</strong>: search by ICP criteria, wealth data, and "catalysts" (inheritance, job change, relocation). Rolled out firm-wide at the start of July after an eight-week pilot. Tom reports immediate impact on client size and pipeline.</p>
+    <p><strong>No outreach automation, no sequencer, no Proofpoint compliance flow in use.</strong> CAs call and email by hand. That leaves the entire decision layer, the messaging layer and the supervision layer open &#x2014; which is the scope you wanted.</p>
+    <div class="then"><b>Do</b><span>Stop treating WealthFeed as a competitor. It is an upstream data source. Say that plainly next time; it will land well.</span></div>
+  </div>
+
+  <div class="chg">
+    <span class="n">CHANGE 05</span>
+    <h3>Tom handed you the narrowest valuable first feature</h3>
+    <p><em>"If I make a phone call and an AI agent, compliance approved, sends an email following my phone call, that's something that would definitely create some more efficiency."</em></p>
+    <p>That is small, unambiguous, sits exactly on your existing compliance capability, and the end user asked for it himself. It also fits the day-1 cadence he described &#x2014; call, voicemail, email, all on the same day &#x2014; and the copy-paste burden he called a bottleneck.</p>
+    <div class="then"><b>Do</b><span>Consider making this the visible Phase 1 alongside suppression. Adoption is guaranteed when the user specified the feature.</span></div>
+  </div>
+
+  <div class="chg">
+    <span class="n">CHANGE 06</span>
+    <h3>The best dataset in the building is untouched</h3>
+    <p>Every prospect and client meeting is recorded in <strong>Zoom Revenue Accelerator</strong>. Gevorg spotted it and nobody followed up. With a 34% close rate over four meetings and cycles from three weeks to years, those recordings hold the actual reasons deals convert &#x2014; the thing no CRM field captures.</p>
+    <div class="then"><b>Do</b><span>Add it to the data request. Ask what Revenue Accelerator exposes via API, and whether transcripts can be exported.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2><em>02</em>The metrics conversation you need to have</h2>
+  <p>Gevorg opened by asking for the business metric to improve, and John answered with conversion rate and 34%. Left alone, that becomes the yardstick. It is the wrong one, and correcting it early protects you.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Metric</th><th>Who owns it</th><th>Does the agent move it?</th></tr></thead>
+      <tbody>
+        <tr><td>34% initial meeting &#x2192; signed</td><td>BD advisors, over 4 meetings</td><td>Barely. This is sales execution after the agent's work is done.</td></tr>
+        <tr><td>Initial meetings booked per CA per week</td><td>Tom's team</td><td><strong>Yes &#x2014; the primary metric.</strong> Better targeting and better timing show up here first.</td></tr>
+        <tr><td>Contact rate per cadence</td><td>Tom's team</td><td><strong>Yes.</strong> Right person, right time, right channel is exactly this number.</td></tr>
+        <tr><td>CA hours lost to cross-referencing and copy-paste</td><td>Tom's team</td><td><strong>Yes, immediately.</strong> The suppression fix is measurable in week one.</td></tr>
+        <tr><td>Lead &#x2192; initial meeting conversion</td><td>CA team</td><td><strong>Yes.</strong> The honest headline metric for this engagement.</td></tr>
+        <tr><td>Average client size at signing</td><td>Shared</td><td>Partly. Tom already credits WealthFeed with lifting it, so attribution will be contested.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="say">
+    <div class="eyebrow">Say this next call</div>
+    <p>"John, you gave us 34% and that is a great number to know &#x2014; but it happens after a BD advisor is already in the room. What we affect is upstream: how many initial meetings your CAs book, and how much of their week goes to research instead of dialling. Can we agree those as the scoreboard, and treat 34% as the thing we protect rather than the thing we promise to raise?"</p>
+  </div>
+</section>
+
+<section>
+  <h2><em>03</em>What you owe, and by when</h2>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Deliverable</th><th>Owner</th><th>Promised</th></tr></thead>
+      <tbody>
+        <tr><td>Vendor question lists for WealthFeed and VisitIQ</td><td>Marie / Gevorg</td><td>"As soon as possible" &#x2014; drafted below, send today</td></tr>
+        <tr><td>Infrastructure and architecture overview</td><td>Gevorg / Marie</td><td>Before the next call. Deanna asked for it explicitly.</td></tr>
+        <tr><td>Prototype of the Salesforce-embedded view</td><td>Marie</td><td>Next call. Different from what you have &#x2014; a record tab, an alert, a dashboard.</td></tr>
+        <tr><td>Salesforce integration capability research</td><td>Marie</td><td>Next call</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="call warn">
+    <div class="eyebrow">Three asks nobody made</div>
+    <p><strong>The data.</strong> No retrospective file was requested on the call. Nothing can be trained without it and it has the longest lead time. Put it in the follow-up email today.</p>
+    <p><strong>Stu Maggs and Adam.</strong> Stuart flagged Stu Maggs himself. Adam was absent entirely &#x2014; and compliance is load-bearing for Tom's auto-email feature.</p>
+    <p><strong>A CA's actual morning.</strong> Gevorg asked Tom to screen-share his real workflow and it never happened &#x2014; Deanna moved to VisitIQ instead. Tom described it well, but you still have not watched anyone do it.</p>
+  </div>
+</section>
+
+<section>
+  <h2><em>04</em>Vendor questions &#x2014; ready to send</h2>
+  <p>Deanna is routing these to the CEOs directly: Sam Kendree at WealthFeed, and "Vern" at VisitIQ. She noted TMG got in early with both and is helping shape the platforms &#x2014; so ask for what you need, not only for what exists.</p>
+
+  <div class="qbox">
+    <h3>WealthFeed <span>for Sam Kendree</span></h3>
+    <p class="grp">Access and integration</p>
+    <ol>
+      <li>Do you expose a <b>REST API</b> for programmatic access to prospect records and wealth events? If so, what authentication, and is there developer documentation?</li>
+      <li>What are the <b>rate limits and volume ceilings</b> per account?</li>
+      <li>Can we receive events by <b>webhook or push</b> when a catalyst fires, rather than polling?</li>
+      <li>How does the existing <b>Salesforce integration</b> work &#x2014; native managed package, middleware, or export? Which objects and fields does it write?</li>
+      <li>Is there a <b>bulk or batch endpoint</b> for enriching a list of existing records, as opposed to one lookup at a time?</li>
+    </ol>
+    <p class="grp">The suppression gap &#x2014; lead with this</p>
+    <ol start="6">
+      <li>TMG's largest operational bottleneck is that <b>WealthFeed does not suppress records that already exist in their Salesforce</b>. Client associates cross-reference by hand on every prospect. Is bidirectional suppression on your roadmap, and on what timeline?</li>
+      <li>If not, can we <b>push a suppression list to you</b> via API and have it respected in search results and exports?</li>
+      <li>What <b>identity resolution key</b> do you match on &#x2014; email, name plus address, a proprietary person ID? Is that ID stable and can it be stored in Salesforce for future matching?</li>
+    </ol>
+    <p class="grp">Data, provenance and licensing</p>
+    <ol start="9">
+      <li>For each field &#x2014; net worth, investable assets, income, age &#x2014; is the value <b>observed or modelled</b>, and do you expose a confidence score?</li>
+      <li>What are the <b>16 catalyst types</b>, what is the detection latency for each, and how is recency stamped?</li>
+      <li>What does the licence permit regarding <b>derived works</b> &#x2014; may we compute and store scores derived from your data inside TMG's environment?</li>
+      <li>Any restriction on passing your data to a <b>third-party processor</b> such as ourselves, and do you need to approve us as a sub-processor?</li>
+      <li>What is the <b>source and refresh cadence</b> of the underlying data, and how are opt-outs and do-not-contact requests handled?</li>
+    </ol>
+  </div>
+
+  <div class="qbox">
+    <h3>VisitIQ <span>for Vern</span></h3>
+    <p class="grp">Access and integration</p>
+    <ol>
+      <li>Is there a <b>REST API</b> for identified visitor records and their journeys? Authentication, rate limits, documentation?</li>
+      <li>Can identifications be delivered by <b>webhook in near real time</b>, so an alert can reach a client associate the same day?</li>
+      <li>How does the <b>Salesforce push</b> work today &#x2014; which objects, which fields, and is it configurable?</li>
+      <li>Is the <b>journey data</b> (page sequence, UTM source, timestamps) available through the API, or only in the interface? Deanna noted it does not appear on every record &#x2014; why?</li>
+    </ol>
+    <p class="grp">Match quality &#x2014; ask directly</p>
+    <ol start="5">
+      <li>What is your <b>measured accuracy</b> for person-level identification, and how was it measured? Would you support a <b>known-visitor test</b> where TMG sends five known people to the site and we check what comes back?</li>
+      <li>Do you return a <b>confidence score</b> per identification, and can it be filtered on?</li>
+      <li>TMG's uploaded list produced records with implausible net worth values. What causes that, and is there a way to <b>flag low-confidence enrichments</b> rather than returning them silently?</li>
+      <li>Can we <b>push a client and do-not-contact suppression list</b> so existing clients never surface? Deanna is still working around this manually.</li>
+    </ol>
+    <p class="grp">Consent, provenance and compliance</p>
+    <ol start="9">
+      <li>What exactly is the <b>consent basis</b> for identification, and what does the pixel capture before consent is given?</li>
+      <li>Do you provide an <b>auditable record of consent</b> per identified visitor &#x2014; timestamp, banner version, choice made? TMG is an SEC-registered adviser and needs to evidence this.</li>
+      <li>How do you handle <b>state privacy law opt-outs</b> and deletion requests, and what is the turnaround?</li>
+      <li>Which fields are <b>observed versus modelled</b>, and what are the licence terms on derived works and third-party processing?</li>
+    </ol>
+  </div>
+
+  <div class="call">
+    <div class="eyebrow">One line to include in the covering email</div>
+    <p>"Answers to the API and identity-key questions are what let us design the integration properly &#x2014; if we get those back before the next session, we can bring an architecture rather than a set of options."</p>
+  </div>
+</section>
+
+<section>
+  <h2><em>05</em>What to send today</h2>
+  <ul>
+    <li>The two vendor question lists, for Deanna to forward to Sam and Vern.</li>
+    <li>The retrospective data request &#x2014; nobody asked for it on the call and it gates everything downstream.</li>
+    <li>A request for <b>Stu Maggs and Adam</b> on the next session, with a sentence on why each is needed.</li>
+    <li>A request to <b>watch Tom or a client associate work for twenty minutes</b>, screen shared. Gevorg asked and it slipped; ask again in writing.</li>
+    <li>A short recap that names the metrics you propose to be measured on, so the 34% does not harden by default.</li>
+  </ul>
+</section>
+
+</main>
+</div>
+
+</body></html>
