@@ -71,4 +71,38 @@ private class OmnishiftEngineTest {
         System.schedule('OmnishiftTest', '0 0 2 * * ?', new OmnishiftEngineSchedule());
         Test.stopTest();
     }
+
+    @isTest static void autoCorrectActuallyRemovesTheTerm() {
+        OmnishiftEngine.Outcome c = OmnishiftEngine.complianceCheck(
+            'Worth a conversation?', 'Margaret - we are the best firm in Chicago. No pitch.');
+        System.assertEquals('Auto-corrected', c.complianceStatus);
+        System.assertNotEquals(null, c.draftBody,
+            'An auto-corrected result must return the corrected text, not null.');
+        System.assert(!c.draftBody.toLowerCase().contains('best'),
+            'The term the label claims was removed must actually be gone: ' + c.draftBody);
+        System.assert(c.draftBody.contains('firm in Chicago'), 'The rest of the sentence must survive.');
+        System.assert(!c.draftBody.contains('  '), 'No double spaces left behind: ' + c.draftBody);
+    }
+
+    @isTest static void aPassingDraftIsLeftAlone() {
+        OmnishiftEngine.Outcome c = OmnishiftEngine.complianceCheck('Hello', 'A plain and honest note.');
+        System.assertEquals('Passed', c.complianceStatus);
+        System.assertEquals(null, c.draftBody, 'Nothing to correct means nothing returned.');
+    }
+
+    @isTest static void complianceReasonDoesNotTouchTheAdvisorsReason() {
+        Lead l = new Lead(FirstName='Ada', LastName='Byron', Company='Engines',
+                          LeadSource='Referral', Status='Open - Not Contacted',
+                          Omnishift_Disposition_Reason__c='Advisor said the timing was wrong');
+        insert l;
+        Test.startTest();
+        OmnishiftEngineBatch.runNow();
+        Test.stopTest();
+        Lead after = [SELECT Omnishift_Disposition_Reason__c, Omnishift_Compliance_Reason__c
+                      FROM Lead WHERE Id = :l.Id];
+        System.assertEquals('Advisor said the timing was wrong', after.Omnishift_Disposition_Reason__c,
+            'A scoring run must not overwrite what the advisor recorded.');
+        System.assertNotEquals(null, after.Omnishift_Compliance_Reason__c,
+            'The compliance reason belongs in its own field.');
+    }
 }

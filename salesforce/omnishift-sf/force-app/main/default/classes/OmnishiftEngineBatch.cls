@@ -82,7 +82,11 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
             u.Omnishift_Draft_Subject__c = d.draftSubject;
             u.Omnishift_Draft_Body__c = d.draftBody;
             u.Omnishift_Compliance_Status__c = c.complianceStatus;
-            u.Omnishift_Disposition_Reason__c = c.complianceReason;
+            u.Omnishift_Compliance_Reason__c = c.complianceReason;
+            // The compliance reason used to be written into the disposition reason,
+            // so every nightly run overwrote whatever the advisor had recorded.
+            if (c.draftSubject != null) u.Omnishift_Draft_Subject__c = c.draftSubject;
+            if (c.draftBody != null) u.Omnishift_Draft_Body__c = c.draftBody;
             u.Omnishift_Recommended_Owner__c = OmnishiftEngine.route(l, pool, load);
             // Anything scoring 50+ is worth a touch today; the rest get a nurture date.
             u.Omnishift_Next_Action_Date__c = (s.score >= 50) ? Date.today() : Date.today().addDays(30);

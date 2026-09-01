@@ -123,6 +123,16 @@
         <field>Contact.Omnishift_Run_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.Omnishift_Compliance_Reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contact.Omnishift_Compliance_Reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <classAccesses>
         <apexClass>OmnishiftAction</apexClass>
         <enabled>true</enabled>

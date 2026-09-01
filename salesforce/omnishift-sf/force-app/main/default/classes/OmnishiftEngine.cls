@@ -198,15 +198,39 @@ public with sharing class OmnishiftEngine {
                 return o;
             }
         }
+        // Auto-correct has to actually correct. Returning the untouched text under
+        // an "Auto-corrected" label tells a compliance officer a control fired
+        // when it did not.
+        String fixedSubject = (subject == null) ? '' : subject;
+        String fixedBody    = (body == null) ? '' : body;
+        List<String> removed = new List<String>();
         for (String t : autofix) {
             if (text.contains(t)) {
-                o.complianceStatus = 'Auto-corrected';
-                o.complianceReason = 'Auto-corrected: removed "' + t + '".';
-                return o;
+                fixedSubject = stripTerm(fixedSubject, t);
+                fixedBody    = stripTerm(fixedBody, t);
+                removed.add(t);
             }
+        }
+        if (!removed.isEmpty()) {
+            o.complianceStatus = 'Auto-corrected';
+            o.complianceReason = 'Auto-corrected: removed "' + String.join(removed, '", "') + '".';
+            o.draftSubject = fixedSubject;
+            o.draftBody = fixedBody;
+            return o;
         }
         o.complianceStatus = 'Passed';
         o.complianceReason = 'Passed all checks.';
         return o;
+    }
+
+    // Removes a term case-insensitively and tidies the whitespace and article it
+    // leaves behind, so "the best firm" becomes "the firm" rather than "the  firm".
+    private static String stripTerm(String src, String term) {
+        if (String.isBlank(src)) return src;
+        String out = Pattern.compile('(?i)\\s*\\b' + Pattern.quote(term) + '\\b')
+            .matcher(src).replaceAll('');
+        out = out.replaceAll('\\s{2,}', ' ');
+        out = out.replaceAll('\\s+([,.;:!?])', '$1');
+        return out.trim();
     }
 }
