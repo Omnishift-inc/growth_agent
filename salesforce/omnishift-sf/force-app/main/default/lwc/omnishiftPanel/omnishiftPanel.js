@@ -42,6 +42,10 @@ export default class OmnishiftPanel extends LightningElement {
         // IsPersonAccount only exists on Contact; requesting it on Lead would error,
         // so it is only added for Contact.
         const extra = obj === 'Contact' ? ['Contact.IsPersonAccount'] : [];
+        // The lookup's own displayValue comes back null for a User lookup, which
+        // put a raw 005... id on screen where the advisor's name belongs. Ask for
+        // the spanning field instead.
+        extra.push(`${obj}.Omnishift_Recommended_Owner__r.Name`);
         return OMNISHIFT_FIELDS.map((f) => `${obj}.${f}`).concat(extra);
     }
 
@@ -101,7 +105,14 @@ export default class OmnishiftPanel extends LightningElement {
         return this.val('Omnishift_Next_Action_Date__c');
     }
     get recommendedOwner() {
-        return this.val('Omnishift_Recommended_Owner__c');
+        const rel =
+            this.record &&
+            this.record.fields &&
+            this.record.fields.Omnishift_Recommended_Owner__r;
+        const name = rel && rel.value && rel.value.fields && rel.value.fields.Name;
+        if (name && name.value) return name.value;
+        // Nobody routed to, rather than routed to an id we could not resolve.
+        return this.raw('Omnishift_Recommended_Owner__c') ? 'Unresolved user' : 'Unassigned';
     }
     get runId() {
         return this.val('Omnishift_Run_Id__c');
