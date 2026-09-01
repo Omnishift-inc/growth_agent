@@ -1,5 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
-import { getRecord, updateRecord } from 'lightning/uiRecordApi';
+import { getRecord, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
+import recordDisposition from '@salesforce/apex/OmnishiftAction.recordDisposition';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 // Field API names are identical on Lead and Contact, so we build the qualified list
@@ -177,13 +178,30 @@ export default class OmnishiftPanel extends LightningElement {
             return;
         }
         this.isSaving = true;
-        const fields = { Id: this.recordId, Omnishift_Disposition__c: disposition };
-        if (disposition === 'Wrong person') {
-            fields.Omnishift_Disposition_Reason__c = 'Marked wrong person from the Omnishift panel.';
-        }
+        const reason =
+            disposition === 'Wrong person'
+                ? 'Marked wrong person from the Omnishift panel.'
+                : null;
         try {
-            await updateRecord({ fields });
-            this.toast('Recorded', `${disposition} - saved as a training label.`, 'success');
+            // Apex, not updateRecord: approving has to log the activity and clear
+            // the next action date in the same transaction as the disposition,
+            // or the lead comes back in tomorrow's queue as though nothing happened.
+            const message = await recordDisposition({
+                recordId: this.recordId,
+                disposition,
+                reason,
+                subject: this.draftSubject,
+                body: this.draftBody
+            });
+            await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            this.toast('Recorded', message, 'success');
+            this.dispatchEvent(
+                new CustomEvent('dispositioned', {
+                    detail: { recordId: this.recordId, disposition },
+                    bubbles: true,
+                    composed: true
+                })
+            );
         } catch (e) {
             const msg =
                 (e && e.body && (e.body.message || JSON.stringify(e.body))) ||

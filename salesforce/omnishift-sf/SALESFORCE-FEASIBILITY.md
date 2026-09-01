@@ -74,3 +74,25 @@ content unread. All action buttons now carry equal weight.
    drafted-email flow depends on it.
 2. Does this org have Financial Services Cloud or Person Accounts?
 3. What automation already exists on Lead, and what is its CPU time on a 200-record update?
+
+## Logging the send (verified in the Dev org, 2 Sep 2026)
+
+`EmailMessage` looked like the natural place to record an approved draft, but
+two constraints rule it out for this use case:
+
+- `EmailMessage.Status = 'Draft'` is only permitted when the record hangs off a
+  Case. The Growth Agent works Leads and Contacts, so there is no Case to
+  parent it to.
+- `EmailMessage.RelatedToId` does not accept a Lead id at all.
+
+`Task` has neither problem. `Task.WhoId` takes both Lead and Contact ids, which
+is exactly the pair the agent works, so `OmnishiftAction` logs a completed Task
+with `Type = 'Email'` (or `'Call'`) as the audit record. The description records
+whether the advisor sent the draft as written or edited it first, which is the
+distinction compliance actually cares about.
+
+One org quirk worth knowing before the TMG deployment: `Task.Type` is not
+readable over SOQL in this Dev org because no permission set grants FLS on it.
+Apex DML does not enforce field-level security, so the write succeeds and the
+value is stored, but any report or list view that surfaces `Type` will need the
+field exposed first.
