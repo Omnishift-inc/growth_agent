@@ -1,6 +1,11 @@
-import { LightningElement, api, track } from 'lwc';
-import { updateRecord } from 'lightning/uiRecordApi';
+import { LightningElement, api, track, wire } from 'lwc';
+import { updateRecord, getRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
+// Salesforce documents that all changes to a person account must be made through the
+// Account, not the Contact. If this panel is opened on a person contact we refuse the
+// write rather than doing something the platform tells us not to do.
+const PERSON_ACCOUNT_PROBE = ['Contact.IsPersonAccount'];
 
 export default class OmnishiftPanel extends LightningElement {
     @api recordId;
@@ -86,7 +91,28 @@ export default class OmnishiftPanel extends LightningElement {
         await this.writeDisposition(disposition, reason);
     }
 
+    // Only meaningful on Contact; on Lead the wire errors harmlessly and we treat it as
+    // "not a person account", which is correct - Leads are never person accounts.
+    @wire(getRecord, { recordId: '$recordId', optionalFields: PERSON_ACCOUNT_PROBE })
+    wiredPersonProbe({ data }) {
+        this.isPersonContact = Boolean(
+            data && data.fields && data.fields.IsPersonAccount
+                ? data.fields.IsPersonAccount.value
+                : false
+        );
+    }
+
+    isPersonContact = false;
+
     async writeDisposition(disposition, reason) {
+        if (this.isPersonContact) {
+            this.toast(
+                'Person account detected',
+                'Salesforce requires changes to a person account to be made through the Account, not the Contact. Put the Omnishift panel on the Account page for these records.',
+                'warning'
+            );
+            return;
+        }
         if (!this.recordId) {
             this.toast(
                 'No record Id',
