@@ -4,7 +4,7 @@
     <label>Omnishift Recommended Owner</label>
     <description>Advisory only. Never write OwnerId in bulk - ownership changes force sharing recalculation across the role hierarchy.</description>
     <type>Lookup</type><referenceTo>User</referenceTo>
-    <relationshipLabel>Omnishift Recommended</relationshipLabel>
-    <relationshipName>Omnishift_Recommended</relationshipName>
+    <relationshipLabel>Omnishift Recommended Leads</relationshipLabel>
+    <relationshipName>Omnishift_Recommended_Leads</relationshipName>
     <required>false</required><deleteConstraint>SetNull</deleteConstraint>
 </CustomField>

@@ -1,152 +1,195 @@
-import { LightningElement, api, track, wire } from 'lwc';
-import { updateRecord, getRecord } from 'lightning/uiRecordApi';
+import { LightningElement, api, wire } from 'lwc';
+import { getRecord, updateRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-// Salesforce documents that all changes to a person account must be made through the
-// Account, not the Contact. If this panel is opened on a person contact we refuse the
-// write rather than doing something the platform tells us not to do.
-const PERSON_ACCOUNT_PROBE = ['Contact.IsPersonAccount'];
+// Field API names are identical on Lead and Contact, so we build the qualified list
+// from objectApiName at runtime and one component serves both.
+const OMNISHIFT_FIELDS = [
+    'Omnishift_Score__c',
+    'Omnishift_Rank__c',
+    'Omnishift_Why_Now__c',
+    'Omnishift_Next_Action_Date__c',
+    'Omnishift_Recommended_Owner__c',
+    'Omnishift_Compliance_Status__c',
+    'Omnishift_Draft_Subject__c',
+    'Omnishift_Draft_Body__c',
+    'Omnishift_Disposition__c',
+    'Omnishift_Disposition_Reason__c',
+    'Omnishift_Scored_On__c',
+    'Omnishift_Run_Id__c'
+];
+
+const DISPOSITIONS = [
+    { key: 'Approved and sent', label: 'Approve & send' },
+    { key: 'Edited before send', label: 'Edit first' },
+    { key: 'Call logged', label: 'Log call' },
+    { key: 'Snoozed', label: 'Not now' },
+    { key: 'Wrong person', label: 'Wrong person' }
+];
 
 export default class OmnishiftPanel extends LightningElement {
     @api recordId;
-    @track showDraft = false;
-    @track lastDisposition = '';
-    @track isSaving = false;
+    @api objectApiName;
 
-    // SAMPLE DATA — Pamela Whitaker fictional case (not live WealthFeed / VisitIQ)
-    sampleName = 'Pamela Whitaker';
-    sampleSubtitle = 'SAMPLE · Lead / Prospect · Wealth Management';
-    recommendedAction = 'Call today';
-    whyNowChips = [
-        { id: '1', label: 'Website visit 2h ago', tone: 'warning' },
-        { id: '2', label: 'AUM signal ↑', tone: 'success' },
-        { id: '3', label: 'Life event: retirement window', tone: 'info' }
-    ];
-    note2018 =
-        '2018 note (SAMPLE): Pam mentioned rolling a 401(k) after a corporate exit. ' +
-        'Preferred mornings. Husband Deana on joint decisions for $10M+ households.';
-    journeySteps = [
-        { id: 'j1', label: 'Home', detail: 'Visited /wealth overview', active: false },
-        { id: 'j2', label: 'Team', detail: 'Viewed advisor bios', active: false },
-        { id: 'j3', label: 'Family office', detail: 'Downloaded FO one-pager', active: true }
-    ];
-    talkTrack =
-        'Hi Pam — saw you were looking at our family-office materials. ' +
-        'Happy to walk through how we coordinate multi-entity households and ' +
-        'whether a short intro call this week would help.';
-    complianceChecks = [
-        { id: 'c1', label: 'Do-not-call cleared', ok: true },
-        { id: 'c2', label: 'Email consent on file', ok: true },
-        { id: 'c3', label: 'FINRA / firm policy OK for soft pitch', ok: true },
-        { id: 'c4', label: 'No open complaint flag', ok: true }
-    ];
-    draftEmail =
-        'Subject: Following up on your family-office research\n\n' +
-        'Hi Pam,\n\nThank you for visiting our site. Based on your interest in ' +
-        'family-office coordination, I wanted to offer a brief call to compare notes ' +
-        'on multi-entity planning without any commitment.\n\nBest regards';
-    identityStrip = [
-        { id: 'i1', label: 'CRM ID', value: '00Q-SAMPLE-PAM-001' },
-        { id: 'i2', label: 'VisitIQ SID', value: 'viq_x9k2m_sample' },
-        { id: 'i3', label: 'WealthFeed', value: 'wf-demo-pw-8841' },
-        { id: 'i4', label: 'Household', value: 'Whitaker · $10M+ rule' }
-    ];
+    record;
+    error;
+    isSaving = false;
+    showDraft = false;
+
+    get fieldList() {
+        const obj = this.objectApiName || 'Lead';
+        // IsPersonAccount only exists on Contact; requesting it on Lead would error,
+        // so it is only added for Contact.
+        const extra = obj === 'Contact' ? ['Contact.IsPersonAccount'] : [];
+        return OMNISHIFT_FIELDS.map((f) => `${obj}.${f}`).concat(extra);
+    }
+
+    @wire(getRecord, { recordId: '$recordId', fields: '$fieldList' })
+    wiredRecord({ data, error }) {
+        if (data) {
+            this.record = data;
+            this.error = undefined;
+        } else if (error) {
+            this.error = error;
+            this.record = undefined;
+        }
+    }
+
+    val(field) {
+        const f = this.record && this.record.fields && this.record.fields[field];
+        if (!f) return null;
+        return f.displayValue !== null && f.displayValue !== undefined
+            ? f.displayValue
+            : f.value;
+    }
+
+    raw(field) {
+        const f = this.record && this.record.fields && this.record.fields[field];
+        return f ? f.value : null;
+    }
+
+    // ---- state -------------------------------------------------------------
+    get isLoading() {
+        return !this.record && !this.error;
+    }
+    get hasError() {
+        return Boolean(this.error);
+    }
+    get isScored() {
+        return Boolean(this.record && this.raw('Omnishift_Scored_On__c'));
+    }
+    get notScored() {
+        return Boolean(this.record) && !this.isScored;
+    }
+    get isPersonContact() {
+        return Boolean(this.raw('IsPersonAccount'));
+    }
+
+    // ---- display -----------------------------------------------------------
+    get score() {
+        return this.raw('Omnishift_Score__c');
+    }
+    get rank() {
+        const r = this.raw('Omnishift_Rank__c');
+        return r === null ? null : String(r).padStart(2, '0');
+    }
+    get whyNow() {
+        return this.val('Omnishift_Why_Now__c');
+    }
+    get nextActionDate() {
+        return this.val('Omnishift_Next_Action_Date__c');
+    }
+    get recommendedOwner() {
+        return this.val('Omnishift_Recommended_Owner__c');
+    }
+    get runId() {
+        return this.val('Omnishift_Run_Id__c');
+    }
+    get scoredOn() {
+        return this.val('Omnishift_Scored_On__c');
+    }
+    get draftSubject() {
+        return this.val('Omnishift_Draft_Subject__c');
+    }
+    get draftBody() {
+        return this.val('Omnishift_Draft_Body__c');
+    }
+    get lastDisposition() {
+        return this.val('Omnishift_Disposition__c');
+    }
+    get dispositionReason() {
+        return this.val('Omnishift_Disposition_Reason__c');
+    }
+    get hasDisposition() {
+        return Boolean(this.lastDisposition);
+    }
+
+    get complianceStatus() {
+        return this.val('Omnishift_Compliance_Status__c') || 'Not checked';
+    }
+    get complianceIsBlocked() {
+        return this.raw('Omnishift_Compliance_Status__c') === 'Blocked';
+    }
+    get complianceTheme() {
+        const s = this.raw('Omnishift_Compliance_Status__c');
+        if (s === 'Blocked') return 'slds-theme_error';
+        if (s === 'Flagged') return 'slds-theme_warning';
+        return 'slds-theme_success';
+    }
+    get complianceIcon() {
+        const s = this.raw('Omnishift_Compliance_Status__c');
+        if (s === 'Blocked') return 'utility:error';
+        if (s === 'Flagged') return 'utility:warning';
+        if (s === 'Auto-corrected') return 'utility:edit';
+        return 'utility:success';
+    }
 
     get draftButtonLabel() {
         return this.showDraft ? 'Hide draft' : 'Show draft';
     }
 
-    get whyNowItems() {
-        return this.whyNowChips.map((c) => ({
-            ...c,
-            className: `chip chip_${c.tone}`
+    // Every action carries equal visual weight. Salesforce publishes the opposite as an
+    // anti-pattern: send must not outrank edit, so nobody sends AI copy unread.
+    get actions() {
+        return DISPOSITIONS.map((d) => ({
+            ...d,
+            // A compliance block stops the send. It must never stop the phone call.
+            disabled:
+                this.isSaving ||
+                (this.complianceIsBlocked && d.key === 'Approved and sent'),
+            variant: d.key === 'Wrong person' ? 'destructive-text' : 'neutral'
         }));
     }
 
-    get journeyItems() {
-        return this.journeySteps.map((s) => ({
-            ...s,
-            className: s.active ? 'journey-step journey-step_active' : 'journey-step'
-        }));
-    }
-
-    get complianceItems() {
-        return this.complianceChecks.map((c) => ({
-            ...c,
-            icon: c.ok ? 'utility:success' : 'utility:warning',
-            variant: c.ok ? 'success' : 'warning'
-        }));
-    }
-
-    handleToggleDraft() {
+    // ---- behaviour ---------------------------------------------------------
+    toggleDraft() {
         this.showDraft = !this.showDraft;
     }
 
     async handleDisposition(event) {
         const disposition = event.currentTarget.dataset.disposition;
-        let reason = '';
-        if (disposition === 'Wrong person') {
-            reason = 'Marked wrong person from Omnishift panel (SAMPLE).';
-        }
-        await this.writeDisposition(disposition, reason);
-    }
-
-    // Only meaningful on Contact; on Lead the wire errors harmlessly and we treat it as
-    // "not a person account", which is correct - Leads are never person accounts.
-    @wire(getRecord, { recordId: '$recordId', optionalFields: PERSON_ACCOUNT_PROBE })
-    wiredPersonProbe({ data }) {
-        this.isPersonContact = Boolean(
-            data && data.fields && data.fields.IsPersonAccount
-                ? data.fields.IsPersonAccount.value
-                : false
-        );
-    }
-
-    isPersonContact = false;
-
-    async writeDisposition(disposition, reason) {
         if (this.isPersonContact) {
             this.toast(
-                'Person account detected',
-                'Salesforce requires changes to a person account to be made through the Account, not the Contact. Put the Omnishift panel on the Account page for these records.',
-                'warning'
-            );
-            return;
-        }
-        if (!this.recordId) {
-            this.toast(
-                'No record Id',
-                'Open this panel on a Lead or Contact record page.',
+                'Person account',
+                'Salesforce requires changes to a person account to go through the Account, not the Contact.',
                 'warning'
             );
             return;
         }
         this.isSaving = true;
-        const fields = {
-            Id: this.recordId,
-            Omnishift_Disposition__c: disposition
-        };
-        if (reason) {
-            fields.Omnishift_Disposition_Reason__c = reason;
+        const fields = { Id: this.recordId, Omnishift_Disposition__c: disposition };
+        if (disposition === 'Wrong person') {
+            fields.Omnishift_Disposition_Reason__c = 'Marked wrong person from the Omnishift panel.';
         }
         try {
             await updateRecord({ fields });
-            this.lastDisposition = disposition;
-            this.toast(
-                'Disposition saved',
-                `Omnishift_Disposition__c = "${disposition}"`,
-                'success'
-            );
+            this.toast('Recorded', `${disposition} - saved as a training label.`, 'success');
         } catch (e) {
             const msg =
                 (e && e.body && (e.body.message || JSON.stringify(e.body))) ||
                 (e && e.message) ||
                 'Unknown error';
-            this.toast(
-                'Could not update disposition',
-                `Check fields Omnishift_Disposition__c and Omnishift_Disposition_Reason__c on Lead/Contact. ${msg}`,
-                'error'
-            );
+            this.toast('Could not save', msg, 'error');
         } finally {
             this.isSaving = false;
         }
