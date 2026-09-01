@@ -96,3 +96,24 @@ readable over SOQL in this Dev org because no permission set grants FLS on it.
 Apex DML does not enforce field-level security, so the write succeeds and the
 value is stored, but any report or list view that surfaces `Type` will need the
 field exposed first.
+
+## Deployment ordering (hit during the Dev org build)
+
+A scheduled job holds a lock on its Schedulable class and every class that
+class depends on. Once `OmnishiftEngineSchedule` was scheduled, redeploying
+`OmnishiftEngine` failed with "This schedulable class has jobs pending or in
+progress". The batch job in flight blocked it the same way.
+
+For TMG this means the release order is: abort the schedule, deploy, reschedule.
+The alternative is enabling "Allow deployments of components when corresponding
+Apex jobs are pending or in progress" in Deployment Settings, which is fine for
+a sandbox but worth a conversation before turning on in production.
+
+## Who is eligible to own a recommendation
+
+`UserType = 'Standard'` is not a filter for "advisor". It also matches the
+platform accounts - Security User, Integration User, the org's automation user -
+and the first routing run duly assigned prospects to them. The pool is now the
+set of users holding the `Omnishift_Growth_Agent_User` permission set, which
+makes eligibility something TMG administers rather than something the code
+guesses at.

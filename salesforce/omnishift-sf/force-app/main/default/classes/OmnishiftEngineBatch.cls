@@ -23,7 +23,22 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
             String nm = ((c.FirstName == null ? '' : c.FirstName) + ' ' + c.LastName).trim().toLowerCase();
             if (nm != '') ownedNames.add(nm);
         }
-        pool = [SELECT Id, Name, State FROM User WHERE IsActive = true AND UserType = 'Standard' LIMIT 50];
+        // The eligible owners are whoever holds the Growth Agent permission set,
+        // not every Standard user. UserType = 'Standard' also matches the
+        // platform accounts - Security User, Integration User - and routing a
+        // prospect to one of those is worse than not routing it at all.
+        Set<Id> eligible = new Set<Id>();
+        for (PermissionSetAssignment psa : [
+                SELECT AssigneeId FROM PermissionSetAssignment
+                WHERE PermissionSet.Name = 'Omnishift_Growth_Agent_User'
+                LIMIT 1000]) {
+            eligible.add(psa.AssigneeId);
+        }
+        if (eligible.isEmpty()) eligible.add(UserInfo.getUserId());
+
+        pool = [SELECT Id, Name, State FROM User
+                WHERE IsActive = true AND Id IN :eligible
+                ORDER BY Name LIMIT 200];
     }
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
