@@ -96,3 +96,21 @@
 .skel__row { height: 3.4rem; background: linear-gradient(90deg,#f3f3f3 0%,#fafafa 50%,#f3f3f3 100%); background-size: 200% 100%; border-radius: .25rem; margin-bottom: .5rem; animation: sk 1.2s linear infinite; }
 @keyframes sk { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) { .skel__row { animation: none; } }
+
+/* ---- segments: a selected one looks selected, a hovered one looks hoverable --
+   The pill carries the word the advisor uses, the word Salesforce uses, and
+   the count, so "prospect" and "lead" stop being two things. */
+.seg { display: inline-flex; align-items: center; gap: .35rem; border: 1px solid #c9d0da; background: #fff; color: #2b3a4d;
+       border-radius: 1rem; padding: .25rem .5rem .25rem .7rem; font-size: .75rem; font-weight: 600; cursor: pointer;
+       transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease; }
+.seg__sub { font-weight: 400; color: #706e6b; }
+.seg__sub::before { content: '·'; margin-right: .35rem; }
+.seg__n { font-variant-numeric: tabular-nums; font-weight: 700; background: #eef2f7; color: #16325c;
+          border-radius: 1rem; padding: 0 .45rem; line-height: 1.4; font-size: .6875rem; }
+.seg:hover { background: #eef4ff; border-color: #0b5cab; color: #0b5cab; }
+.seg:hover .seg__sub { color: #0b5cab; }
+.seg:active { transform: translateY(1px); }
+.seg:focus-visible { outline: 2px solid #0176d3; outline-offset: 2px; }
+.seg_on, .seg_on:hover { background: #16325c; border-color: #16325c; color: #fff; box-shadow: 0 1px 2px rgba(22,50,92,.3); }
+.seg_on .seg__sub, .seg_on:hover .seg__sub { color: rgba(255,255,255,.75); }
+.seg_on .seg__n { background: rgba(255,255,255,.18); color: #fff; }

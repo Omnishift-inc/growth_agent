@@ -109,7 +109,7 @@
                             data-seg={sg.key}
                             aria-pressed={sg.pressed}
                             onclick={handleSegment}
-                        >{sg.label}</button>
+                        ><span class="seg__l">{sg.label}</span><template if:true={sg.sub}><span class="seg__sub">{sg.sub}</span></template><span class="seg__n">{sg.n}</span></button>
                     </template>
                 </div>
                 <template for:each={rows} for:item="r">
