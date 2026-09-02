@@ -44,11 +44,11 @@
                         variant="neutral"
                         onclick={openQueue}
                     ></lightning-button>
-                    <span class="cta__alt">
-                        or as a Salesforce list view:
-                        <a href="#" data-object="Lead" onclick={openListView}>prospects</a> ·
-                        <a href="#" data-object="Contact" onclick={openListView}>clients</a>
-                    </span>
+                    <div class="cta__views" role="group" aria-label="Standard list views">
+                        <span class="cta__lbl">List views</span>
+                        <lightning-button label="Prospects" variant="base" icon-name="utility:list" data-object="Lead" onclick={openListView}></lightning-button>
+                        <lightning-button label="Clients" variant="base" icon-name="utility:list" data-object="Contact" onclick={openListView}></lightning-button>
+                    </div>
                 </div>
 
                 <p class="run">{runLine}</p>
