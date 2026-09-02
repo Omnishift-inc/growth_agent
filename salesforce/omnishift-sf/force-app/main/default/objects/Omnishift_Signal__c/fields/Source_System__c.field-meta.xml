@@ -16,6 +16,7 @@
             <value><fullName>CorralData</fullName><default>false</default><label>CorralData</label></value>
             <value><fullName>Zoom</fullName><default>false</default><label>Zoom</label></value>
             <value><fullName>LinkedIn</fullName><default>false</default><label>LinkedIn</label></value>
+            <value><fullName>Public web</fullName><default>false</default><label>Public web</label></value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>
