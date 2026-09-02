@@ -3,12 +3,10 @@ import { getRecord, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
 import { getListRecordsByName } from 'lightning/uiListsApi';
 import { NavigationMixin } from 'lightning/navigation';
 import recordDisposition from '@salesforce/apex/OmnishiftAction.recordDisposition';
-import personAccountsEnabled from '@salesforce/apex/OmnishiftAction.personAccountsEnabled';
-import getSignals from '@salesforce/apex/OmnishiftAction.getSignals';
-import getTimeline from '@salesforce/apex/OmnishiftAction.getTimeline';
+import recordOutcome from '@salesforce/apex/OmnishiftAction.recordOutcome';
+import getPanelContext from '@salesforce/apex/OmnishiftAction.getPanelContext';
 import saveDraft from '@salesforce/apex/OmnishiftAction.saveDraft';
 import sendDraft from '@salesforce/apex/OmnishiftAction.sendDraft';
-import liveEmailEnabled from '@salesforce/apex/OmnishiftAction.liveEmailEnabled';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 // Field API names are identical on Lead and Contact, so we build the qualified list
@@ -22,6 +20,7 @@ const OMNISHIFT_FIELDS = [
     'Omnishift_Compliance_Status__c',
     'Omnishift_Compliance_Reason__c',
     'Omnishift_Escalated__c',
+    'Omnishift_Outcome__c',
     'Omnishift_Draft_Subject__c',
     'Omnishift_Draft_Body__c',
     'Omnishift_Disposition__c',
@@ -109,31 +108,6 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         return OMNISHIFT_FIELDS.map((f) => `${obj}.${f}`).concat(extra);
     }
 
-    @wire(getSignals, { recordId: '$recordId' })
-    wiredSignals({ data }) {
-        if (!data) return;
-        this.signals = data.map((g, i) => ({
-            key: `${g.type}-${i}`,
-            type: g.type,
-            source: g.source,
-            detail: g.evidence || g.detail,
-            age: g.age,
-            lag: g.lag,
-            externalId: g.externalId,
-            confidence: g.confidence === null ? null : `${g.confidence}% confidence`,
-            // The provider is the useful distinction: a public filing and a
-            // pattern of website visits are different kinds of evidence.
-            sourceClass:
-                g.source === 'WealthFeed'
-                    ? 'src src_filing'
-                    : g.source === 'VisitIQ' || g.source === 'Account Engagement'
-                    ? 'src src_web'
-                    : g.source === 'SmartAsset AMP' || g.source === 'LinkedIn'
-                    ? 'src src_third'
-                    : 'src'
-        }));
-    }
-
     get hasSignals() {
         return this.signals && this.signals.length > 0;
     }
@@ -148,22 +122,6 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         return this.val('Name') || 'the prospect';
     }
 
-    timeline = [];
-    @wire(getTimeline, { recordId: '$recordId' })
-    wiredTimeline({ data }) {
-        if (!data) return;
-        this.timeline = data.map((r, i) => ({
-            key: `${r.kind}-${i}`,
-            ...r,
-            rowClass: r.upcoming ? 'tl tl_upcoming' : `tl tl_${r.kind}`,
-            sourceClass:
-                r.source === 'WealthFeed' ? 'src src_filing'
-                : r.source === 'VisitIQ' || r.source === 'Account Engagement' ? 'src src_web'
-                : r.source === 'SmartAsset AMP' || r.source === 'LinkedIn' ? 'src src_third'
-                : r.source === 'Omnishift' ? 'src src_agent'
-                : 'src'
-        }));
-    }
     get hasTimeline() {
         return this.timeline && this.timeline.length > 0;
     }
@@ -174,19 +132,6 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         return Boolean(this.raw('Omnishift_Escalated__c'));
     }
 
-    @wire(personAccountsEnabled)
-    wiredPersonAccounts({ data }) {
-        if (data !== undefined) this.personAccounts = data;
-    }
-
-    @wire(liveEmailEnabled)
-    wiredLiveEmail({ data }) {
-        if (data !== undefined) this.liveEmail = data;
-    }
-
-    // Today's ranked order, so the advisor can walk the list without going back
-    // to the Home page and hunting for where they were. Always a Lead list view;
-    // the nav is hidden on Contact rather than pointed at the wrong object.
     // The Home queue merges both list views on the global rank. The walk here
     // has to do the same, or the panel says "3 of 20" while the queue says 31 -
     // which is exactly the mismatch the advisor noticed.
@@ -237,6 +182,72 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     mergeQueue() {
         if (this.queueSnapshot || !this.leadQueue || !this.contactQueue) return;
         this.queueSnapshot = this.leadQueue.concat(this.contactQueue).sort((a, b) => a.rank - b.rank);
+    }
+
+    // One round trip for everything that is not on the record. The timeline
+    // already carries the signals, so the separate signals call went too.
+    timeline = [];
+    signals = [];
+    showAllTimeline = false;
+    @wire(getPanelContext, { recordId: '$recordId' })
+    wiredContext({ data }) {
+        if (!data) return;
+        this.personAccounts = Boolean(data.personAccounts);
+        this.liveEmail = Boolean(data.liveEmail);
+        const srcClass = (src) =>
+            src === 'WealthFeed' ? 'src src_filing'
+            : src === 'VisitIQ' || src === 'Account Engagement' ? 'src src_web'
+            : src === 'SmartAsset AMP' || src === 'LinkedIn' ? 'src src_third'
+            : src === 'Omnishift' ? 'src src_agent'
+            : 'src';
+        this.timeline = (data.timeline || []).map((r, i) => ({
+            key: `${r.kind}-${i}`,
+            ...r,
+            rowClass: r.upcoming ? 'tl tl_upcoming' : `tl tl_${r.kind}`,
+            sourceClass: srcClass(r.source)
+        }));
+        this.signals = this.timeline.filter((r) => r.kind === 'signal');
+    }
+    get visibleTimeline() {
+        return this.showAllTimeline ? this.timeline : this.timeline.slice(0, 6);
+    }
+    get timelineHasMore() {
+        return this.timeline.length > 6;
+    }
+    get timelineToggleLabel() {
+        return this.showAllTimeline ? 'Show less' : `Show all ${this.timeline.length}`;
+    }
+    toggleTimeline() {
+        this.showAllTimeline = !this.showAllTimeline;
+    }
+
+    // ---- what happened: the label the ranking learns from ----
+    get outcome() {
+        return this.val('Omnishift_Outcome__c');
+    }
+    get outcomeOptions() {
+        const cur = this.outcome;
+        return [
+            'Meeting booked', 'Replied, no meeting', 'No response',
+            'Not interested', 'Too early', 'Should not have been surfaced'
+        ].map((o) => ({
+            key: o, label: o,
+            variant: o === cur ? 'brand' : 'neutral',
+            disabled: this.isSaving
+        }));
+    }
+    async handleOutcome(event) {
+        const outcome = event.currentTarget.dataset.outcome;
+        this.isSaving = true;
+        try {
+            const msg = await recordOutcome({ recordId: this.recordId, outcome });
+            await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            this.toast('Outcome recorded', msg, 'success');
+        } catch (e) {
+            this.toast('Could not record the outcome', this.messageOf(e), 'error');
+        } finally {
+            this.isSaving = false;
+        }
     }
 
     @wire(getRecord, { recordId: '$recordId', fields: '$fieldList' })

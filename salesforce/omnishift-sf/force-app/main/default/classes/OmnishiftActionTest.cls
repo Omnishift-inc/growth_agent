@@ -266,4 +266,12 @@ private class OmnishiftActionTest {
         System.assertEquals(2, hit.get('people'), 'Two people, one calendar entry - as Pardot shows it.');
         System.assertEquals(1, hit.get('dayIndex'), 'Monday is one day after the week start.');
     }
+
+    @isTest static void thePanelContextIsOneCall() {
+        Lead l = newLead();
+        Map<String, Object> ctx = OmnishiftAction.getPanelContext(l.Id);
+        System.assert(ctx.containsKey('personAccounts') && ctx.containsKey('liveEmail')
+            && ctx.containsKey('timeline'), 'All three in one round trip: ' + ctx.keySet());
+        System.assertEquals(false, ctx.get('liveEmail'));
+    }
 }

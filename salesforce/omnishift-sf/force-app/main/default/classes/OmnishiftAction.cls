@@ -542,17 +542,43 @@ public with sharing class OmnishiftAction {
             }
             e.put('people', (Integer) e.get('people') + 1);
         }
-        // how many the agent held back for each send, by the reason it wrote
+        // How many the agent held back for each send. One query per object,
+        // counted in memory - the previous version ran two COUNT queries per
+        // calendar entry, which is what made the Home page slow to open.
+        Map<String, Integer> heldByName = new Map<String, Integer>();
+        for (String obj : new List<String>{ 'Lead', 'Contact' }) {
+            for (sObject r : Database.query('SELECT Omnishift_Quarantine_Reason__c FROM ' + obj
+                    + ' WHERE Omnishift_Quarantined__c = true LIMIT 5000')) {
+                String reason = (String) r.get('Omnishift_Quarantine_Reason__c');
+                if (reason == null) continue;
+                for (String key : entries.keySet()) {
+                    String nm = (String) entries.get(key).get('name');
+                    if (reason.contains('"' + nm + '"')) {
+                        heldByName.put(nm, (heldByName.containsKey(nm) ? heldByName.get(nm) : 0) + 1);
+                    }
+                }
+            }
+        }
         for (String key : entries.keySet()) {
             String nm = (String) entries.get(key).get('name');
-            String pattern = '%"' + nm + '"%';
-            Integer held = [SELECT COUNT() FROM Lead WHERE Omnishift_Quarantined__c = true
-                            AND Omnishift_Quarantine_Reason__c LIKE :pattern]
-                         + [SELECT COUNT() FROM Contact WHERE Omnishift_Quarantined__c = true
-                            AND Omnishift_Quarantine_Reason__c LIKE :pattern];
-            entries.get(key).put('deferred', held);
+            entries.get(key).put('deferred', heldByName.containsKey(nm) ? heldByName.get(nm) : 0);
         }
         return entries.values();
+    }
+
+    /**
+     * Everything the panel needs that is not on the record itself, in one round
+     * trip. It was four: person-account support, the live-email switch, the
+     * signals, the timeline - each a separate server call before the panel
+     * could settle. The timeline already contains the signals.
+     */
+    @AuraEnabled(cacheable=true)
+    public static Map<String, Object> getPanelContext(Id recordId) {
+        return new Map<String, Object>{
+            'personAccounts' => personAccountsEnabled(),
+            'liveEmail'      => liveEmailEnabled(),
+            'timeline'       => getTimeline(recordId)
+        };
     }
 
     @AuraEnabled(cacheable=true)

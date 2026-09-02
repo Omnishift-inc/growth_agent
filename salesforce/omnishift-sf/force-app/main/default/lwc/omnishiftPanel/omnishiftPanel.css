@@ -333,3 +333,13 @@
     border-left: 3px solid #c78a12; border-radius: 2px;
     padding: .4rem .55rem; margin: 0 0 .75rem;
 }
+
+/* ---- outcome -----------------------------------------------------------
+   Kept apart from the draft actions because it answers a different question:
+   not "what did you do with the email" but "was this the right person to
+   surface". It is the only feedback the ranking learns from. */
+.outcome { border-top: 1px solid #eef0f2; margin-top: .6rem; padding-top: .5rem; }
+.outcome__lbl { font-size: .625rem; letter-spacing: .06em; text-transform: uppercase; color: #706e6b; margin: 0 0 .35rem; }
+.outcome__btns { display: flex; flex-wrap: wrap; gap: .4rem; }
+.outcome__note { font-size: .6875rem; color: #706e6b; margin: .4rem 0 0; }
+.chip_outcome { background: #eaf5ee; color: #1c6b41; }

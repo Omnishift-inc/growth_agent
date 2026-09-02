@@ -15,6 +15,19 @@ public with sharing class OmnishiftEngine {
     // How long an event stays relevant. Past this it is history, not a reason to
     // call today.
     private static final Integer SIGNAL_WINDOW_DAYS = 120;
+    // Engagement is perishable in a way a filing is not. A page view from six
+    // weeks ago is not a reason to call today; a business sale from six weeks
+    // ago still is. Before this every signal shared the 120-day window, and
+    // 59-day-old email opens were driving "call today".
+    private static final Integer ENGAGEMENT_WINDOW_DAYS = 21;
+    private static final Set<String> ENGAGEMENT_TYPES = new Set<String>{
+        'Website research', 'Marketplace enquiry', 'Email engagement',
+        'Survey response', 'Webinar attendance'
+    };
+    @TestVisible
+    private static Integer windowFor(String signalType) {
+        return ENGAGEMENT_TYPES.contains(signalType) ? ENGAGEMENT_WINDOW_DAYS : SIGNAL_WINDOW_DAYS;
+    }
 
     // What a confirmed, current event is worth on top of the weighted base, and
     // how strong one has to be before it becomes the reason shown to the advisor
@@ -34,6 +47,7 @@ public with sharing class OmnishiftEngine {
         public String complianceReason;
         public String topDriver;
         public Decimal rawScore;
+        public Boolean surfacedEarly = false;
     }
 
     /**
@@ -227,18 +241,33 @@ public with sharing class OmnishiftEngine {
         // still worth contacting, just not this week.
         if (p.marketingSendOn != null) {
             Integer days = Date.today().daysBetween(p.marketingSendOn);
-            if (days >= -2 && days <= 3) {
+            // Yesterday's send and the next three days. Two days back was
+            // holding people for a send that had already come and gone.
+            if (days >= -1 && days <= 3) {
                 o.suppressed = true;
                 o.suppressReason = 'Marketing has "' + p.marketingSendName + '" scheduled '
-                    + (days < 0 ? 'two days ago' : days == 0 ? 'today' : 'in ' + days + ' days')
+                    + (days < 0 ? 'yesterday' : days == 0 ? 'today' : 'in ' + days + (days == 1 ? ' day' : ' days'))
                     + ' - deferred so the firm does not arrive twice';
                 return o;
             }
         }
         if (p.hasOpenFollowUp) {
-            o.suppressed = true;
-            o.suppressReason = 'Already being worked - an open follow-up is scheduled';
-            return o;
+            // A parked cadence - "resume in 90 days" - is a plan made without
+            // today's information. If something has happened since (a filing, a
+            // role change, a fresh enquiry), surfacing early is the entire point
+            // of the agent: Deana's own example was "what would be the most
+            // opportune time to reach out to them again". Engagement noise does
+            // not qualify; a confirmed event does.
+            Boolean freshEvent = p.signalType != null && p.signalOn != null
+                && !ENGAGEMENT_TYPES.contains(p.signalType)
+                && p.signalOn.daysBetween(Date.today()) <= 30
+                && (p.signalConfidence == null || p.signalConfidence >= 70);
+            if (!freshEvent) {
+                o.suppressed = true;
+                o.suppressReason = 'Already being worked - an open follow-up is scheduled';
+                return o;
+            }
+            o.surfacedEarly = true;
         }
         // For an existing client the fortnight still holds: two advisors reaching
         // the same household inside two weeks reads as disorganisation, and a
@@ -331,13 +360,14 @@ public with sharing class OmnishiftEngine {
         Decimal signalFreshness = 0;
         if (p.signalType != null && p.signalOn != null) {
             Integer signalAge = p.signalOn.daysBetween(Date.today());
-            if (signalAge >= 0 && signalAge <= SIGNAL_WINDOW_DAYS) {
+            Integer win = windowFor(p.signalType);
+            if (signalAge >= 0 && signalAge <= win) {
                 Decimal conf = (p.signalConfidence == null) ? 60 : p.signalConfidence;
-                Decimal recency = 1 - (Decimal.valueOf(signalAge) / SIGNAL_WINDOW_DAYS * 0.5);
+                Decimal recency = 1 - (Decimal.valueOf(signalAge) / win * 0.5);
                 signalBoost = SIGNAL_MAX_BOOST * (conf / 100) * recency;
                 // A fresher event of the same kind should sit above a staler
                 // one even when both are strong enough to cap.
-                signalFreshness = (SIGNAL_WINDOW_DAYS - signalAge);
+                signalFreshness = (win - signalAge);
             }
         }
 

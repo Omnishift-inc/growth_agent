@@ -69,6 +69,9 @@
                             <template if:true={isEscalated}>
                                 <span class="chip chip_esc">Leadership notified</span>
                             </template>
+                            <template if:true={outcome}>
+                                <span class="chip chip_outcome">{outcome}</span>
+                            </template>
                         </div>
                         <p class="hdr__why">{whyNow}</p>
                     </div>
@@ -89,7 +92,7 @@
                 <template if:true={hasTimeline}>
                     <p class="slds-text-title_caps slds-m-bottom_xx-small">Engagement history</p>
                     <ol class="tls slds-m-bottom_medium">
-                        <template for:each={timeline} for:item="r">
+                        <template for:each={visibleTimeline} for:item="r">
                             <li key={r.key} class={r.rowClass}>
                                 <span class="tl__when">{r.when}</span>
                                 <span class="tl__body">
@@ -107,6 +110,9 @@
                             </li>
                         </template>
                     </ol>
+                    <template if:true={timelineHasMore}>
+                        <lightning-button variant="base" label={timelineToggleLabel} onclick={toggleTimeline} class="slds-m-bottom_small"></lightning-button>
+                    </template>
                 </template>
 
                 <!-- who and by when, as facts rather than a form -->
@@ -249,6 +255,16 @@
                             onclick={handleDisposition}
                         ></lightning-button>
                     </template>
+                </div>
+                <div class="outcome">
+                    <p class="outcome__lbl">What happened</p>
+                    <div class="outcome__btns">
+                        <template for:each={outcomeOptions} for:item="o">
+                            <lightning-button key={o.key} label={o.label} variant={o.variant}
+                                disabled={o.disabled} data-outcome={o.key} onclick={handleOutcome}></lightning-button>
+                        </template>
+                    </div>
+                    <p class="outcome__note">This is what the ranking learns from. The buttons above record what you did with the draft; this records whether surfacing the person was right.</p>
                 </div>
                 <div class="acts__foot">
                     <p class="acts__note">{sendFootnote}</p>

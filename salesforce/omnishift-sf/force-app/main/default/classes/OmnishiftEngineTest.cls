@@ -490,4 +490,33 @@ private class OmnishiftEngineTest {
         System.assertNotEquals(null, after.Omnishift_Driver__c,
             'A 200-character sentence cannot be grouped in a report; the driver can.');
     }
+
+    @isTest static void staleEngagementDoesNotDriveButAFreshOneDoes() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.firstName='Thea'; p.lastName='Marlowe'; p.intakeChannel='Other';
+        p.createdDate=Datetime.now().addDays(-40); p.fitValue=3000000;
+        p.signalType='Email engagement'; p.signalConfidence=90; p.signalSource='Account Engagement';
+        p.signalOn=Date.today().addDays(-59);
+        System.assertNotEquals('Event', OmnishiftEngine.score(p).topDriver,
+            'Email opened two months ago is not a reason to call today.');
+        p.signalOn=Date.today().addDays(-6);
+        System.assertEquals('Event', OmnishiftEngine.score(p).topDriver,
+            'Email opened last week is.');
+        System.assertEquals(21, OmnishiftEngine.windowFor('Website research'));
+        System.assertEquals(120, OmnishiftEngine.windowFor('Business sale'));
+    }
+
+    @isTest static void aParkedCadenceYieldsToAFreshFiling() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.firstName='Tom'; p.lastName='Marlowe'; p.hasOpenFollowUp = true;
+        p.lastActivityDate = Date.today().addDays(-20);
+        OmnishiftEngine.Outcome held = OmnishiftEngine.suppressionCheck(p, new Set<String>(), new Set<String>());
+        System.assert(held.suppressed, 'Nothing new: the parked follow-up stands.');
+        p.signalType='Business sale'; p.signalOn=Date.today().addDays(-4); p.signalConfidence=88; p.signalSource='WealthFeed';
+        OmnishiftEngine.Outcome early = OmnishiftEngine.suppressionCheck(p, new Set<String>(), new Set<String>());
+        System.assert(!early.suppressed, 'A business sale this week is exactly the reason to bring it forward.');
+        p.signalType='Email engagement';
+        System.assert(OmnishiftEngine.suppressionCheck(p, new Set<String>(), new Set<String>()).suppressed,
+            'Opening an email is not enough to override a plan.');
+    }
 }
