@@ -333,4 +333,30 @@ private class OmnishiftActionTest {
         System.assertEquals('Working - Contacted', [SELECT Status FROM Lead WHERE Id = :l.Id].Status,
             'the Path should say the prospect has been contacted, because they have');
     }
+
+    @isTest static void undoingAWrongPersonMarkPutsTheRecordBackAndScoresIt() {
+        Lead l = newLead();
+        OmnishiftAction.recordDisposition(l.Id, 'Wrong person', 'mis-mapped', null, null, null);
+        // the nightly run would have held it for that mark
+        update new Lead(Id = l.Id, Omnishift_Quarantined__c = true, Omnishift_Quarantine_Reason__c = 'Marked as the wrong person by the advisor', Omnishift_Score__c = 0);
+        String msg = OmnishiftAction.clearDisposition(l.Id);
+        Lead after = [SELECT Omnishift_Disposition__c, Omnishift_Quarantined__c, Omnishift_Score__c, Omnishift_Next_Action_Date__c, Omnishift_Why_Now__c FROM Lead WHERE Id = :l.Id];
+        System.assertEquals(null, after.Omnishift_Disposition__c);
+        System.assertEquals(false, after.Omnishift_Quarantined__c, 'the hold went with the mark');
+        System.assert(after.Omnishift_Score__c > 0, 'scored again on the spot: ' + after.Omnishift_Score__c);
+        System.assertEquals(Date.today(), after.Omnishift_Next_Action_Date__c);
+        System.assert(String.isNotBlank(after.Omnishift_Why_Now__c));
+        System.assert(msg.contains('Back'), msg);
+    }
+
+    @isTest static void bringingASnoozeBackDoesNotTouchTheScore() {
+        Lead l = newLead();
+        update new Lead(Id = l.Id, Omnishift_Score__c = 77, Omnishift_Scored_On__c = Datetime.now());
+        OmnishiftAction.recordDisposition(l.Id, 'Snoozed', 'wrong month', null, null, Date.today().addDays(10));
+        OmnishiftAction.clearDisposition(l.Id);
+        Lead after = [SELECT Omnishift_Disposition__c, Omnishift_Score__c, Omnishift_Next_Action_Date__c FROM Lead WHERE Id = :l.Id];
+        System.assertEquals(null, after.Omnishift_Disposition__c);
+        System.assertEquals(77, after.Omnishift_Score__c, 'nothing about the person changed, only the advisor\'s mind');
+        System.assertEquals(Date.today(), after.Omnishift_Next_Action_Date__c);
+    }
 }

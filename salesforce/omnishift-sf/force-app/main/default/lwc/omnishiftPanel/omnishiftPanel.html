@@ -201,46 +201,81 @@
                     </div>
                 </template>
 
-                <div class="acts">
-                    <lightning-button
-                        variant="brand"
-                        label={primaryAction.label}
-                        disabled={primaryAction.disabled}
-                        data-disposition={primaryAction.key}
-                        onclick={handleDisposition}
-                        class="acts__primary"
-                    ></lightning-button>
-                    <template for:each={secondaryActions} for:item="a">
-                        <lightning-button
-                            key={a.key}
-                            label={a.label}
-                            variant="neutral"
-                            disabled={a.disabled}
-                            data-disposition={a.key}
-                            onclick={handleDisposition}
-                        ></lightning-button>
-                    </template>
-                </div>
-                <div class="outcome">
-                    <p class="outcome__lbl">Outcome</p>
-                    <div class="outcome__btns">
-                        <template for:each={outcomeOptions} for:item="o">
-                            <lightning-button key={o.key} label={o.label} variant={o.variant}
-                                disabled={o.disabled} data-outcome={o.key} onclick={handleOutcome}></lightning-button>
+                <template if:true={stageBanner}>
+                    <div class={stageBanner.cls} role="status">
+                        <lightning-icon icon-name={stageBanner.icon} size="x-small" class="stage__icon"></lightning-icon>
+                        <div class="stage__text">
+                            <strong>{stageBanner.title}</strong>
+                            <span>{stageBanner.text}</span>
+                        </div>
+                        <template if:true={isSnoozedStage}>
+                            <lightning-button label="Bring back today" variant="brand" disabled={isSaving} onclick={handleUndo}></lightning-button>
+                            <lightning-button label="Change date" variant="neutral" disabled={isSaving} onclick={handleChangeDate}></lightning-button>
+                        </template>
+                        <template if:true={isWrongStage}>
+                            <lightning-button label="Undo" variant="neutral" disabled={isSaving} onclick={handleUndo}></lightning-button>
                         </template>
                     </div>
-                </div>
-                <div class="acts__foot">
+                </template>
+
+                <!-- Nothing done yet: the decision. The send is the recommendation,
+                     the rest are the ways to not send. -->
+                <template if:true={isOpenStage}>
+                    <p class="grp__lbl">Your move</p>
+                    <div class="acts">
+                        <lightning-button
+                            variant="brand"
+                            label={primaryAction.label}
+                            disabled={primaryAction.disabled}
+                            data-disposition={primaryAction.key}
+                            onclick={handleDisposition}
+                            class="acts__primary"
+                        ></lightning-button>
+                        <template for:each={secondaryActions} for:item="a">
+                            <lightning-button
+                                key={a.key}
+                                label={a.label}
+                                variant="neutral"
+                                disabled={a.disabled}
+                                data-disposition={a.key}
+                                onclick={handleDisposition}
+                            ></lightning-button>
+                        </template>
+                        <span class="acts__spacer"></span>
+                        <lightning-button
+                            variant="base"
+                            label="Wrong person"
+                            disabled={wrongPersonDisabled}
+                            data-disposition="Wrong person"
+                            onclick={handleDisposition}
+                            class="acts__wrong"
+                        ></lightning-button>
+                    </div>
                     <template if:true={sendFootnote}><p class="acts__note">{sendFootnote}</p></template>
-                    <lightning-button
-                        variant="base"
-                        label="Wrong person"
-                        disabled={wrongPersonDisabled}
-                        data-disposition="Wrong person"
-                        onclick={handleDisposition}
-                        class="acts__wrong"
-                    ></lightning-button>
-                </div>
+                </template>
+
+                <!-- Something was done: what came of it. Pills, not buttons - this
+                     is a label the ranking learns from, not another command. -->
+                <template if:true={showOutcome}>
+                    <p class="grp__lbl">{outcomePrompt}</p>
+                    <div class="pills" role="group" aria-label="Outcome">
+                        <template for:each={outcomeOptions} for:item="o">
+                            <button key={o.key} class={o.cls} aria-pressed={o.pressed}
+                                disabled={o.disabled} data-outcome={o.key} onclick={handleOutcome}>{o.label}</button>
+                        </template>
+                    </div>
+                    <template if:true={showQuietActions}>
+                        <div class="acts acts_quiet">
+                            <template for:each={quietActions} for:item="a">
+                                <lightning-button key={a.key} label={a.label} variant="base" disabled={a.disabled}
+                                    data-disposition={a.key} onclick={handleDisposition}></lightning-button>
+                            </template>
+                            <span class="acts__spacer"></span>
+                            <lightning-button variant="base" label="Wrong person" disabled={wrongPersonDisabled}
+                                data-disposition="Wrong person" onclick={handleDisposition} class="acts__wrong"></lightning-button>
+                        </div>
+                    </template>
+                </template>
 
                 <template if:true={inQueue}>
                     <div class="queue-nav slds-m-top_small">

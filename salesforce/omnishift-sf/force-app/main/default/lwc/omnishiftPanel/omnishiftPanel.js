@@ -5,6 +5,7 @@ import { getListRecordsByName } from 'lightning/uiListsApi';
 import { NavigationMixin } from 'lightning/navigation';
 import recordDisposition from '@salesforce/apex/OmnishiftAction.recordDisposition';
 import recordOutcome from '@salesforce/apex/OmnishiftAction.recordOutcome';
+import clearDisposition from '@salesforce/apex/OmnishiftAction.clearDisposition';
 import getPanelContext from '@salesforce/apex/OmnishiftAction.getPanelContext';
 import saveDraft from '@salesforce/apex/OmnishiftAction.saveDraft';
 import sendDraft from '@salesforce/apex/OmnishiftAction.sendDraft';
@@ -28,7 +29,8 @@ const OMNISHIFT_FIELDS = [
     'Omnishift_Disposition__c',
     'Omnishift_Disposition_Reason__c',
     'Omnishift_Scored_On__c',
-    'Omnishift_Run_Id__c'
+    'Omnishift_Run_Id__c',
+    'Omnishift_Dispositioned_On__c'
 ];
 
 // The advisor picks when to come back. recordDisposition takes the date, so the
@@ -246,6 +248,8 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         ].map((o) => ({
             key: o, label: o,
             variant: o === cur ? 'brand' : 'neutral',
+            cls: o === cur ? 'pill pill_on' : 'pill',
+            pressed: o === cur ? 'true' : 'false',
             disabled: this.isSaving
         }));
     }
@@ -390,6 +394,89 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     // look equally likely, which is the opposite of a recommendation - so the
     // send is the only brand button, editing sits beside it, and the rest drop
     // to a quieter row.
+    // ---- where this record is in the advisor's hands ----------------------
+    // The footer used to show every button on every visit, so a record that
+    // had been snoozed yesterday looked exactly like one nobody had touched.
+    // One state at a time: what was done, and what is left to do.
+    get stage() {
+        const d = this.raw('Omnishift_Disposition__c');
+        const o = this.raw('Omnishift_Outcome__c');
+        if (d === 'Wrong person') return 'wrong';
+        if (o === 'Meeting booked') return 'booked';
+        if (d === 'Snoozed') return 'snoozed';
+        if (o) return 'closed';
+        if (d === 'Approved and sent' || d === 'Edited before send' || d === 'Call logged') return 'sent';
+        return 'open';
+    }
+    get isOpenStage() { return this.stage === 'open'; }
+    get isSentStage() { return this.stage === 'sent'; }
+    get isSnoozedStage() { return this.stage === 'snoozed'; }
+    get isWrongStage() { return this.stage === 'wrong'; }
+    get showOutcome() { return ['sent', 'closed', 'booked'].includes(this.stage); }
+    get showQuietActions() { return ['sent', 'closed'].includes(this.stage); }
+    get touchVerb() {
+        return this.raw('Omnishift_Disposition__c') === 'Call logged' ? 'called' : 'emailed';
+    }
+    get dispositionedOn() { return this.val('Omnishift_Dispositioned_On__c'); }
+    get outcomeOn() { return this.val('Omnishift_Outcome_On__c'); }
+    get stageBanner() {
+        const when = this.dispositionedOn ? ` on ${this.dispositionedOn}` : '';
+        const note = this.dispositionReason ? ` ${this.dispositionReason}` : '';
+        switch (this.stage) {
+            case 'sent':
+                return { cls: 'stage stage_sent', icon: 'utility:email',
+                    title: (this.touchVerb === 'called' ? 'Call logged' : 'Email sent') + when,
+                    text: (note || ' Sent as drafted.') + ' Record what happened when you hear back.' };
+            case 'snoozed':
+                return { cls: 'stage stage_snoozed', icon: 'utility:clock',
+                    title: 'Not now' + (this.nextActionDate ? ` - comes back ${this.nextActionDate}` : ''),
+                    text: note || ' Off today\'s list until then.' };
+            case 'wrong':
+                return { cls: 'stage stage_wrong', icon: 'utility:ban',
+                    title: 'Marked as the wrong person' + when,
+                    text: ' Held off the list until you undo it.' };
+            case 'booked':
+                return { cls: 'stage stage_booked', icon: 'utility:event',
+                    title: 'Meeting booked' + (this.outcomeOn ? ` - recorded ${this.outcomeOn}` : ''),
+                    text: ' Off the list until the outcome changes.' };
+            case 'closed':
+                return { cls: 'stage stage_closed', icon: 'utility:check',
+                    title: `Outcome: ${this.outcome}` + (this.outcomeOn ? ` - recorded ${this.outcomeOn}` : ''),
+                    text: ' Change it below if things move.' };
+            default:
+                return null;
+        }
+    }
+    get outcomePrompt() {
+        if (this.stage === 'sent') {
+            return `What happened after the ${this.touchVerb === 'called' ? 'call' : 'email'}${this.dispositionedOn ? ' on ' + this.dispositionedOn : ''}?`;
+        }
+        return 'What happened';
+    }
+    get quietActions() {
+        return [
+            { key: 'Call logged', label: 'Log another call' },
+            { key: 'Snoozed', label: 'Not now' }
+        ].map((d) => ({ ...d, disabled: this.isSaving }));
+    }
+    async handleUndo() {
+        this.isSaving = true;
+        try {
+            const message = await clearDisposition({ recordId: this.recordId });
+            await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            if (this._ctx) await refreshApex(this._ctx);
+            this.showSnooze = false;
+            this.toast('Back on the list', message, 'success');
+        } catch (e) {
+            this.toast('Could not undo', this.messageOf(e), 'error');
+        } finally {
+            this.isSaving = false;
+        }
+    }
+    handleChangeDate() {
+        this.showSnooze = true;
+    }
+
     get primaryAction() {
         return {
             key: 'Approved and sent',

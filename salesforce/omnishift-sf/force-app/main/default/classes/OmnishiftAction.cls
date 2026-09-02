@@ -376,6 +376,76 @@ public with sharing class OmnishiftAction {
      * send" says what the advisor did with the draft, and says nothing at all
      * about whether surfacing the person was right.
      */
+    /**
+     * The advisor changes their mind: "not now" turned into "now", or the
+     * wrong-person mark was itself wrong. Clears the decision, puts the record
+     * back on today's list and, if the engine had held it because of that
+     * decision, scores it again on the spot so the panel does not show a zero
+     * until the nightly run.
+     */
+    @AuraEnabled
+    public static String clearDisposition(Id recordId) {
+        try {
+            return clearDispositionImpl(recordId);
+        } catch (ActionException e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+    private static String clearDispositionImpl(Id recordId) {
+        if (recordId == null) throw new ActionException('A record is required.');
+        String sObj = recordId.getSObjectType().getDescribe().getName();
+        if (sObj != 'Lead' && sObj != 'Contact') {
+            throw new ActionException('The Growth Agent only dispositions Leads and Contacts.');
+        }
+        if (!canUpdate(sObj)) throw new ActionException('You do not have permission to update this record.');
+        SObject rec = Schema.getGlobalDescribe().get(sObj).newSObject(recordId);
+        rec.put('Omnishift_Disposition__c', null);
+        rec.put('Omnishift_Disposition_Reason__c', null);
+        rec.put('Omnishift_Dispositioned_On__c', null);
+        rec.put('Omnishift_Next_Action_Date__c', Date.today());
+        update rec;
+        SObject cur = Database.query('SELECT Omnishift_Quarantined__c, Omnishift_Quarantine_Reason__c FROM ' + sObj + ' WHERE Id = :recordId LIMIT 1');
+        String held = (String) cur.get('Omnishift_Quarantine_Reason__c');
+        if (cur.get('Omnishift_Quarantined__c') == true && held != null
+                && (held.contains('wrong person') || held.startsWith('Meeting booked'))) {
+            rescoreOne(recordId, sObj);
+        }
+        return 'Back on today\'s list';
+    }
+    /** One record through the same engine the nightly run uses. */
+    private static void rescoreOne(Id recordId, String sObj) {
+        String fields = sObj == 'Lead'
+            ? 'Id, FirstName, LastName, Company, Email, State, Status, LeadSource, AnnualRevenue, DoNotCall, HasOptedOutOfEmail, IsConverted, CreatedDate, LastActivityDate, Omnishift_Draft_Edited__c, Omnishift_Disposition__c, Omnishift_Outcome__c, Omnishift_Next_Action_Date__c'
+            : 'Id, FirstName, LastName, Email, MailingState, Title, LeadSource, AccountId, Account.AnnualRevenue, DoNotCall, HasOptedOutOfEmail, CreatedDate, LastActivityDate, Omnishift_Draft_Edited__c, Omnishift_Disposition__c, Omnishift_Outcome__c, Omnishift_Next_Action_Date__c';
+        SObject r = Database.query('SELECT ' + fields + ' FROM ' + sObj + ' WHERE Id = :recordId LIMIT 1');
+        OmnishiftEngine.Prospect p = sObj == 'Lead' ? OmnishiftEngine.fromLead((Lead) r) : OmnishiftEngine.fromContact((Contact) r);
+        p.disposition = null;
+        List<Omnishift_Signal__c> sigs = [SELECT Signal_Type__c, Occurred_On__c, Confidence__c, Source__c, Evidence__c, Detail__c
+                                          FROM Omnishift_Signal__c
+                                          WHERE (Omnishift_Lead__c = :recordId OR Omnishift_Contact__c = :recordId)
+                                            AND Occurred_On__c != null AND Occurred_On__c >= LAST_N_DAYS:120
+                                          ORDER BY Occurred_On__c DESC, Confidence__c DESC LIMIT 1];
+        if (!sigs.isEmpty()) OmnishiftEngine.attachSignal(p, sigs[0]);
+        OmnishiftEngine.Outcome s = OmnishiftEngine.score(p);
+        OmnishiftEngine.Outcome d = OmnishiftEngine.draft(p, s.topDriver);
+        OmnishiftEngine.Outcome c = OmnishiftEngine.complianceCheck(d.draftSubject, d.draftBody);
+        SObject u = Schema.getGlobalDescribe().get(sObj).newSObject(recordId);
+        u.put('Omnishift_Score__c', s.score);
+        u.put('Omnishift_Rank_Score__c', s.rawScore);
+        u.put('Omnishift_Driver__c', s.topDriver);
+        u.put('Omnishift_Why_Now__c', s.whyNow);
+        u.put('Omnishift_Quarantined__c', false);
+        u.put('Omnishift_Quarantine_Reason__c', null);
+        u.put('Omnishift_Scored_On__c', Datetime.now());
+        if (r.get('Omnishift_Draft_Edited__c') != true) {
+            u.put('Omnishift_Draft_Subject__c', c.draftSubject != null ? c.draftSubject : d.draftSubject);
+            u.put('Omnishift_Draft_Body__c', c.draftBody != null ? c.draftBody : d.draftBody);
+            u.put('Omnishift_Compliance_Status__c', c.complianceStatus);
+            u.put('Omnishift_Compliance_Reason__c', c.complianceReason);
+        }
+        update u;
+    }
+
     @AuraEnabled
     public static String recordOutcome(Id recordId, String outcome) {
         try {
