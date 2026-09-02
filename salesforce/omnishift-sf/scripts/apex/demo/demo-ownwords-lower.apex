@@ -56,3 +56,8 @@ update new Lead(Id = [SELECT Id FROM Lead WHERE Name = 'Pamela Whitaker' AND IsC
     Omnishift_Disposition__c = null, Omnishift_Disposition_Reason__c = null, Omnishift_Dispositioned_On__c = null, Omnishift_Next_Action_Date__c = Date.today());
 System.debug('TUNE ' + tune.size());
 System.debug(OmnishiftEngineBatch.runNow());
+// The "needs review" example was scoring under 50 and getting a nurture date, so it was never on today's list.
+List<Omnishift_Signal__c> s = [SELECT Id FROM Omnishift_Signal__c WHERE External_Id__c LIKE 'SMA-OWN%' AND Omnishift_Lead__r.Name = 'Ansel Sandhurst'];
+for (Omnishift_Signal__c x : s) x.Confidence__c = 80;
+update s;
+System.debug(OmnishiftEngineBatch.runNow());
