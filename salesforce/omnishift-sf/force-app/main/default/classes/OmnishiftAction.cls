@@ -424,8 +424,8 @@ public with sharing class OmnishiftAction {
                                           FROM Omnishift_Signal__c
                                           WHERE (Omnishift_Lead__c = :recordId OR Omnishift_Contact__c = :recordId)
                                             AND Occurred_On__c != null AND Occurred_On__c >= LAST_N_DAYS:120
-                                          ORDER BY Occurred_On__c DESC, Confidence__c DESC LIMIT 1];
-        if (!sigs.isEmpty()) OmnishiftEngine.attachSignal(p, sigs[0]);
+                                          ORDER BY Occurred_On__c DESC, Confidence__c DESC LIMIT 20];
+        OmnishiftEngine.attachSignal(p, OmnishiftEngine.pickSignal(sigs));
         OmnishiftEngine.Outcome s = OmnishiftEngine.score(p);
         OmnishiftEngine.Outcome d = OmnishiftEngine.draft(p, s.topDriver);
         OmnishiftEngine.Outcome c = OmnishiftEngine.complianceCheck(d.draftSubject, d.draftBody);

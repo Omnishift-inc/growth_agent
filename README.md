@@ -1,10 +1,14 @@
-# Omnishift Salesforce DX (Developer Edition prototype)
+# Omnishift Growth Agent - Salesforce DX project
 
-Puts an **Omnishift** panel on **Lead** and **Contact** record pages (Pam-style Super Profile UI with **SAMPLE** data) and a **Today Queue** LWC on Home.
+The Growth Agent inside Salesforce: a nightly engine that decides who each advisor should contact today and why, a panel on every Lead and Contact that shows the reasoning and lets them act, a merged queue on Home, a marketing calendar, a compliance check on every draft, and the reports to tell whether it works.
 
-This is a **record tab** experience (like Pardot on a record) — **not** Setup → Tabs → Lightning Component Tab, unless you also want it in app navigation.
+- What is built: `../../docs/features.md`
+- Demo script with links: `../../docs/demo-script.md`
+- What is left: `../../docs/whats-next.md`
+- Demo data scripts: `scripts/apex/demo/README.md`
 
-> **Not wired to WealthFeed / VisitIQ yet.** Sample / fictional data only (Pamela Whitaker case). Phase 1 engine preview.
+All data in the org is generated: emails `@example.com`, phones 555-01xx, invented names and events. Live email is behind `Omnishift_Config__mdt.Send_Live_Email__c` and is off.
+
 
 ---
 

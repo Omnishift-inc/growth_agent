@@ -27,6 +27,22 @@ public with sharing class OmnishiftEngine {
     public static Boolean isEngagement(String signalType) {
         return ENGAGEMENT_TYPES.contains(signalType);
     }
+    /**
+     * Which of a person's signals the engine reads. A confirmed event - a
+     * filing, a sale, a role change - inside the last 30 days outranks an
+     * engagement signal that merely happens to be newer: a probate filing on
+     * Friday is the reason to call, not the website visit on Saturday. With
+     * no recent event, the newest signal wins. The list must be ordered
+     * newest first, highest confidence first on the same day.
+     */
+    public static Omnishift_Signal__c pickSignal(List<Omnishift_Signal__c> newestFirst) {
+        if (newestFirst == null || newestFirst.isEmpty()) return null;
+        for (Omnishift_Signal__c s : newestFirst) {
+            if (s.Occurred_On__c != null && !isEngagement(s.Signal_Type__c)
+                    && s.Occurred_On__c >= Date.today().addDays(-30)) return s;
+        }
+        return newestFirst[0];
+    }
     @TestVisible
     private static Integer windowFor(String signalType) {
         return ENGAGEMENT_TYPES.contains(signalType) ? ENGAGEMENT_WINDOW_DAYS : SIGNAL_WINDOW_DAYS;

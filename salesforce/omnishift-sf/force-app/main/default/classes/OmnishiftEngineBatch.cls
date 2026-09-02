@@ -11,6 +11,7 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
     private Set<String> ownedNames  = new Set<String>();
     private List<User>  pool        = new List<User>();
     private Map<Id, Omnishift_Signal__c> signals = new Map<Id, Omnishift_Signal__c>();
+    private Map<Id, List<Omnishift_Signal__c>> signalLists = new Map<Id, List<Omnishift_Signal__c>>();
     // What outcomes have taught us about each driver, loaded once per run.
     private Map<String, Decimal> learned = OmnishiftLearning.multipliers();
     // Who already has a next step booked. One query, not one per record.
@@ -59,8 +60,13 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
                 ORDER BY Occurred_On__c DESC, Confidence__c DESC
                 LIMIT 20000]) {
             Id key = (sig.Omnishift_Lead__c != null) ? sig.Omnishift_Lead__c : sig.Omnishift_Contact__c;
-            if (key != null && !signals.containsKey(key)) signals.put(key, sig);
+            if (key == null) continue;
+            if (!signalLists.containsKey(key)) signalLists.put(key, new List<Omnishift_Signal__c>());
+            signalLists.get(key).add(sig);
         }
+        // Newest first per person, then the engine's own preference: a recent
+        // confirmed event over a merely newer engagement signal.
+        for (Id key : signalLists.keySet()) signals.put(key, OmnishiftEngine.pickSignal(signalLists.get(key)));
 
         for (Omnishift_Marketing_Send__c ms : [
                 SELECT Name, Scheduled_For__c, Omnishift_Lead__c, Omnishift_Contact__c

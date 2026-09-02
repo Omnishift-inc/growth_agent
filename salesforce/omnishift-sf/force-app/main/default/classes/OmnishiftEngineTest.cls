@@ -575,4 +575,53 @@ private class OmnishiftEngineTest {
         System.assertEquals('Blocked', c.complianceStatus, 'the prospect said it; the firm still may not repeat it');
         System.assert(c.complianceReason.contains('guarantee'), c.complianceReason);
     }
+
+    @isTest static void aRecentFilingOutranksANewerWebsiteVisit() {
+        Omnishift_Signal__c visit = new Omnishift_Signal__c(Signal_Type__c='Website research', Occurred_On__c=Date.today().addDays(-3), Confidence__c=84);
+        Omnishift_Signal__c filing = new Omnishift_Signal__c(Signal_Type__c='Inheritance filing', Occurred_On__c=Date.today().addDays(-5), Confidence__c=90);
+        Omnishift_Signal__c picked = OmnishiftEngine.pickSignal(new List<Omnishift_Signal__c>{ visit, filing });
+        System.assertEquals('Inheritance filing', picked.Signal_Type__c, 'the filing is the reason to call; the visit is the reminder');
+    }
+
+    @isTest static void withNoRecentEventTheNewestSignalWins() {
+        Omnishift_Signal__c visit = new Omnishift_Signal__c(Signal_Type__c='Website research', Occurred_On__c=Date.today().addDays(-3), Confidence__c=84);
+        Omnishift_Signal__c oldSale = new Omnishift_Signal__c(Signal_Type__c='Business sale', Occurred_On__c=Date.today().addDays(-70), Confidence__c=95);
+        System.assertEquals('Website research', OmnishiftEngine.pickSignal(new List<Omnishift_Signal__c>{ visit, oldSale }).Signal_Type__c);
+        System.assertEquals(null, OmnishiftEngine.pickSignal(new List<Omnishift_Signal__c>()));
+    }
+
+    @isTest static void theLearningLoopReadsBookingRatesPerDriver() {
+        List<Lead> ls = new List<Lead>();
+        for (Integer i = 0; i < 6; i++) ls.add(new Lead(FirstName='L'+i, LastName='Learn', Company='Learn Co', Email='learn'+i+'@example.com',
+            Omnishift_Driver__c = 'Event', Omnishift_Outcome__c = (i < 3) ? 'Meeting booked' : 'No response'));
+        ls.add(new Lead(FirstName='R', LastName='Ref', Company='Ref Co', Email='ref@example.com', Omnishift_Driver__c='Referral', Omnishift_Outcome__c='Not interested'));
+        insert ls;
+        Map<String, OmnishiftLearning.DriverStat> stats = OmnishiftLearning.driverStats();
+        System.assertEquals(6, stats.get('Event').surfaced);
+        System.assertEquals(3, stats.get('Event').booked);
+        System.assert(stats.get('Event').multiplier > 1, 'a driver that books above the prior is trusted more: ' + stats.get('Event').multiplier);
+        System.assert(stats.get('Referral').multiplier < 1, 'one miss and no bookings shrinks toward the prior, below it');
+        System.assert(stats.get('Event').multiplier <= 1.15 && stats.get('Referral').multiplier >= 0.85, 'bounded');
+        System.assertEquals(false, stats.get('Event').enoughEvidence, 'six records is not evidence');
+        List<OmnishiftLearning.DriverStat> sorted = OmnishiftLearning.getDriverStats();
+        System.assertEquals('Event', sorted[0].driver, 'most evidence first');
+        System.assertEquals(stats.get('Event').multiplier, OmnishiftLearning.multipliers().get('Event'));
+    }
+
+    @isTest static void escalationMarksTheRecordOnceAndFormatsTheMoney() {
+        Lead big = new Lead(FirstName='Vesper', LastName='Ironwood', Company='Ironwood Capital', Email='vesper@example.com', AnnualRevenue=12000000);
+        insert big;
+        System.assert(OmnishiftEscalation.qualifies(12000000));
+        System.assert(!OmnishiftEscalation.qualifies(9999999));
+        System.assert(!OmnishiftEscalation.qualifies(null));
+        Integer sent = OmnishiftEscalation.escalate(new List<OmnishiftEscalation.Candidate>{
+            new OmnishiftEscalation.Candidate(big.Id, 'Vesper Ironwood', 12000000, 'Business sale picked up today by WealthFeed. ' + 'x'.repeat(200))
+        });
+        System.assertEquals(0, sent, 'tests never ring the bell');
+        Lead after = [SELECT Omnishift_Escalated__c, Omnishift_Escalated_On__c FROM Lead WHERE Id = :big.Id];
+        System.assertEquals(true, after.Omnishift_Escalated__c);
+        System.assertNotEquals(null, after.Omnishift_Escalated_On__c);
+        System.assertEquals(0, OmnishiftEscalation.escalate(null));
+        System.assertEquals(0, OmnishiftEscalation.escalate(new List<OmnishiftEscalation.Candidate>()));
+    }
 }

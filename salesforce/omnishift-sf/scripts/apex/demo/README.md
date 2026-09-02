@@ -29,3 +29,6 @@ twice if outcomes changed: the first pass records drivers, the second learns fro
 | 16 | `demo-park.apex` | Snoozed records carry the date they come back on |
 | 17 | `demo-trim.apex` | A realistic few snoozes and wrong-person marks instead of a third of the list; runs the engine |
 | 18 | `demo-ownwords.apex` then `demo-ownwords-lower.apex` | Compliance cases from the agent’s own drafts quoting what the prospect wrote, kept below the top ten; drops the seeded advisor edits; runs the engine |
+| 19 | `demo-final-fixes.apex` | Every phone a 555 number; every outcome has the outreach it came from |
+| 20 | `demo-diane.apex` | Diane Okafor matches the Universal Integrator's sandboxes exactly (WealthFeed 29 Aug $5.2M, VisitIQ 30 Aug, directory) |
+| 21 | `demo-final-tune.apex` | Final placement: clean top ten, the blocked example just below, Diane's evidence as one sentence; runs the engine |
