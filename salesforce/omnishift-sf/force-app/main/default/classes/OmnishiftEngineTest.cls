@@ -429,4 +429,65 @@ private class OmnishiftEngineTest {
             + 'happen is unrecoverable: ' + d.draftBody);
         System.assert(d.draftBody.contains('Ida'), d.draftBody);
     }
+
+    @isTest static void anActivelyWorkedProspectIsNotSuppressedForBeingContacted() {
+        // The advisors work a live prospect on a two-week rhythm. A flat
+        // fourteen-day cooling period hid exactly the people they were working.
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.firstName='Tom'; p.lastName='Marlowe';
+        p.lastActivityDate = Date.today().addDays(-6);
+        p.hasOpenFollowUp = false;
+        OmnishiftEngine.Outcome o =
+            OmnishiftEngine.suppressionCheck(p, new Set<String>(), new Set<String>());
+        System.assert(!o.suppressed,
+            'Contacted six days ago with nothing scheduled is where things fall '
+            + 'through - that is the agent job, not a suppression: ' + o.suppressReason);
+    }
+
+    @isTest static void aRecordWithAPlanIsLeftAlone() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.firstName='Tom'; p.lastName='Marlowe';
+        p.lastActivityDate = Date.today().addDays(-6);
+        p.hasOpenFollowUp = true;
+        OmnishiftEngine.Outcome o =
+            OmnishiftEngine.suppressionCheck(p, new Set<String>(), new Set<String>());
+        System.assert(o.suppressed, 'Someone already has a next step booked.');
+        System.assert(o.suppressReason.contains('Already being worked'), o.suppressReason);
+    }
+
+    @isTest static void contactedThisMorningIsStillHeldBack() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.firstName='Tom'; p.lastName='Marlowe';
+        p.lastActivityDate = Date.today();
+        OmnishiftEngine.Outcome o =
+            OmnishiftEngine.suppressionCheck(p, new Set<String>(), new Set<String>());
+        System.assert(o.suppressed, 'Nobody should be contacted twice in a morning.');
+    }
+
+    @isTest static void aSuppressedRecordIsQuarantinedRatherThanSilentlyDropped() {
+        Lead l = new Lead(FirstName='Ada', LastName='Byron', Company='Engines',
+                          Status='Closed - Not Converted', LeadSource='Web');
+        insert l;
+        Test.startTest();
+        OmnishiftEngineBatch.runNow();
+        Test.stopTest();
+        Lead after = [SELECT Omnishift_Quarantined__c, Omnishift_Quarantine_Reason__c
+                      FROM Lead WHERE Id = :l.Id];
+        System.assertEquals(true, after.Omnishift_Quarantined__c,
+            'A suppression nobody can filter for is indistinguishable from a record '
+            + 'the agent never saw.');
+        System.assertNotEquals(null, after.Omnishift_Quarantine_Reason__c);
+    }
+
+    @isTest static void theDriverIsStoredSoOutcomesCanBeGroupedByIt() {
+        Lead l = new Lead(FirstName='Soren', LastName='Blackwood', Company='Blackwood',
+                          LeadSource='Partner Referral', Status='Open - Not Contacted');
+        insert l;
+        Test.startTest();
+        OmnishiftEngineBatch.runNow();
+        Test.stopTest();
+        Lead after = [SELECT Omnishift_Driver__c FROM Lead WHERE Id = :l.Id];
+        System.assertNotEquals(null, after.Omnishift_Driver__c,
+            'A 200-character sentence cannot be grouped in a report; the driver can.');
+    }
 }

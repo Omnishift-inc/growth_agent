@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Omnishift_Outcome_On__c</fullName>
+    <label>Omnishift Outcome On</label>
+    <type>DateTime</type>
+    <required>false</required>
+    <description>When the outcome was recorded. Without it there is no way to measure how long a recommendation takes to convert, or to weight recent evidence above old.</description>
+</CustomField>

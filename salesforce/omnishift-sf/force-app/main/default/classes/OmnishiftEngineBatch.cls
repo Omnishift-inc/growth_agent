@@ -11,6 +11,10 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
     private Set<String> ownedNames  = new Set<String>();
     private List<User>  pool        = new List<User>();
     private Map<Id, Omnishift_Signal__c> signals = new Map<Id, Omnishift_Signal__c>();
+    // What outcomes have taught us about each driver, loaded once per run.
+    private Map<String, Decimal> learned = OmnishiftLearning.multipliers();
+    // Who already has a next step booked. One query, not one per record.
+    private Set<Id> withOpenFollowUp = new Set<Id>();
     private Map<Id, Integer> load   = new Map<Id, Integer>();
     public  Integer scored = 0;
     public  Integer suppressed = 0;
@@ -53,6 +57,11 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
                 LIMIT 20000]) {
             Id key = (sig.Omnishift_Lead__c != null) ? sig.Omnishift_Lead__c : sig.Omnishift_Contact__c;
             if (key != null && !signals.containsKey(key)) signals.put(key, sig);
+        }
+
+        for (Task t : [SELECT WhoId FROM Task
+                       WHERE IsClosed = false AND WhoId != null LIMIT 50000]) {
+            withOpenFollowUp.add(t.WhoId);
         }
 
         pool = [SELECT Id, Name, State FROM User
@@ -116,6 +125,7 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
                 ? OmnishiftEngine.fromLead((Lead) rec)
                 : OmnishiftEngine.fromContact((Contact) rec);
             OmnishiftEngine.attachSignal(p, signals.get(rec.Id));
+            p.hasOpenFollowUp = withOpenFollowUp.contains(rec.Id);
 
             // Every Omnishift field carries the same API name on both objects, so
             // the writes below are identical once the shell is the right type.
@@ -129,6 +139,12 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
                 u.put('Omnishift_Score__c', 0);
                 u.put('Omnishift_Rank__c', null);
                 u.put('Omnishift_Why_Now__c', 'Suppressed: ' + sup.suppressReason);
+                // The client raised filtered-out records as a worry of her own.
+                // A suppression only she can find by reading prose is
+                // indistinguishable from a record the agent never saw.
+                u.put('Omnishift_Quarantined__c', true);
+                u.put('Omnishift_Quarantine_Reason__c', sup.suppressReason);
+                u.put('Omnishift_Driver__c', null);
                 u.put('Omnishift_Next_Action_Date__c', null);
                 u.put('Omnishift_Compliance_Status__c', null);
                 u.put('Omnishift_Draft_Subject__c', null);
@@ -142,7 +158,18 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
             OmnishiftEngine.Outcome d = OmnishiftEngine.draft(p, s.topDriver);
             OmnishiftEngine.Outcome c = OmnishiftEngine.complianceCheck(d.draftSubject, d.draftBody);
 
-            u.put('Omnishift_Score__c', s.score);
+            // Evidence adjusts the score; it does not replace the rules. The
+            // multiplier is bounded and shrinks toward the firm's prior while
+            // the sample is small, so a thin fortnight cannot rewrite the
+            // ranking.
+            Decimal mult = learned.containsKey(s.topDriver) ? learned.get(s.topDriver) : 1;
+            Integer adjusted = Integer.valueOf((s.score * mult).setScale(0, System.RoundingMode.HALF_UP));
+            if (adjusted > 100) adjusted = 100;
+            if (adjusted < 1) adjusted = 1;
+            u.put('Omnishift_Score__c', adjusted);
+            u.put('Omnishift_Driver__c', s.topDriver);
+            u.put('Omnishift_Quarantined__c', false);
+            u.put('Omnishift_Quarantine_Reason__c', null);
             u.put('Omnishift_Why_Now__c', s.whyNow);
             // An advisor's edit outranks the template. Regenerating over the top of
             // it every night silently threw away their work, and made any

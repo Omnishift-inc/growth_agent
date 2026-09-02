@@ -344,6 +344,48 @@ public with sharing class OmnishiftAction {
         };
     }
 
+    /**
+     * Records what happened with the prospect, which is the label the ranking
+     * learns from. Kept separate from the disposition on purpose: "edited before
+     * send" says what the advisor did with the draft, and says nothing at all
+     * about whether surfacing the person was right.
+     */
+    @AuraEnabled
+    public static String recordOutcome(Id recordId, String outcome) {
+        try {
+            if (recordId == null || String.isBlank(outcome)) {
+                throw new ActionException('A record and an outcome are both required.');
+            }
+            String sObj = recordId.getSObjectType().getDescribe().getName();
+            if (sObj != 'Lead' && sObj != 'Contact') {
+                throw new ActionException('The Growth Agent only works Leads and Contacts.');
+            }
+            SObject rec = Schema.getGlobalDescribe().get(sObj).newSObject(recordId);
+            rec.put('Omnishift_Outcome__c', outcome);
+            rec.put('Omnishift_Outcome_On__c', Datetime.now());
+            if (outcome == 'Meeting booked' || outcome == 'Not interested'
+                || outcome == 'Should not have been surfaced') {
+                rec.put('Omnishift_Next_Action_Date__c', null);
+            }
+            update rec;
+            return outcome == 'Meeting booked'
+                ? 'Meeting booked. That is the outcome the ranking learns from.'
+                : 'Recorded as ' + outcome.toLowerCase() + '.';
+        } catch (ActionException e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @TestVisible
+    private static String outcomeForTest(Id recordId, String outcome) {
+        SObject rec = Schema.getGlobalDescribe()
+            .get(recordId.getSObjectType().getDescribe().getName()).newSObject(recordId);
+        rec.put('Omnishift_Outcome__c', outcome);
+        rec.put('Omnishift_Outcome_On__c', Datetime.now());
+        update rec;
+        return outcome;
+    }
+
     @AuraEnabled(cacheable=true)
     public static Boolean personAccountsEnabled() {
         return OmnishiftEngine.personAccountsEnabled();

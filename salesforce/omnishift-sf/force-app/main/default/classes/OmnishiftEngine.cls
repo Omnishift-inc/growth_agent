@@ -64,6 +64,9 @@ public with sharing class OmnishiftEngine {
         public Boolean doNotCall = false;
         public Boolean optedOutOfEmail = false;
         public Boolean checkOwnedDuplicates = false;
+        // Whether anyone has already scheduled a next step. Set from open Tasks
+        // by the batch, which loads them once for the run.
+        public Boolean hasOpenFollowUp = false;
 
         // The strongest timing evidence there is: something actually happened to
         // this person. Populated from Omnishift_Signal__c, which is where a
@@ -201,10 +204,34 @@ public with sharing class OmnishiftEngine {
                 o.suppressed = true; o.suppressReason = 'Duplicate of an owned Contact - name match'; return o;
             }
         }
-        // Cooling period. If anything, it matters more for a client: two advisors
-        // reaching the same household in a fortnight reads as disorganisation.
-        if (p.lastActivityDate != null && p.lastActivityDate > Date.today().addDays(-14)) {
-            o.suppressed = true; o.suppressReason = 'Contacted within 14 days - cooling period'; return o;
+        // Cooling period, revised. A flat fourteen days hid exactly the people
+        // the advisors were working: their own cadence touches a live prospect
+        // on roughly a two-week rhythm, so every actively worked record was
+        // suppressed from the queue that is supposed to show them their day.
+        //
+        // The question is not "was this touched recently" but "does someone
+        // already have a plan for it". A record with an open follow-up task is
+        // being worked and does not need the agent. A record touched last week
+        // with nothing scheduled is exactly where things fall through, and is
+        // the agent's job. Two days is left as a courtesy gap so the same
+        // person is not contacted twice in a morning.
+        if (p.hasOpenFollowUp) {
+            o.suppressed = true;
+            o.suppressReason = 'Already being worked - an open follow-up is scheduled';
+            return o;
+        }
+        // For an existing client the fortnight still holds: two advisors reaching
+        // the same household inside two weeks reads as disorganisation, and a
+        // client has no equivalent of a prospecting cadence. The relaxation is
+        // for prospects only, which is whose cadence it was blocking.
+        Integer coolingDays = p.isClient ? 14 : 2;
+        if (p.lastActivityDate != null
+            && p.lastActivityDate > Date.today().addDays(-coolingDays)) {
+            o.suppressed = true;
+            o.suppressReason = p.isClient
+                ? 'Contacted within 14 days - cooling period'
+                : 'Contacted in the last two days';
+            return o;
         }
         return o;
     }
