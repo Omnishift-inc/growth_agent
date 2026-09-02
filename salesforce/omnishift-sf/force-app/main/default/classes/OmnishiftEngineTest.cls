@@ -366,4 +366,24 @@ private class OmnishiftEngineTest {
         System.assertEquals(1, atOne,
             'A Contact and a Lead must not both be rank 1 - that is the whole point of one queue');
     }
+
+    @isTest static void aRunNeverLeavesAVerdictContradictingItself() {
+        Lead l = new Lead(FirstName='Wren', LastName='Ashcombe', Company='Ashcombe Partners',
+                          LeadSource='Partner Referral', Status='Open - Not Contacted');
+        insert l;
+        // An advisor edits a violation in, then the nightly run passes over it.
+        OmnishiftAction.saveDraft(l.Id, 'A note', 'We deliver guaranteed returns every year.');
+        Test.startTest();
+        OmnishiftEngineBatch.runNow();
+        Test.stopTest();
+        Lead after = [SELECT Omnishift_Compliance_Status__c, Omnishift_Compliance_Reason__c,
+                             Omnishift_Draft_Body__c FROM Lead WHERE Id = :l.Id];
+        System.assertEquals('Blocked', after.Omnishift_Compliance_Status__c,
+            'The edited draft still contains the violation, so it stays blocked.');
+        System.assert(after.Omnishift_Compliance_Reason__c.startsWith('Blocked'),
+            'The reason must agree with the status, not describe a draft that was '
+            + 'thrown away: ' + after.Omnishift_Compliance_Reason__c);
+        System.assert(after.Omnishift_Draft_Body__c.contains('guaranteed'),
+            'The advisor edit must survive the run.');
+    }
 }

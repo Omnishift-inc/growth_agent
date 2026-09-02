@@ -39,3 +39,13 @@
     font-family: monospace;
     word-break: break-word;
 }
+
+/* The queue holds prospects and clients now, so a full day can run to thirty
+   rows. Left to grow it pushes everything else on the Home page below the fold.
+   Scroll inside the card instead: the list keeps its length, the page keeps its
+   shape. About eight rows, which is roughly what fits beside the sidebar. */
+.qscroll {
+    max-height: 30rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}

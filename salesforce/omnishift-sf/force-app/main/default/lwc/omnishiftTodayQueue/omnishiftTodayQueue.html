@@ -103,6 +103,7 @@
                 <p class="slds-text-heading_medium slds-p-horizontal_medium slds-p-bottom_x-small">
                     {headline}
                 </p>
+                <div class="qscroll">
                 <template for:each={rows} for:item="r">
                     <button key={r.id} class="qrow" data-id={r.id} data-object={r.objectApiName} onclick={handleOpen}>
                         <span class="qrow__rank">{r.rank}</span>
@@ -114,6 +115,7 @@
                         <span class={r.statusClass}>{r.status}</span>
                     </button>
                 </template>
+                </div>
                 <p class="slds-text-body_small slds-text-color_weak slds-p-horizontal_medium slds-p-vertical_x-small">
                     Read at {checkedAt}. Open the top one; the panel walks you down the list from there.
                 </p>

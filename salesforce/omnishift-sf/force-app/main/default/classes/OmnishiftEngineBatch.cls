@@ -133,16 +133,18 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
             // compliance verdict on an edited draft unstable from one run to the
             // next.
             Boolean edited = rec.get('Omnishift_Draft_Edited__c') == true;
+            // The status and the reason are one verdict and must move together.
+            // Preserving the status while rewriting the reason from the
+            // regenerated template produced records reading "Blocked" above
+            // "Passed all checks." - a verdict contradicting itself.
             if (!edited) {
-                u.put('Omnishift_Draft_Subject__c', d.draftSubject);
-                u.put('Omnishift_Draft_Body__c', d.draftBody);
+                u.put('Omnishift_Draft_Subject__c',
+                      c.draftSubject != null ? c.draftSubject : d.draftSubject);
+                u.put('Omnishift_Draft_Body__c',
+                      c.draftBody != null ? c.draftBody : d.draftBody);
                 u.put('Omnishift_Compliance_Status__c', c.complianceStatus);
+                u.put('Omnishift_Compliance_Reason__c', c.complianceReason);
             }
-            u.put('Omnishift_Compliance_Reason__c', c.complianceReason);
-            // The compliance reason used to be written into the disposition reason,
-            // so every nightly run overwrote whatever the advisor had recorded.
-            if (!edited && c.draftSubject != null) u.put('Omnishift_Draft_Subject__c', c.draftSubject);
-            if (!edited && c.draftBody != null) u.put('Omnishift_Draft_Body__c', c.draftBody);
             u.put('Omnishift_Recommended_Owner__c', OmnishiftEngine.route(p, pool, load));
             // Anything scoring 50+ is worth a touch today; the rest get a nurture date.
             u.put('Omnishift_Next_Action_Date__c', (s.score >= 50) ? Date.today() : Date.today().addDays(30));
