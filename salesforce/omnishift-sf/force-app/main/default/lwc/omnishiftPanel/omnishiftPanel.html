@@ -52,18 +52,25 @@
             </template>
 
             <template if:true={isScored}>
-                <!-- rank + score -->
-                <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
-                    <span class="slds-badge slds-badge_inverse slds-m-right_x-small">Rank {rank}</span>
-                    <span class="slds-text-body_small slds-text-color_weak">
-                        Score {score} &middot; run {runId}
-                    </span>
-                    <template if:true={inQueue}>
-                        <span class="slds-text-body_small slds-text-color_weak slds-m-left_x-small">
-                            &middot; {queuePosition}
-                        </span>
-                    </template>
+                <!-- the three things worth knowing before reading anything -->
+                <div class="hdr">
+                    <div class={scoreBand}>
+                        <span class="band__n">{score}</span>
+                        <span class="band__l">score</span>
+                    </div>
+                    <div class="hdr__mid">
+                        <div class="hdr__chips">
+                            <span class="chip chip_rank">Rank {rank}</span>
+                            <span class="chip chip_driver">{driverLabel}</span>
+                            <span class={complianceChipClass}>{complianceStatus}</span>
+                        </div>
+                        <p class="hdr__why">{whyNow}</p>
+                    </div>
                 </div>
+
+                <template if:true={complianceNeedsAttention}>
+                    <p class="cmpl-note" role="status">{complianceReason}</p>
+                </template>
 
                 <!-- where the evidence came from -->
                 <template if:true={hasSignals}>
@@ -85,33 +92,13 @@
                     </div>
                 </template>
 
-                <!-- why now -->
-                <p class="slds-text-title_caps slds-m-bottom_xx-small">Why now</p>
-                <p class="slds-text-body_regular slds-m-bottom_medium">{whyNow}</p>
-
-                <!-- assignment + timing -->
-                <div class="slds-box slds-box_x-small slds-m-bottom_medium">
-                    <p class="slds-text-body_small">
-                        <span class="slds-text-color_weak">Best fit:</span> <strong>{recommendedOwner}</strong>
-                    </p>
-                    <p class="slds-text-body_small slds-text-color_weak">
-                        Recommended action date: {nextActionDate}
-                    </p>
-                </div>
-
-                <!-- compliance -->
-                <div class={complianceTheme} style="border-radius:.25rem;padding:.5rem .75rem;margin-bottom:.75rem">
-                    <div class="slds-media slds-media_center">
-                        <div class="slds-media__figure">
-                            <lightning-icon icon-name={complianceIcon} size="x-small" variant="inverse"></lightning-icon>
-                        </div>
-                        <div class="slds-media__body">
-                            <p class="slds-text-body_small">Compliance: {complianceStatus}</p>
-                            <template if:true={complianceReason}>
-                                <p class="slds-text-body_small">{complianceReason}</p>
-                            </template>
-                        </div>
-                    </div>
+                <!-- who and by when, as facts rather than a form -->
+                <div class="meta slds-m-bottom_medium">
+                    <div class="meta__i"><span class="meta__l">Assign to</span><span class="meta__v">{recommendedOwner}</span></div>
+                    <div class="meta__i"><span class="meta__l">Act by</span><span class="meta__v">{nextActionDate}</span></div>
+                    <template if:true={hasDisposition}>
+                        <div class="meta__i"><span class="meta__l">Last recorded</span><span class="meta__v">{lastDisposition}</span></div>
+                    </template>
                 </div>
 
                 <!-- draft -->
@@ -178,16 +165,8 @@
                     </template>
                 </template>
 
-                <!-- last disposition -->
-                <template if:true={hasDisposition}>
-                    <div class="slds-box slds-box_xx-small slds-m-bottom_small">
-                        <p class="slds-text-body_small">
-                            Last recorded: <strong>{lastDisposition}</strong>
-                        </p>
-                        <template if:true={dispositionReason}>
-                            <p class="slds-text-body_small slds-text-color_weak">{dispositionReason}</p>
-                        </template>
-                    </div>
+                <template if:true={dispositionReason}>
+                    <p class="disp-reason">{dispositionReason}</p>
                 </template>
             </template>
         </div>
@@ -234,22 +213,37 @@
                     </div>
                 </template>
 
-                <div class="slds-grid slds-wrap slds-grid_vertical-align-center">
-                    <template for:each={actions} for:item="a">
+                <div class="acts">
+                    <lightning-button
+                        variant="brand"
+                        label={primaryAction.label}
+                        disabled={primaryAction.disabled}
+                        data-disposition={primaryAction.key}
+                        onclick={handleDisposition}
+                        class="acts__primary"
+                    ></lightning-button>
+                    <template for:each={secondaryActions} for:item="a">
                         <lightning-button
                             key={a.key}
                             label={a.label}
-                            variant={a.variant}
+                            variant="neutral"
                             disabled={a.disabled}
                             data-disposition={a.key}
                             onclick={handleDisposition}
-                            class="slds-m-right_xx-small slds-m-bottom_xx-small"
                         ></lightning-button>
                     </template>
                 </div>
-                <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
-                    Approve and send checks compliance again before anything leaves. Every button logs what happened and sets the next action date.
-                </p>
+                <div class="acts__foot">
+                    <p class="acts__note">{sendFootnote}</p>
+                    <lightning-button
+                        variant="base"
+                        label="Wrong person"
+                        disabled={wrongPersonDisabled}
+                        data-disposition="Wrong person"
+                        onclick={handleDisposition}
+                        class="acts__wrong"
+                    ></lightning-button>
+                </div>
 
                 <template if:true={inQueue}>
                     <div class="queue-nav slds-m-top_small">

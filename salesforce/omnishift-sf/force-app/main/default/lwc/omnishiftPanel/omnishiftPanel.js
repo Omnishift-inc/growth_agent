@@ -297,15 +297,60 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
 
     // Every action carries equal visual weight. Salesforce publishes the opposite as an
     // anti-pattern: send must not outrank edit, so nobody sends AI copy unread.
-    get actions() {
-        return DISPOSITIONS.map((d) => ({
-            ...d,
+    // The recommended action is the send. Six identical buttons made every choice
+    // look equally likely, which is the opposite of a recommendation - so the
+    // send is the only brand button, editing sits beside it, and the rest drop
+    // to a quieter row.
+    get primaryAction() {
+        return {
+            key: 'Approved and sent',
+            label: this.liveEmail ? 'Approve & send' : 'Approve & log',
             // A compliance block stops the send. It must never stop the phone call.
-            disabled:
-                this.isSaving ||
-                (this.complianceIsBlocked && d.key === 'Approved and sent'),
-            variant: d.key === 'Wrong person' ? 'destructive-text' : 'neutral'
-        }));
+            disabled: this.isSaving || this.complianceIsBlocked
+        };
+    }
+    get secondaryActions() {
+        return [
+            { key: 'Edited before send', label: 'Edit first' },
+            { key: 'Call logged', label: 'Log a call' },
+            { key: 'Snoozed', label: 'Not now' }
+        ].map((d) => ({ ...d, disabled: this.isSaving }));
+    }
+    get wrongPersonDisabled() {
+        return this.isSaving;
+    }
+
+    // What the advisor should read first: how strong, why, and whether it can go.
+    get driverLabel() {
+        const w = this.whyNow || '';
+        if (w.includes('picked up')) return 'Event';
+        if (w.startsWith('Referral') || w.includes('introduction')) return 'Referral';
+        if (w.includes('inbound web enquiry') || w.startsWith('Inbound web')) return 'Inbound web';
+        if (w.startsWith('Created')) return 'New and unworked';
+        if (w.startsWith('Nothing recorded')) return 'Review overdue';
+        if (w.startsWith('Dormant')) return 'Dormant';
+        return 'Profile fit';
+    }
+    get scoreBand() {
+        const n = Number(this.score);
+        if (n >= 80) return 'band band_high';
+        if (n >= 60) return 'band band_mid';
+        return 'band band_low';
+    }
+    get complianceChipClass() {
+        const s = this.complianceStatus;
+        return s === 'Blocked' ? 'chip chip_block'
+            : s === 'Flagged' ? 'chip chip_flag'
+            : s === 'Auto-corrected' ? 'chip chip_info'
+            : 'chip chip_pass';
+    }
+    get complianceNeedsAttention() {
+        return this.complianceStatus !== 'Passed' && this.complianceStatus !== 'Not checked';
+    }
+    get sendFootnote() {
+        return this.complianceIsBlocked
+            ? 'Sending is blocked until the draft is edited. Calling and snoozing still work.'
+            : 'Compliance is checked again at the moment of sending.';
     }
 
     get workingSubject() {
