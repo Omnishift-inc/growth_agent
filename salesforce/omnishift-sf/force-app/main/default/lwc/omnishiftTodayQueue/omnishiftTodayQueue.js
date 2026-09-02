@@ -222,7 +222,7 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
                 rank: rank === null ? '--' : String(rank).padStart(2, '0'),
                 name: v('Name'),
                 company: isLead ? v('Company') : account,
-                kind: isLead ? 'Prospect (Lead)' : 'Client (Contact)',
+                kind: isLead ? 'Lead' : 'Contact',
                 score: v('Omnishift_Score__c'),
                 whyNow: v('Omnishift_Why_Now__c'),
                 status: status || 'Not checked',
@@ -266,8 +266,8 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
             // Salesforce calls a prospect a Lead and a client a Contact. Both
             // words on the control, so nobody has to know that to use it.
             { key: 'all', label: 'All', n: c.all },
-            { key: 'prospects', label: 'Prospects', sub: 'Leads', n: c.prospects },
-            { key: 'clients', label: 'Clients', sub: 'Contacts', n: c.clients }
+            { key: 'prospects', label: 'Leads', n: c.prospects },
+            { key: 'clients', label: 'Contacts', n: c.clients }
         ].map((s) => ({
             ...s,
             cls: this.segment === s.key ? 'seg seg_on' : 'seg',

@@ -625,6 +625,46 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     // Shown beside the global rank so the two numbers an advisor sees - the
     // position on the Home queue and the rank on the record - can be read
     // together instead of looking like a disagreement.
+    // What the hero states as facts, in the order an advisor asks them:
+    // where on today's list, what put it there, whether the draft can go,
+    // whether leadership knows, what happened last time.
+    get heroFacts() {
+        const out = [];
+        const total = (this.queueSnapshot || []).length;
+        out.push({
+            key: 'pos', label: "Today's list",
+            value: this.inQueue ? `#${this.queueIndex + 1} of ${total}` : (this.rank ? `Rank ${this.rank}` : 'Not on it'),
+            cls: 'fact__v', help: 'Position on today\'s list, Leads and Contacts ranked together'
+        });
+        const src = this.triggerSource;
+        out.push({
+            key: 'why', label: 'Surfaced for',
+            value: src ? `${this.driverLabel} · ${src}` : this.driverLabel,
+            cls: 'fact__v', help: this.driverHelp
+        });
+        const s = this.raw('Omnishift_Compliance_Status__c');
+        out.push({
+            key: 'draft', label: 'Draft',
+            value: { 'Passed': 'Cleared to send', 'Auto-corrected': 'Corrected - re-read', 'Flagged': 'Needs review', 'Blocked': 'Blocked' }[s] || 'Not checked',
+            dot: s === 'Blocked' ? 'dot dot_red' : s === 'Flagged' || s === 'Auto-corrected' ? 'dot dot_amber' : s === 'Passed' ? 'dot dot_green' : 'dot dot_grey',
+            cls: 'fact__v', help: this.complianceHelp
+        });
+        if (this.isEscalated) {
+            out.push({ key: 'esc', label: 'Escalation', value: 'Leadership notified', dot: 'dot dot_amber', cls: 'fact__v',
+                help: 'Household above the $10M threshold. John and Deana were notified the first time it was surfaced.' });
+        }
+        if (this.outcome) {
+            out.push({ key: 'out', label: 'Last outcome', value: this.outcome, cls: 'fact__v',
+                help: 'What happened after the last outreach, as recorded by the advisor. This is what the ranking learns from.' });
+        }
+        return out;
+    }
+    // The feed behind an event driver, from the newest signal on the timeline.
+    get triggerSource() {
+        if (this.driverLabel !== 'Event') return null;
+        const sig = (this.timeline || []).find((r) => r.kind === 'signal' || r.iconName === 'utility:trending');
+        return sig && sig.source ? sig.source : null;
+    }
     get rankChip() {
         return this.inQueue ? `Rank ${this.rank} · #${this.queueIndex + 1} today` : `Rank ${this.rank}`;
     }

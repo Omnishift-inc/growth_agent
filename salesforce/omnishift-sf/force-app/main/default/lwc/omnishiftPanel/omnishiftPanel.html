@@ -61,13 +61,17 @@
                     <div class="hero__main">
                         <p class="sec sec_why">Why now</p>
                         <p class="hero__why">{whyNow}</p>
-                        <div class="hero__chips">
-                            <span class="chip chip_rank" title="Position on today's list, across prospects and clients">{rankChip}</span>
-                            <span class="chip chip_driver" title={driverHelp}><span class="chip__k">Reason</span>{driverLabel}</span>
-                            <span class={complianceChipClass} title={complianceHelp}>{complianceLabel}</span>
-                            <template if:true={isEscalated}><span class="chip chip_esc" title="Household above the $10M threshold. John and Deana were notified the first time it was surfaced."><span class="chip__k">Escalated</span>Leadership notified</span></template>
-                            <template if:true={outcome}><span class="chip chip_outcome" title="What happened after the outreach, as recorded by the advisor. This is what the ranking learns from."><span class="chip__k">Outcome</span>{outcome}</span></template>
-                        </div>
+                        <!-- Facts, not badges. A label over each value reads like the
+                             highlights panel above it; a row of coloured pills read
+                             like six unrelated warnings. -->
+                        <dl class="facts-strip">
+                            <template for:each={heroFacts} for:item="f">
+                                <div key={f.key} class="fact" title={f.help}>
+                                    <dt class="fact__l">{f.label}</dt>
+                                    <dd class={f.cls}><template if:true={f.dot}><span class={f.dot}></span></template>{f.value}</dd>
+                                </div>
+                            </template>
+                        </dl>
                     </div>
                 </div>
 

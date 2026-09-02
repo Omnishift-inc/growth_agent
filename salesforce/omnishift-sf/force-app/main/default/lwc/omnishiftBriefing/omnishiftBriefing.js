@@ -45,7 +45,7 @@ export default class OmnishiftBriefing extends NavigationMixin(LightningElement)
     get split() {
         const d = this.data;
         if (!d) return '';
-        return `${d.dueLeads} prospects (Leads) · ${d.dueContacts} clients (Contacts)`;
+        return `${d.dueLeads} Leads · ${d.dueContacts} Contacts`;
     }
 
     get sources() {

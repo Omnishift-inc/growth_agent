@@ -443,3 +443,12 @@
 .note_flag { color: #8a5a0b; background: #fdf3e3; }
 .note__act { display: block; margin-top: .25rem; --slds-c-button-text-color: #a4271b; }
 .chip_edited { background: #fdf3e3; color: #8a5a0b; flex: 0 0 auto; }
+
+/* ---- facts strip: label over value, hairline between cells ---------------- */
+.facts-strip { display: flex; flex-wrap: wrap; gap: 0; margin: .6rem 0 0; padding: 0; }
+.fact { min-width: 8.5rem; flex: 1 1 8.5rem; padding: .35rem .75rem .35rem 0; margin: 0 .75rem 0 0; border-right: 1px solid #e5e5e5; }
+.fact:last-child { border-right: 0; margin-right: 0; }
+.fact__l { font-size: .5625rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #706e6b; margin: 0 0 .1rem; }
+.fact__v { font-size: .8125rem; font-weight: 600; color: #181818; margin: 0; display: flex; align-items: center; gap: .35rem; }
+.dot { width: .5rem; height: .5rem; border-radius: 50%; flex: 0 0 auto; display: inline-block; }
+.dot_green { background: #2e844a; } .dot_amber { background: #dd7a01; } .dot_red { background: #ba0517; } .dot_grey { background: #c9c9c9; }
