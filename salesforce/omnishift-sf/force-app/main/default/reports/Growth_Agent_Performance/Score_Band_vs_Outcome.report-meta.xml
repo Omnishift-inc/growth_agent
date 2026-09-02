@@ -86,7 +86,7 @@
         <field>BucketField_Score_Band</field>
         <sortOrder>Desc</sortOrder>
     </groupingsDown>
-    <name>Are Advisors Working the Top of the List</name>
+    <name>Top of List vs Action</name>
     <reportType>LeadList</reportType>
     <scope>org</scope>
     <showDetails>false</showDetails>

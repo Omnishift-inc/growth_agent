@@ -51,7 +51,7 @@
         <field>Lead.Omnishift_Recommended_Owner__c</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>Top of the List Nobody Has Worked</name>
+    <name>Top Untouched</name>
     <reportType>LeadList</reportType>
     <scope>org</scope>
     <showDetails>true</showDetails>

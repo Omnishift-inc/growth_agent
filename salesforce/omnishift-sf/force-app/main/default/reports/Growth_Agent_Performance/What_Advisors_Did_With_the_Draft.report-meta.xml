@@ -55,7 +55,7 @@
         <field>Lead.Omnishift_Disposition__c</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>What Advisors Did With the Draft</name>
+    <name>Draft Dispositions</name>
     <reportType>LeadList</reportType>
     <scope>org</scope>
     <showDetails>false</showDetails>
