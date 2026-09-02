@@ -578,11 +578,14 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
             // Where the phrase came from matters: the agent's templates are
             // built to pass, so a block almost always sits on an edit.
             const body = this.draftBody || '';
-            const quoted = new RegExp('"[^"]*' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^"]*"', 'i').test(body);
+            // Show the phrase the person actually wrote, not the rule's stem
+            // ("guaranteed income in retirement", not "guarantee").
+            const qm = body.match(new RegExp('"([^"]*' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^"]*)"', 'i'));
+            const theirs = qm ? qm[1] : null;
             const origin = this.draftWasEdited
                 ? ` "${term}" was added when the draft was edited, so the block is on the edited version.`
-                : quoted
-                ? ` The agent quoted the prospect's own words - they wrote "${term}" themselves - and the firm is not allowed to repeat it, so the check stopped the draft before anyone saw it.`
+                : theirs
+                ? ` The agent quoted the prospect's own words - they wrote "${theirs}" - and the firm is not allowed to repeat that, so the check stopped the draft before anyone saw it.`
                 : ` It is in the draft the agent wrote, which should not happen - please flag it.`;
             return `${origin} Under the SEC marketing rule (206(4)-1) it is a claim the firm cannot substantiate, so the send button is off until the phrase is gone. Edit the draft and remove it; the check runs again when you save.`;
         }
