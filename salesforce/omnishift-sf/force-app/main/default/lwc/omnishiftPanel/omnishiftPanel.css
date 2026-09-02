@@ -442,3 +442,4 @@
 .note strong { display: block; font-weight: 700; }
 .note_flag { color: #8a5a0b; background: #fdf3e3; }
 .note__act { display: block; margin-top: .25rem; --slds-c-button-text-color: #a4271b; }
+.chip_edited { background: #fdf3e3; color: #8a5a0b; flex: 0 0 auto; }

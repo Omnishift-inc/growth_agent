@@ -135,6 +135,7 @@
                     <div class="draftsec__head">
                         <h3 class="sec">Draft</h3>
                         <span class="draftsec__subj">{draftHeadline}</span>
+                        <template if:true={draftWasEdited}><span class="chip chip_edited" title="An advisor changed this draft after the agent wrote it. The compliance verdict is on the edited text.">Edited by advisor</span></template>
                         <template if:true={draftSubject}>
                             <lightning-button label={draftButtonLabel} variant="base" onclick={toggleDraft}></lightning-button>
                         </template>

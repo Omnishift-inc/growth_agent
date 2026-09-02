@@ -30,6 +30,7 @@ const OMNISHIFT_FIELDS = [
     'Omnishift_Disposition_Reason__c',
     'Omnishift_Scored_On__c',
     'Omnishift_Run_Id__c',
+    'Omnishift_Draft_Edited__c',
     'Omnishift_Dispositioned_On__c'
 ];
 
@@ -556,6 +557,9 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     }
     // The verdict in words an advisor can act on: what was found, what the
     // rule says about it, and what to do. The raw reason is a rule citation.
+    get draftWasEdited() {
+        return this.raw('Omnishift_Draft_Edited__c') === true;
+    }
     get complianceNoteClass() {
         return this.complianceIsBlocked ? 'note note_block' : 'note note_flag';
     }
@@ -571,7 +575,12 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         const term = m ? m[1] : null;
         const s = this.raw('Omnishift_Compliance_Status__c');
         if (s === 'Blocked' && term) {
-            return ` The draft says "${term}". Under the SEC marketing rule (206(4)-1) that is a claim the firm cannot substantiate, so the send button is off until the phrase is gone. Edit the draft and remove it; the check runs again when you save.`;
+            // Where the phrase came from matters: the agent's templates are
+            // built to pass, so a block almost always sits on an edit.
+            const origin = this.draftWasEdited
+                ? ` The agent's own draft passed. "${term}" was added when the draft was edited, so the block is on the edited version.`
+                : ` It is in the draft the agent wrote, which should not happen - please flag it.`;
+            return `${origin} Under the SEC marketing rule (206(4)-1) it is a claim the firm cannot substantiate, so the send button is off until the phrase is gone. Edit the draft and remove it; the check runs again when you save.`;
         }
         if (s === 'Auto-corrected' && term) {
             return ` "${term}" was removed from the draft. Read the corrected sentence so it still makes sense.`;
