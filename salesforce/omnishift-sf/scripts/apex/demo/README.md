@@ -28,3 +28,4 @@ twice if outcomes changed: the first pass records drivers, the second learns fro
 | 15 | `demo-evidence.apex` | Evidence that matches each signal's type, in the source tool's words, varying per household; runs the engine |
 | 16 | `demo-park.apex` | Snoozed records carry the date they come back on |
 | 17 | `demo-trim.apex` | A realistic few snoozes and wrong-person marks instead of a third of the list; runs the engine |
+| 18 | `demo-ownwords.apex` | Compliance cases from the agent's own drafts quoting what the prospect wrote; drops the seeded advisor edits; runs the engine |

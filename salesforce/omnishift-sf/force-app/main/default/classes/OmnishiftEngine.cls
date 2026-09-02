@@ -627,7 +627,7 @@ public with sharing class OmnishiftEngine {
     public static Outcome draft(Prospect p, String driver) {
         Outcome o = new Outcome();
         String first = (p.firstName == null || p.firstName == '') ? p.lastName : p.firstName;
-        if (p.isClient) return draftForClient(o, first, driver);
+        if (p.isClient) { draftForClient(o, first, driver); return quoteTheirWords(o, p); }
 
         if (driver == 'Referral') {
             o.draftSubject = 'A note after your introduction';
@@ -657,6 +657,32 @@ public with sharing class OmnishiftEngine {
             o.draftBody = first + ' - it has been a while since we were in touch. If your circumstances have moved '
                 + 'on, I would be glad to hear about it. No pitch.';
         }
+        return quoteTheirWords(o, p);
+    }
+
+    /**
+     * When the person has said something in their own words - a marketplace
+     * enquiry's stated goal, a survey's free text - the draft picks it up.
+     * That is the most natural opening there is, and it is also where the
+     * compliance check earns its keep: a prospect who wrote "guaranteed
+     * income" has handed the firm a phrase it is not allowed to repeat, and
+     * the check catches it before anyone does.
+     */
+    @TestVisible
+    private static Outcome quoteTheirWords(Outcome o, Prospect p) {
+        String ev = p.signalEvidence;
+        if (String.isBlank(ev) || o.draftBody == null) return o;
+        String said = null, whereFrom = null;
+        Matcher m = Pattern.compile('stated goal "([^"]+)"').matcher(ev);
+        if (m.find()) { said = m.group(1); whereFrom = 'your enquiry'; }
+        else {
+            m = Pattern.compile('free text mentions ([^;.]+)').matcher(ev);
+            if (m.find()) { said = m.group(1).trim(); whereFrom = 'the survey'; }
+        }
+        if (said == null) return o;
+        Integer cut = o.draftBody.indexOf('. ');
+        String line = ' You mentioned "' + said + '" in ' + whereFrom + ' - that is exactly the sort of thing worth a proper conversation.';
+        o.draftBody = (cut > 0) ? o.draftBody.substring(0, cut + 1) + line + o.draftBody.substring(cut + 1) : o.draftBody + line;
         return o;
     }
 

@@ -550,4 +550,29 @@ private class OmnishiftEngineTest {
         System.assert(o.whyNow.contains('Form D filed, total offering $18.4m.'), o.whyNow);
         System.assert(!o.whyNow.contains('Generated'), 'the data notice is not part of the reason');
     }
+
+    @isTest static void theDraftPicksUpWhatTheProspectSaidInTheirEnquiry() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.firstName = 'Pamela'; p.lastName = 'Whitaker'; p.intakeChannel = 'Web';
+        p.createdDate = Datetime.now().addDays(-3); p.fitValue = 3200000;
+        OmnishiftEngine.attachSignal(p, new Omnishift_Signal__c(Signal_Type__c = 'Marketplace enquiry', Source__c = 'SmartAsset AMP',
+            Occurred_On__c = Date.today().addDays(-1), Confidence__c = 90,
+            Evidence__c = 'Matched enquiry 9/1/2026, self-reported investable assets $5m+, stated goal "college funding for two", timeframe "within 3 months"; marketplace lead, not exclusive.'));
+        OmnishiftEngine.Outcome d = OmnishiftEngine.draft(p, OmnishiftEngine.score(p).topDriver);
+        System.assert(d.draftBody.contains('You mentioned "college funding for two" in your enquiry'), d.draftBody);
+        System.assertEquals('Passed', OmnishiftEngine.complianceCheck(d.draftSubject, d.draftBody).complianceStatus);
+    }
+
+    @isTest static void aProspectsOwnGuaranteeIsCaughtBeforeTheFirmRepeatsIt() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.firstName = 'Theo'; p.lastName = 'Nakamura'; p.intakeChannel = 'Web';
+        p.createdDate = Datetime.now().addDays(-3); p.fitValue = 3200000;
+        OmnishiftEngine.attachSignal(p, new Omnishift_Signal__c(Signal_Type__c = 'Marketplace enquiry', Source__c = 'SmartAsset AMP',
+            Occurred_On__c = Date.today().addDays(-1), Confidence__c = 90,
+            Evidence__c = 'Matched enquiry 9/1/2026, self-reported investable assets $5m+, stated goal "guaranteed income in retirement", timeframe "within 3 months"; marketplace lead, not exclusive.'));
+        OmnishiftEngine.Outcome d = OmnishiftEngine.draft(p, OmnishiftEngine.score(p).topDriver);
+        OmnishiftEngine.Outcome c = OmnishiftEngine.complianceCheck(d.draftSubject, d.draftBody);
+        System.assertEquals('Blocked', c.complianceStatus, 'the prospect said it; the firm still may not repeat it');
+        System.assert(c.complianceReason.contains('guarantee'), c.complianceReason);
+    }
 }
