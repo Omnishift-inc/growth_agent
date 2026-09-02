@@ -404,6 +404,107 @@ public with sharing class OmnishiftAction {
         return outcome;
     }
 
+    /**
+     * Engagement history: every touch the firm knows about, in one order.
+     *
+     * Deana pointed at the Pardot tab - "so we can see their engagement history"
+     * - and said the Omnishift tab should be that "with more information". The
+     * signals showed the external feeds; this merges them with what Salesforce
+     * itself holds (activities, dispositions, outcomes) and with what marketing
+     * has scheduled, so the advisor sees one timeline rather than four tabs.
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, Object>> getTimeline(Id recordId) {
+        List<Map<String, Object>> out = new List<Map<String, Object>>();
+        if (recordId == null) return out;
+        String sObj = recordId.getSObjectType().getDescribe().getName();
+        Boolean isLead = (sObj == 'Lead');
+
+        // 1. external signals, via the same query the panel already trusts
+        for (Map<String, Object> g : getSignals(recordId)) {
+            // 'on' is reserved in Apex - it is the trigger keyword.
+            Date occurred = (Date) g.get('occurredOn');
+            out.add(row(occurred == null ? null : Datetime.newInstance(occurred, Time.newInstance(9,0,0,0)),
+                        'signal', (String) g.get('source'), (String) g.get('type'),
+                        (String) g.get('detail'), g.get('confidence') == null ? '' :
+                        g.get('confidence') + '% confidence', false));
+        }
+        // 2. marketing calendar - past sends as history, future ones as a warning
+        List<Omnishift_Marketing_Send__c> ms = isLead
+            ? [SELECT Name, Scheduled_For__c, Campaign_Type__c, Audience__c, Source_System__c
+               FROM Omnishift_Marketing_Send__c WHERE Omnishift_Lead__c = :recordId
+               ORDER BY Scheduled_For__c DESC LIMIT 20]
+            : [SELECT Name, Scheduled_For__c, Campaign_Type__c, Audience__c, Source_System__c
+               FROM Omnishift_Marketing_Send__c WHERE Omnishift_Contact__c = :recordId
+               ORDER BY Scheduled_For__c DESC LIMIT 20];
+        for (Omnishift_Marketing_Send__c m : ms) {
+            Boolean future = m.Scheduled_For__c > Datetime.now();
+            out.add(row(m.Scheduled_For__c, 'marketing', m.Source_System__c, m.Name,
+                        (future ? 'Scheduled. ' : 'Sent. ') + m.Campaign_Type__c
+                        + ' to ' + m.Audience__c + '.', future ? 'upcoming' : '', future));
+        }
+        // 3. what the firm itself did
+        for (Task t : [SELECT Subject, Type, Status, ActivityDate, Description, CreatedDate,
+                              Owner.Name
+                       FROM Task WHERE WhoId = :recordId ORDER BY CreatedDate DESC LIMIT 30]) {
+            Datetime at = t.ActivityDate != null
+                ? Datetime.newInstance(t.ActivityDate, Time.newInstance(12,0,0,0)) : t.CreatedDate;
+            out.add(row(at, 'activity', 'Salesforce',
+                        (String.isBlank(t.Type) ? 'Activity' : t.Type) + ': ' + t.Subject,
+                        String.isBlank(t.Description) ? t.Status : t.Description.left(220),
+                        t.Owner.Name, false));
+        }
+        // 4. the agent's own trail
+        SObject rec = Database.query('SELECT Omnishift_Scored_On__c, Omnishift_Run_Id__c, '
+            + 'Omnishift_Driver__c, Omnishift_Disposition__c, Omnishift_Dispositioned_On__c, '
+            + 'Omnishift_Outcome__c, Omnishift_Outcome_On__c, Omnishift_Escalated__c, '
+            + 'Omnishift_Escalated_On__c FROM ' + sObj + ' WHERE Id = :recordId LIMIT 1');
+        if (rec.get('Omnishift_Scored_On__c') != null) {
+            out.add(row((Datetime) rec.get('Omnishift_Scored_On__c'), 'agent', 'Omnishift',
+                        'Surfaced by the agent', 'Driver: ' + rec.get('Omnishift_Driver__c')
+                        + '. Run ' + rec.get('Omnishift_Run_Id__c') + '.', '', false));
+        }
+        if (rec.get('Omnishift_Dispositioned_On__c') != null) {
+            out.add(row((Datetime) rec.get('Omnishift_Dispositioned_On__c'), 'agent', 'Omnishift',
+                        'Advisor: ' + rec.get('Omnishift_Disposition__c'), '', '', false));
+        }
+        if (rec.get('Omnishift_Outcome_On__c') != null) {
+            out.add(row((Datetime) rec.get('Omnishift_Outcome_On__c'), 'outcome', 'Omnishift',
+                        'Outcome: ' + rec.get('Omnishift_Outcome__c'), '', '', false));
+        }
+        if (rec.get('Omnishift_Escalated_On__c') != null) {
+            out.add(row((Datetime) rec.get('Omnishift_Escalated_On__c'), 'agent', 'Omnishift',
+                        'Escalated to leadership', 'High-value household surfaced.', '', false));
+        }
+        // newest first, undated last
+        List<TimelineRow> sortable = new List<TimelineRow>();
+        for (Map<String, Object> r : out) sortable.add(new TimelineRow(r));
+        sortable.sort();
+        List<Map<String, Object>> sorted = new List<Map<String, Object>>();
+        for (TimelineRow r : sortable) sorted.add(r.data);
+        return sorted;
+    }
+
+    private static Map<String, Object> row(Datetime at, String kind, String source, String title,
+                                           String detail, String meta, Boolean upcoming) {
+        return new Map<String, Object>{
+            'at' => at, 'kind' => kind, 'source' => source, 'title' => title,
+            'detail' => detail, 'meta' => meta, 'upcoming' => upcoming,
+            'when' => at == null ? '' : at.format('d MMM yyyy')
+        };
+    }
+    private class TimelineRow implements Comparable {
+        public Map<String, Object> data;
+        TimelineRow(Map<String, Object> d) { data = d; }
+        public Integer compareTo(Object o) {
+            Datetime a = (Datetime) data.get('at'), b = (Datetime) ((TimelineRow) o).data.get('at');
+            if (a == null && b == null) return 0;
+            if (a == null) return 1;
+            if (b == null) return -1;
+            return a > b ? -1 : (a < b ? 1 : 0);
+        }
+    }
+
     @AuraEnabled(cacheable=true)
     public static Boolean personAccountsEnabled() {
         return OmnishiftEngine.personAccountsEnabled();

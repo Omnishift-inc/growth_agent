@@ -97,7 +97,7 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
             SELECT Id, FirstName, LastName, Company, Email, State, Status, LeadSource,
                    AnnualRevenue, NumberOfEmployees, Rating, Industry, DoNotCall,
                    HasOptedOutOfEmail, IsConverted, CreatedDate, LastActivityDate,
-                   Omnishift_Draft_Edited__c
+                   Omnishift_Draft_Edited__c, Omnishift_Escalated__c
             FROM Lead
             WHERE IsConverted = false
             LIMIT :SCOPE_CAP
@@ -119,13 +119,16 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
         String soql =
             'SELECT Id, FirstName, LastName, Email, MailingState, Title, LeadSource, '
           + 'AccountId, Account.AnnualRevenue, DoNotCall, HasOptedOutOfEmail, '
-          + 'CreatedDate, LastActivityDate, Omnishift_Draft_Edited__c FROM Contact';
+          + 'CreatedDate, LastActivityDate, Omnishift_Draft_Edited__c, Omnishift_Escalated__c FROM Contact';
         if (OmnishiftEngine.personAccountsEnabled()) soql += ' WHERE IsPersonAccount = false';
         soql += ' LIMIT ' + SCOPE_CAP;
         return (List<Contact>) Database.query(soql);
     }
 
     public void execute(Database.BatchableContext bc, List<sObject> scope) {
+        // Large households the leadership asked to hear about, collected across
+        // the chunk and notified once at the end of it.
+        List<OmnishiftEscalation.Candidate> escalations = new List<OmnishiftEscalation.Candidate>();
         // Salesforce rejects DML over a list holding more than one object type,
         // so the two go into their own lists all the way to the update.
         List<Lead> leadUpdates = new List<Lead>();
@@ -209,6 +212,10 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
                 u.put('Omnishift_Compliance_Reason__c', c.complianceReason);
             }
             u.put('Omnishift_Recommended_Owner__c', OmnishiftEngine.route(p, pool, load));
+            if (OmnishiftEscalation.qualifies(p.fitValue) && rec.get('Omnishift_Escalated__c') != true) {
+                escalations.add(new OmnishiftEscalation.Candidate(
+                    rec.Id, p.firstName + ' ' + p.lastName, p.fitValue, s.whyNow));
+            }
             // Anything scoring 50+ is worth a touch today; the rest get a nurture date.
             u.put('Omnishift_Next_Action_Date__c', (s.score >= 50) ? Date.today() : Date.today().addDays(30));
             scored++;
@@ -216,6 +223,8 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
         }
         if (!leadUpdates.isEmpty()) Database.update(leadUpdates, false);
         if (!contactUpdates.isEmpty()) Database.update(contactUpdates, false);
+        // After the scores land, so the notification opens a scored record.
+        OmnishiftEscalation.escalate(escalations);
     }
 
     public void finish(Database.BatchableContext bc) {

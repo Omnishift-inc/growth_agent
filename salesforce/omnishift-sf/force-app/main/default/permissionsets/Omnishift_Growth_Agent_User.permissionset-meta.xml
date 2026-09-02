@@ -63,6 +63,16 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Contact.Omnishift_Escalated_On__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contact.Omnishift_Escalated__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Contact.Omnishift_Name__c</field>
         <readable>true</readable>
@@ -170,6 +180,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.Omnishift_Driver__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.Omnishift_Escalated_On__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.Omnishift_Escalated__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

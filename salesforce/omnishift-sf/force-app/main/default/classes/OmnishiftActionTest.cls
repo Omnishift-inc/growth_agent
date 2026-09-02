@@ -180,4 +180,65 @@ private class OmnishiftActionTest {
         System.assertEquals(expected, OmnishiftAction.personAccountsEnabled(),
             'The panel decides whether to request IsPersonAccount from this.');
     }
+
+    @isTest static void aTenMillionHouseholdIsEscalatedOnceAndFlagged() {
+        Lead big = new Lead(FirstName='Vesper', LastName='Ironwood', Company='Ironwood Capital',
+                            LeadSource='Partner Referral', Status='Open - Not Contacted',
+                            AnnualRevenue=12000000);
+        Lead small = new Lead(FirstName='Thea', LastName='Marlowe', Company='Marlowe Partners',
+                              LeadSource='Partner Referral', Status='Open - Not Contacted',
+                              AnnualRevenue=640000);
+        insert new List<Lead>{ big, small };
+        Test.startTest();
+        OmnishiftEngineBatch.runNow();
+        Test.stopTest();
+        Map<Id, Lead> after = new Map<Id, Lead>([SELECT Omnishift_Escalated__c, Omnishift_Escalated_On__c
+                                                 FROM Lead WHERE Id IN (:big.Id, :small.Id)]);
+        System.assertEquals(true, after.get(big.Id).Omnishift_Escalated__c,
+            'Above the threshold the leadership is told, as Tom described on the call.');
+        System.assertNotEquals(null, after.get(big.Id).Omnishift_Escalated_On__c);
+        System.assertEquals(false, after.get(small.Id).Omnishift_Escalated__c,
+            'Below the threshold the bell must not ring.');
+    }
+
+    @isTest static void qualifiesIsTheThresholdGevorgQuotedOnTheCall() {
+        System.assert(OmnishiftEscalation.qualifies(10000000));
+        System.assert(!OmnishiftEscalation.qualifies(9999999));
+        System.assert(!OmnishiftEscalation.qualifies(null));
+    }
+
+    @isTest static void theTimelineMergesEverySourceNewestFirst() {
+        Lead l = newLead();
+        insert new Omnishift_Signal__c(Name='WealthFeed - Business sale', Omnishift_Lead__c=l.Id,
+            Signal_Type__c='Business sale', Source_System__c='WealthFeed', Source__c='WealthFeed',
+            Occurred_On__c=Date.today().addDays(-3), Confidence__c=88,
+            Evidence__c='Form D filed. Generated test record.');
+        insert new Omnishift_Marketing_Send__c(Name='Quarterly Newsletter', Omnishift_Lead__c=l.Id,
+            Scheduled_For__c=Datetime.now().addDays(2), Campaign_Type__c='Newsletter',
+            Audience__c='Prospects - all', Source_System__c='Account Engagement');
+        insert new Task(WhoId=l.Id, Subject='Intro call', Type='Call', Status='Completed',
+            ActivityDate=Date.today().addDays(-10), OwnerId=UserInfo.getUserId());
+        OmnishiftAction.dispositionForTest(l.Id, 'Call logged', 'left voicemail', null, null);
+
+        Test.startTest();
+        List<Map<String, Object>> rows = OmnishiftAction.getTimeline(l.Id);
+        Test.stopTest();
+
+        Set<String> kinds = new Set<String>();
+        for (Map<String, Object> r : rows) kinds.add((String) r.get('kind'));
+        System.assert(kinds.contains('signal'),    'external feed rows: ' + kinds);
+        System.assert(kinds.contains('marketing'), 'marketing calendar rows: ' + kinds);
+        System.assert(kinds.contains('activity'),  'Salesforce activities: ' + kinds);
+        System.assert(kinds.contains('agent'),     'the agent\'s own trail: ' + kinds);
+        // newest first: the scheduled send (future) sits above the sale (3 days ago)
+        System.assertEquals('marketing', rows[0].get('kind'),
+            'A send scheduled for the day after tomorrow is the newest thing on the record.');
+        System.assertEquals(true, rows[0].get('upcoming'), 'Future sends are flagged so the advisor waits.');
+        Datetime prev;
+        for (Map<String, Object> r : rows) {
+            Datetime at = (Datetime) r.get('at');
+            if (prev != null && at != null) System.assert(at <= prev, 'timeline must descend');
+            if (at != null) prev = at;
+        }
+    }
 }

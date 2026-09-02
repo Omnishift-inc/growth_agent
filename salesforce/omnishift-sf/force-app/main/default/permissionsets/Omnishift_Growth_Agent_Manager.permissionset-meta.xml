@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Receives the high-value prospect escalation. On the call the client named the people who take a second look when a large household surfaces; holding this set is how the firm says who they are, without a code change.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Omnishift Growth Agent Manager</label>
+</PermissionSet>

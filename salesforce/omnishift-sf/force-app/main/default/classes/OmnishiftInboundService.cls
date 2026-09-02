@@ -37,7 +37,7 @@ public with sharing class OmnishiftInboundService {
                 SELECT Id, FirstName, LastName, Company, Email, State, Status, LeadSource,
                        AnnualRevenue, NumberOfEmployees, Rating, Industry, DoNotCall,
                        HasOptedOutOfEmail, IsConverted, CreatedDate, LastActivityDate,
-                       Omnishift_Draft_Edited__c
+                       Omnishift_Draft_Edited__c, Omnishift_Escalated__c
                 FROM Lead WHERE Id IN :leadIds AND IsConverted = false];
             if (ls.isEmpty()) return;
 
@@ -51,6 +51,7 @@ public with sharing class OmnishiftInboundService {
             String runId = 'inbound-' + Datetime.now().format('yyyyMMdd-HHmmss');
 
             List<Lead> updates = new List<Lead>();
+            List<OmnishiftEscalation.Candidate> escalations = new List<OmnishiftEscalation.Candidate>();
             for (Lead l : ls) {
                 OmnishiftEngine.Prospect p = OmnishiftEngine.fromLead(l);
                 OmnishiftEngine.Outcome sup =
@@ -87,6 +88,10 @@ public with sharing class OmnishiftInboundService {
                     u.Omnishift_Compliance_Reason__c = c.complianceReason;
                 }
                 u.Omnishift_Recommended_Owner__c = OmnishiftEngine.route(p, pool, load);
+                if (OmnishiftEscalation.qualifies(p.fitValue) && l.Omnishift_Escalated__c != true) {
+                    escalations.add(new OmnishiftEscalation.Candidate(
+                        l.Id, p.firstName + ' ' + p.lastName, p.fitValue, s.whyNow));
+                }
                 u.Omnishift_Quarantined__c = false;
                 // On the board today. The nightly run assigns the global rank;
                 // until then it sits unranked at the top of the queue rather
@@ -95,6 +100,7 @@ public with sharing class OmnishiftInboundService {
                 updates.add(u);
             }
             if (!updates.isEmpty()) Database.update(updates, false);
+            OmnishiftEscalation.escalate(escalations);
         } catch (Exception e) {
             // A scoring failure must never be why a lead is lost. Record it and
             // let the nightly run pick the record up.

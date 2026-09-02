@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Omnishift_Escalated__c</fullName>
+    <defaultValue>false</defaultValue>
+    <label>Omnishift Escalated</label>
+    <type>Checkbox</type>
+    <description>A high-value prospect was surfaced and the people who take a second look were told. The client described this on the call: above a threshold the distribution loops in leadership. Set once, so the same record does not notify every night.</description>
+</CustomField>

@@ -5,6 +5,7 @@ import { NavigationMixin } from 'lightning/navigation';
 import recordDisposition from '@salesforce/apex/OmnishiftAction.recordDisposition';
 import personAccountsEnabled from '@salesforce/apex/OmnishiftAction.personAccountsEnabled';
 import getSignals from '@salesforce/apex/OmnishiftAction.getSignals';
+import getTimeline from '@salesforce/apex/OmnishiftAction.getTimeline';
 import saveDraft from '@salesforce/apex/OmnishiftAction.saveDraft';
 import sendDraft from '@salesforce/apex/OmnishiftAction.sendDraft';
 import liveEmailEnabled from '@salesforce/apex/OmnishiftAction.liveEmailEnabled';
@@ -20,6 +21,7 @@ const OMNISHIFT_FIELDS = [
     'Omnishift_Recommended_Owner__c',
     'Omnishift_Compliance_Status__c',
     'Omnishift_Compliance_Reason__c',
+    'Omnishift_Escalated__c',
     'Omnishift_Draft_Subject__c',
     'Omnishift_Draft_Body__c',
     'Omnishift_Disposition__c',
@@ -146,6 +148,32 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         return this.val('Name') || 'the prospect';
     }
 
+    timeline = [];
+    @wire(getTimeline, { recordId: '$recordId' })
+    wiredTimeline({ data }) {
+        if (!data) return;
+        this.timeline = data.map((r, i) => ({
+            key: `${r.kind}-${i}`,
+            ...r,
+            rowClass: r.upcoming ? 'tl tl_upcoming' : `tl tl_${r.kind}`,
+            sourceClass:
+                r.source === 'WealthFeed' ? 'src src_filing'
+                : r.source === 'VisitIQ' || r.source === 'Account Engagement' ? 'src src_web'
+                : r.source === 'SmartAsset AMP' || r.source === 'LinkedIn' ? 'src src_third'
+                : r.source === 'Omnishift' ? 'src src_agent'
+                : 'src'
+        }));
+    }
+    get hasTimeline() {
+        return this.timeline && this.timeline.length > 0;
+    }
+    get upcomingSend() {
+        return this.timeline.find((r) => r.upcoming) || null;
+    }
+    get isEscalated() {
+        return Boolean(this.raw('Omnishift_Escalated__c'));
+    }
+
     @wire(personAccountsEnabled)
     wiredPersonAccounts({ data }) {
         if (data !== undefined) this.personAccounts = data;
@@ -159,28 +187,56 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     // Today's ranked order, so the advisor can walk the list without going back
     // to the Home page and hunting for where they were. Always a Lead list view;
     // the nav is hidden on Contact rather than pointed at the wrong object.
+    // The Home queue merges both list views on the global rank. The walk here
+    // has to do the same, or the panel says "3 of 20" while the queue says 31 -
+    // which is exactly the mismatch the advisor noticed.
+    leadQueue;
+    contactQueue;
+
     @wire(getListRecordsByName, {
         objectApiName: 'Lead',
         listViewApiName: 'Omnishift_Today',
-        fields: ['Lead.Name'],
+        fields: ['Lead.Name', 'Lead.Omnishift_Rank__c'],
         sortBy: ['Lead.Omnishift_Rank__c'],
         pageSize: 50
     })
-    wiredQueue({ data, error }) {
-        if (error) {
-            this.queueUnavailable = true;
-            return;
-        }
-        if (!data || this.queueSnapshot) return;
+    wiredLeadQueue({ data, error }) {
+        if (error) { this.queueUnavailable = true; return; }
+        if (!data) return;
+        this.leadQueue = this.readQueue(data, 'Lead');
+        this.mergeQueue();
+    }
+
+    @wire(getListRecordsByName, {
+        objectApiName: 'Contact',
+        listViewApiName: 'Omnishift_Today',
+        fields: ['Contact.Name', 'Contact.Omnishift_Rank__c'],
+        sortBy: ['Contact.Omnishift_Rank__c'],
+        pageSize: 50
+    })
+    wiredContactQueue({ data, error }) {
+        if (error) { this.queueUnavailable = true; return; }
+        if (!data) return;
+        this.contactQueue = this.readQueue(data, 'Contact');
+        this.mergeQueue();
+    }
+
+    readQueue(data, objectApiName) {
         const rows = Array.isArray(data.records) ? data.records : null;
-        if (!rows) {
-            this.queueUnavailable = true;
-            return;
-        }
-        this.queueSnapshot = rows.map((r) => ({
+        if (!rows) { this.queueUnavailable = true; return []; }
+        return rows.map((r) => ({
             id: r.id,
-            name: r.fields && r.fields.Name ? r.fields.Name.value : 'the next record'
+            objectApiName,
+            name: r.fields && r.fields.Name ? r.fields.Name.value : 'the next record',
+            rank: r.fields && r.fields.Omnishift_Rank__c ? Number(r.fields.Omnishift_Rank__c.value) : Number.MAX_SAFE_INTEGER
         }));
+    }
+
+    // Snapshot once both halves have answered, so dispositioning a record does
+    // not shift the advisor's place mid-walk.
+    mergeQueue() {
+        if (this.queueSnapshot || !this.leadQueue || !this.contactQueue) return;
+        this.queueSnapshot = this.leadQueue.concat(this.contactQueue).sort((a, b) => a.rank - b.rank);
     }
 
     @wire(getRecord, { recordId: '$recordId', fields: '$fieldList' })
@@ -371,14 +427,20 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
 
     // ---- today's queue -----------------------------------------------------
     get queueIndex() {
-        if (this.objectApiName !== 'Lead' || !this.queueSnapshot) return -1;
+        if (!this.queueSnapshot) return -1;
         return this.queueSnapshot.findIndex((q) => q.id === this.recordId);
     }
     get inQueue() {
         return this.queueIndex >= 0;
     }
     get queuePosition() {
-        return `${this.queueIndex + 1} of ${this.queueSnapshot.length} on today's list`;
+        return `#${this.queueIndex + 1} of ${this.queueSnapshot.length} today`;
+    }
+    // Shown beside the global rank so the two numbers an advisor sees - the
+    // position on the Home queue and the rank on the record - can be read
+    // together instead of looking like a disagreement.
+    get positionChip() {
+        return this.inQueue ? `#${this.queueIndex + 1} today` : null;
     }
     get nextInQueue() {
         const i = this.queueIndex;
@@ -404,7 +466,7 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         if (!n) return;
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
-            attributes: { recordId: n.id, objectApiName: 'Lead', actionName: 'view' }
+            attributes: { recordId: n.id, objectApiName: n.objectApiName, actionName: 'view' }
         });
     }
 
