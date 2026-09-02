@@ -375,7 +375,7 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     get primaryAction() {
         return {
             key: 'Approved and sent',
-            label: this.liveEmail ? 'Approve & send' : 'Approve & log',
+            label: this.liveEmail ? 'Approve & send' : 'Approve',
             // A compliance block stops the send. It must never stop the phone call.
             disabled: this.isSaving || this.complianceIsBlocked
         };
@@ -419,9 +419,7 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         return this.complianceStatus !== 'Passed' && this.complianceStatus !== 'Not checked';
     }
     get sendFootnote() {
-        return this.complianceIsBlocked
-            ? 'Sending is blocked until the draft is edited. Calling and snoozing still work.'
-            : 'Compliance is checked again at the moment of sending.';
+        return this.complianceIsBlocked ? 'Blocked until the draft is edited.' : '';
     }
 
     get workingSubject() {
@@ -431,9 +429,7 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         return this.editedBody !== undefined ? this.editedBody : this.draftBody;
     }
     get sendModeNote() {
-        return this.liveEmail
-            ? 'Approve and send delivers this to the prospect and logs it on the record.'
-            : 'Live email is off in this org. Approve and send records the outreach without delivering it.';
+        return this.liveEmail ? '' : 'Live email is off: sending logs the outreach without delivering it.';
     }
 
     // ---- today's queue -----------------------------------------------------

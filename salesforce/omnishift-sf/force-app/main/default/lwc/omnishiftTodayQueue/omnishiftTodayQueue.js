@@ -148,7 +148,7 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
         return LIST_LABEL;
     }
     get emptyDetail() {
-        return `${LIST_LABEL} returned 0 records at ${this.checkedAt}. The agent runs again tonight.`;
+        return `Nothing due today (checked ${this.checkedAt}).`;
     }
 
     // Without this an admin has nothing to go on, and the advisor cannot tell a

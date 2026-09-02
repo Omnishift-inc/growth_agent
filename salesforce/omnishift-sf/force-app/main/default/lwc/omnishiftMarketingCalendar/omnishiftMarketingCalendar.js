@@ -56,7 +56,7 @@ export default class OmnishiftMarketingCalendar extends LightningElement {
                     label: `${e.time} · ${e.name}`,
                     peopleLabel: `${e.people} ${e.people === 1 ? 'person' : 'people'}`,
                     hasDeferred: e.deferred > 0,
-                    deferredLabel: `${e.deferred} held back by the agent`,
+                    deferredLabel: `${e.deferred} deferred`,
                     cls: `send send_${String(e.type || '').toLowerCase().replace(/\s+/g, '-')}`
                 }));
             const isToday = iso(d) === today;
@@ -81,7 +81,7 @@ export default class OmnishiftMarketingCalendar extends LightningElement {
         const s = this.totalSends;
         const d = this.totalDeferred;
         if (!s) return 'Nothing scheduled this week.';
-        return `${s} send${s === 1 ? '' : 's'} this week · ${d} outreach${d === 1 ? '' : 'es'} deferred to stay clear of them`;
+        return `${s} send${s === 1 ? '' : 's'} · ${d} deferred`;
     }
 
     prev() {

@@ -82,7 +82,7 @@
                 </template>
                 <template if:true={upcomingSend}>
                     <p class="mkt-note" role="status">
-                        Marketing has <strong>{upcomingSend.title}</strong> going to this person on {upcomingSend.when}. Two arrivals in one week read as one firm that cannot coordinate itself.
+                        Marketing has <strong>{upcomingSend.title}</strong> going to this person on {upcomingSend.when}. 
                     </p>
                 </template>
 
@@ -90,7 +90,7 @@
                      pointed at shows opens and clicks; this shows those, the external
                      feeds, what the firm did, and what the agent did, together. -->
                 <template if:true={hasTimeline}>
-                    <p class="slds-text-title_caps slds-m-bottom_xx-small">Engagement history</p>
+                    <p class="sec">Engagement history</p>
                     <ol class="tls slds-m-bottom_medium">
                         <template for:each={visibleTimeline} for:item="r">
                             <li key={r.key} class={r.rowClass}>
@@ -257,14 +257,13 @@
                     </template>
                 </div>
                 <div class="outcome">
-                    <p class="outcome__lbl">What happened</p>
+                    <p class="outcome__lbl">Outcome</p>
                     <div class="outcome__btns">
                         <template for:each={outcomeOptions} for:item="o">
                             <lightning-button key={o.key} label={o.label} variant={o.variant}
                                 disabled={o.disabled} data-outcome={o.key} onclick={handleOutcome}></lightning-button>
                         </template>
                     </div>
-                    <p class="outcome__note">This is what the ranking learns from. The buttons above record what you did with the draft; this records whether surfacing the person was right.</p>
                 </div>
                 <div class="acts__foot">
                     <p class="acts__note">{sendFootnote}</p>
@@ -288,14 +287,10 @@
                                 icon-position="right"
                                 onclick={handleNext}
                             ></lightning-button>
-                            <span class="slds-text-body_small slds-text-color_weak slds-m-left_x-small">
-                                Same order as the Home queue. Goes straight to the next person.
-                            </span>
+
                         </template>
                         <template if:true={atQueueEnd}>
-                            <span class="slds-text-body_small slds-text-color_weak slds-m-right_x-small">
-                                Last one on today's list.
-                            </span>
+
                             <lightning-button
                                 label="Back to today's queue"
                                 variant={nextVariant}

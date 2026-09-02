@@ -343,3 +343,17 @@
 .outcome__btns { display: flex; flex-wrap: wrap; gap: .4rem; }
 .outcome__note { font-size: .6875rem; color: #706e6b; margin: .4rem 0 0; }
 .chip_outcome { background: #eaf5ee; color: #1c6b41; }
+
+/* ---- SLDS-aligned tokens ---------------------------------------------------
+   Chips take the SLDS badge shape and neutral palette; only status colours
+   carry meaning. Section labels use the SLDS title-caps scale. Less of our own
+   styling means the panel reads as Salesforce, not as something bolted on. */
+.chip { border-radius: 15rem; padding: .125rem .5rem; font-size: .75rem; font-weight: 400; letter-spacing: 0; text-transform: none; }
+.chip_rank, .chip_pos, .chip_driver { background: #f3f3f3; color: #444; }
+.chip_rank { font-weight: 700; }
+.sec, .outcome__lbl, .meta__l { font-size: .625rem; letter-spacing: .0625rem; text-transform: uppercase; color: #444; font-weight: 700; margin: 0 0 .25rem; }
+.band { border-radius: .25rem; }
+.hdr__why { font-size: .8125rem; line-height: 1.5; color: #181818; }
+.tl { background: #fff; border: 1px solid #e5e5e5; border-left-width: 3px; }
+.signal, .envelope { border-color: #e5e5e5; }
+.acts__note, .tl__meta, .signal__prov span, .meta__l { color: #5c5c5c; }
