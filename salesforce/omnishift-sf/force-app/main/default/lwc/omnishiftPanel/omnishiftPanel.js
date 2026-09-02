@@ -424,23 +424,23 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         const note = this.dispositionReason ? ` ${this.dispositionReason}` : '';
         switch (this.stage) {
             case 'sent':
-                return { cls: 'stage stage_sent', icon: 'utility:email',
+                return { cls: 'dstate dstate_sent', icon: 'utility:email',
                     title: (this.touchVerb === 'called' ? 'Call logged' : 'Email sent') + when,
                     text: (note || ' Sent as drafted.') + ' Record what happened when you hear back.' };
             case 'snoozed':
-                return { cls: 'stage stage_snoozed', icon: 'utility:clock',
+                return { cls: 'dstate dstate_snoozed', icon: 'utility:clock',
                     title: 'Not now' + (this.nextActionDate ? ` - comes back ${this.nextActionDate}` : ''),
                     text: note || ' Off today\'s list until then.' };
             case 'wrong':
-                return { cls: 'stage stage_wrong', icon: 'utility:ban',
+                return { cls: 'dstate dstate_wrong', icon: 'utility:ban',
                     title: 'Marked as the wrong person' + when,
                     text: ' Held off the list until you undo it.' };
             case 'booked':
-                return { cls: 'stage stage_booked', icon: 'utility:event',
+                return { cls: 'dstate dstate_booked', icon: 'utility:event',
                     title: 'Meeting booked' + (this.outcomeOn ? ` - recorded ${this.outcomeOn}` : ''),
                     text: ' Off the list until the outcome changes.' };
             case 'closed':
-                return { cls: 'stage stage_closed', icon: 'utility:check',
+                return { cls: 'dstate dstate_closed', icon: 'utility:check',
                     title: `Outcome: ${this.outcome}` + (this.outcomeOn ? ` - recorded ${this.outcomeOn}` : ''),
                     text: ' Change it below if things move.' };
             default:
