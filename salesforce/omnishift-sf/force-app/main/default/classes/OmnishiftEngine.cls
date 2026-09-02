@@ -411,9 +411,17 @@ public with sharing class OmnishiftEngine {
         // referral outranked a business sale filed this morning, which is
         // exactly backwards and was the reason the weight was moved in the
         // first place. Still bounded - a weak or stale signal cannot win.
-        Decimal cIntake = wIntake * 0.20, cEvent = wEvent * 0.20,
+        // Weights sum to 1.15 on purpose. A worked prospect can never score the
+        // "new and unworked" feature, so a formula that only reaches 100 when
+        // every feature is perfect puts the whole list in the 40s and 60s and
+        // the advisor stops reading the number. Timing still outweighs intake
+        // (a brand-new enquiry is "new and unworked" before it is "inbound web",
+        // and thirteen months of silence on a client is "review overdue"), and
+        // an introduction outweighs profile fit. The cap is only reached by a
+        // record that is strong on everything.
+        Decimal cIntake = wIntake * 0.25, cEvent = wEvent * 0.25,
                 cFit = wFit * 0.20, cDorm = wDormancy * 0.10,
-                cSignal = wSignal * 0.30;
+                cSignal = wSignal * 0.35;
         Decimal best = cIntake; driver = intakeDriver;
         if (cEvent > best) { best = cEvent; driver = eventDriver; }
         if (cFit  > best) { best = cFit;  driver = 'ICP fit'; }

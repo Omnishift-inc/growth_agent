@@ -164,7 +164,10 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
                 // indistinguishable from a record the agent never saw.
                 u.put('Omnishift_Quarantined__c', true);
                 u.put('Omnishift_Quarantine_Reason__c', sup.suppressReason);
-                u.put('Omnishift_Driver__c', null);
+                // The driver stays. A prospect held because the meeting is
+                // already booked is the loop's best evidence that the reason
+                // it was surfaced for converts; clearing it here threw that
+                // evidence away the night after it was recorded.
                 u.put('Omnishift_Next_Action_Date__c', null);
                 u.put('Omnishift_Compliance_Status__c', null);
                 u.put('Omnishift_Draft_Subject__c', null);
