@@ -84,9 +84,11 @@
                                     <span class="signal__age">{g.age}</span>
                                 </div>
                                 <p class="signal__detail">{g.detail}</p>
-                                <template if:true={g.confidence}>
-                                    <p class="signal__conf">{g.confidence}</p>
-                                </template>
+                                <p class="signal__prov">
+                                    <template if:true={g.confidence}><span>{g.confidence}</span></template>
+                                    <template if:true={g.lag}><span>{g.lag}</span></template>
+                                    <template if:true={g.externalId}><span>ref {g.externalId}</span></template>
+                                </p>
                             </div>
                         </template>
                     </div>

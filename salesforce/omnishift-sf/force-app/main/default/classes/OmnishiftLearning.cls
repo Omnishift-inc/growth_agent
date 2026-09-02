@@ -71,8 +71,11 @@ public with sharing class OmnishiftLearning {
                               / (s.surfaced + PRIOR_STRENGTH)).setScale(4);
             s.multiplier = (s.smoothedRate / PRIOR_RATE).setScale(3);
             // Bound it. One good fortnight should tilt the ranking, not rebuild it.
-            if (s.multiplier > 1.5) s.multiplier = 1.5;
-            if (s.multiplier < 0.6) s.multiplier = 0.6;
+            // Tighter than it was. At 1.5 the multiplier alone drove every
+            // strong record to the display ceiling, which is evidence
+            // overriding the model rather than adjusting it.
+            if (s.multiplier > 1.15) s.multiplier = 1.15;
+            if (s.multiplier < 0.85) s.multiplier = 0.85;
             s.enoughEvidence = s.surfaced >= PRIOR_STRENGTH;
         }
         return out;

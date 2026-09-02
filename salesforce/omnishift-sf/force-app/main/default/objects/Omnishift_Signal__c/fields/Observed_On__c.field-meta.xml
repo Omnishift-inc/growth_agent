@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Observed_On__c</fullName>
+    <label>Observed On</label>
+    <type>DateTime</type>
+    <description>When the source system saw it, as distinct from when the event itself happened. The lag between the two is how stale a feed is.</description>
+</CustomField>

@@ -15,6 +15,9 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
     private Map<String, Decimal> learned = OmnishiftLearning.multipliers();
     // Who already has a next step booked. One query, not one per record.
     private Set<Id> withOpenFollowUp = new Set<Id>();
+    // The marketing calendar, loaded once. Nearest upcoming send per person.
+    private Map<Id, Omnishift_Marketing_Send__c> marketing =
+        new Map<Id, Omnishift_Marketing_Send__c>();
     private Map<Id, Integer> load   = new Map<Id, Integer>();
     public  Integer scored = 0;
     public  Integer suppressed = 0;
@@ -57,6 +60,15 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
                 LIMIT 20000]) {
             Id key = (sig.Omnishift_Lead__c != null) ? sig.Omnishift_Lead__c : sig.Omnishift_Contact__c;
             if (key != null && !signals.containsKey(key)) signals.put(key, sig);
+        }
+
+        for (Omnishift_Marketing_Send__c ms : [
+                SELECT Name, Scheduled_For__c, Omnishift_Lead__c, Omnishift_Contact__c
+                FROM Omnishift_Marketing_Send__c
+                WHERE Scheduled_For__c >= LAST_N_DAYS:7
+                ORDER BY Scheduled_For__c ASC LIMIT 20000]) {
+            Id key = (ms.Omnishift_Lead__c != null) ? ms.Omnishift_Lead__c : ms.Omnishift_Contact__c;
+            if (key != null && !marketing.containsKey(key)) marketing.put(key, ms);
         }
 
         for (Task t : [SELECT WhoId FROM Task
@@ -126,6 +138,11 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
                 : OmnishiftEngine.fromContact((Contact) rec);
             OmnishiftEngine.attachSignal(p, signals.get(rec.Id));
             p.hasOpenFollowUp = withOpenFollowUp.contains(rec.Id);
+            Omnishift_Marketing_Send__c ms = marketing.get(rec.Id);
+            if (ms != null) {
+                p.marketingSendOn = ms.Scheduled_For__c.date();
+                p.marketingSendName = ms.Name;
+            }
 
             // Every Omnishift field carries the same API name on both objects, so
             // the writes below are identical once the shell is the right type.
@@ -167,6 +184,9 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
             if (adjusted > 100) adjusted = 100;
             if (adjusted < 1) adjusted = 1;
             u.put('Omnishift_Score__c', adjusted);
+            // Ranking uses the uncapped figure so records that all display 100
+            // still come out in a defensible order.
+            u.put('Omnishift_Rank_Score__c', (s.rawScore * mult).setScale(3));
             u.put('Omnishift_Driver__c', s.topDriver);
             u.put('Omnishift_Quarantined__c', false);
             u.put('Omnishift_Quarantine_Reason__c', null);
@@ -204,18 +224,18 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
         // the fastest way to make an advisor stop trusting the queue.
         List<Ranked> all = new List<Ranked>();
         for (Lead l : [
-                SELECT Id, Omnishift_Score__c, CreatedDate FROM Lead
+                SELECT Id, Omnishift_Score__c, Omnishift_Rank_Score__c, CreatedDate FROM Lead
                 WHERE Omnishift_Score__c > 0 AND IsConverted = false
                 ORDER BY Omnishift_Score__c DESC, CreatedDate ASC
                 LIMIT :RANK_CAP]) {
-            all.add(new Ranked(l.Id, l.Omnishift_Score__c, l.CreatedDate));
+            all.add(new Ranked(l.Id, l.Omnishift_Rank_Score__c != null ? l.Omnishift_Rank_Score__c : l.Omnishift_Score__c, l.CreatedDate));
         }
         for (Contact c : [
-                SELECT Id, Omnishift_Score__c, CreatedDate FROM Contact
+                SELECT Id, Omnishift_Score__c, Omnishift_Rank_Score__c, CreatedDate FROM Contact
                 WHERE Omnishift_Score__c > 0
                 ORDER BY Omnishift_Score__c DESC, CreatedDate ASC
                 LIMIT :RANK_CAP]) {
-            all.add(new Ranked(c.Id, c.Omnishift_Score__c, c.CreatedDate));
+            all.add(new Ranked(c.Id, c.Omnishift_Rank_Score__c != null ? c.Omnishift_Rank_Score__c : c.Omnishift_Score__c, c.CreatedDate));
         }
         all.sort();
 

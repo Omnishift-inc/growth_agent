@@ -33,6 +33,7 @@ public with sharing class OmnishiftEngine {
         public String complianceStatus;
         public String complianceReason;
         public String topDriver;
+        public Decimal rawScore;
     }
 
     /**
@@ -67,6 +68,10 @@ public with sharing class OmnishiftEngine {
         // Whether anyone has already scheduled a next step. Set from open Tasks
         // by the batch, which loads them once for the run.
         public Boolean hasOpenFollowUp = false;
+        // What marketing already has booked for this person, from the Account
+        // Engagement calendar.
+        public Date   marketingSendOn;
+        public String marketingSendName;
 
         // The strongest timing evidence there is: something actually happened to
         // this person. Populated from Omnishift_Signal__c, which is where a
@@ -215,6 +220,21 @@ public with sharing class OmnishiftEngine {
         // with nothing scheduled is exactly where things fall through, and is
         // the agent's job. Two days is left as a courtesy gap so the same
         // person is not contacted twice in a morning.
+        // Marketing gets right of way. The firm runs scheduled sends out of
+        // Account Engagement - the Dow drip, the newsletter - and an advisor
+        // arriving in the same inbox the same week reads to the prospect as one
+        // firm that cannot coordinate itself. Defer, do not drop: the person is
+        // still worth contacting, just not this week.
+        if (p.marketingSendOn != null) {
+            Integer days = Date.today().daysBetween(p.marketingSendOn);
+            if (days >= -2 && days <= 3) {
+                o.suppressed = true;
+                o.suppressReason = 'Marketing has "' + p.marketingSendName + '" scheduled '
+                    + (days < 0 ? 'two days ago' : days == 0 ? 'today' : 'in ' + days + ' days')
+                    + ' - deferred so the firm does not arrive twice';
+                return o;
+            }
+        }
         if (p.hasOpenFollowUp) {
             o.suppressed = true;
             o.suppressReason = 'Already being worked - an open follow-up is scheduled';
@@ -308,12 +328,16 @@ public with sharing class OmnishiftEngine {
         // decays back toward the recency signal instead of sitting at the top of
         // the queue forever.
         Decimal signalBoost = 0;
+        Decimal signalFreshness = 0;
         if (p.signalType != null && p.signalOn != null) {
             Integer signalAge = p.signalOn.daysBetween(Date.today());
             if (signalAge >= 0 && signalAge <= SIGNAL_WINDOW_DAYS) {
                 Decimal conf = (p.signalConfidence == null) ? 60 : p.signalConfidence;
                 Decimal recency = 1 - (Decimal.valueOf(signalAge) / SIGNAL_WINDOW_DAYS * 0.5);
                 signalBoost = SIGNAL_MAX_BOOST * (conf / 100) * recency;
+                // A fresher event of the same kind should sit above a staler
+                // one even when both are strong enough to cap.
+                signalFreshness = (SIGNAL_WINDOW_DAYS - signalAge);
             }
         }
 
@@ -345,8 +369,21 @@ public with sharing class OmnishiftEngine {
 
         // The driver is whichever weighted contribution is actually largest - not
         // whichever branch happened to run last.
-        Decimal cIntake = wIntake * 0.30, cEvent = wEvent * 0.30,
-                cFit = wFit * 0.25, cDorm = wDormancy * 0.15;
+        // Five weights summing to one. The signal used to be added on top of a
+        // base that already saturated - a referral, fresh, well-fitted scores in
+        // the eighties on its own, so any event pushed it through the ceiling
+        // and thirty records displayed an identical 100. As a weighted feature
+        // it competes with the others instead of overwhelming them, and the
+        // number means something again.
+        Decimal wSignal = (signalBoost > 0) ? (signalBoost / SIGNAL_MAX_BOOST * 100) : 0;
+        // The signal carries the largest weight, because a confirmed event is
+        // the strongest thing the firm can know: at 0.20 against intake's 0.25 a
+        // referral outranked a business sale filed this morning, which is
+        // exactly backwards and was the reason the weight was moved in the
+        // first place. Still bounded - a weak or stale signal cannot win.
+        Decimal cIntake = wIntake * 0.20, cEvent = wEvent * 0.20,
+                cFit = wFit * 0.20, cDorm = wDormancy * 0.10,
+                cSignal = wSignal * 0.30;
         Decimal best = cIntake; driver = intakeDriver;
         if (cEvent > best) { best = cEvent; driver = eventDriver; }
         if (cFit  > best) { best = cFit;  driver = 'ICP fit'; }
@@ -356,9 +393,14 @@ public with sharing class OmnishiftEngine {
         // dimension. Inside it, capped at the same ceiling as "created three days
         // ago", a business sale could never outrank a plain referral - which is
         // backwards. It is added evidence, so it adds.
-        if (signalBoost >= SIGNAL_NARRATIVE_FLOOR) driver = 'Event';
+        if (cSignal > best && cSignal >= SIGNAL_NARRATIVE_FLOOR) driver = 'Event';
 
-        Decimal total = cIntake + cEvent + cFit + cDorm + signalBoost;
+        Decimal total = cIntake + cEvent + cFit + cDorm + cSignal;
+        // Keep the uncapped total. Capping at 100 before ranking made seven
+        // records tie at the ceiling and let a six-week-old survey sit above a
+        // business sale filed this morning - the display needs a bound, the
+        // ordering does not.
+        o.rawScore = (total + signalFreshness / 1000).setScale(3);
         o.score = Integer.valueOf(total.setScale(0, System.RoundingMode.HALF_UP));
         if (o.score > 100) o.score = 100;
         if (o.score < 1) o.score = 1;
@@ -378,9 +420,40 @@ public with sharing class OmnishiftEngine {
             String whenPhrase = (sAge == 0) ? 'today'
                 : (sAge == 1) ? 'yesterday'
                 : sAge + ' days ago';
-            o.whyNow = p.signalType + ' picked up ' + whenPhrase
-                + ' by ' + p.signalSource + '. That is the window, and it closes as the '
-                + 'decisions get made without you.';
+            // A filed sale and a page view are different kinds of claim and
+            // deserve different sentences. Reading "Website research picked up
+            // by VisitIQ. That is the window" tells an advisor nothing about
+            // what to say when the person answers.
+            String t = p.signalType;
+            if (t == 'Website research') {
+                o.whyNow = 'Reading the site ' + whenPhrase + ', tracked by ' + p.signalSource
+                    + '. Someone researching you before you have spoken to them is deciding '
+                    + 'whether to get in touch. Reaching out now costs them nothing to accept.';
+            } else if (t == 'Marketplace enquiry') {
+                o.whyNow = 'Enquired through ' + p.signalSource + ' ' + whenPhrase
+                    + '. Marketplace enquiries are not exclusive, so assume other advisers '
+                    + 'have the same name and the same day.';
+            } else if (t == 'Email engagement') {
+                o.whyNow = 'Working through the campaign email ' + whenPhrase
+                    + ', per ' + p.signalSource + '. Engagement without a form fill is someone '
+                    + 'interested who has not found a reason to raise their hand.';
+            } else if (t == 'Survey response') {
+                o.whyNow = 'Answered the survey ' + whenPhrase + ' through ' + p.signalSource
+                    + '. They have just told the firm something in writing - the cheapest '
+                    + 'possible opening is to follow up on their own words.';
+            } else if (t == 'Webinar attendance') {
+                o.whyNow = 'Attended the webinar ' + whenPhrase + ', recorded by ' + p.signalSource
+                    + '. They gave the firm an hour. That is an unusually strong signal from '
+                    + 'someone nobody has called.';
+            } else if (t == 'Role change') {
+                o.whyNow = 'Changed role ' + whenPhrase + ', seen on ' + p.signalSource
+                    + '. Role changes move how someone is paid, and a compensation change '
+                    + 'reopens decisions that were settled.';
+            } else {
+                o.whyNow = t + ' picked up ' + whenPhrase + ' by ' + p.signalSource
+                    + '. That is the window, and it closes as the decisions get made '
+                    + 'without you.';
+            }
         } else if (driver == 'Review overdue') {
             o.whyNow = 'Nothing recorded against this relationship for roughly ' + (idleDays / 30)
                 + ' months. The firm works to an annual review, so this one is past due.';

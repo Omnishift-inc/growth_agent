@@ -270,18 +270,36 @@ public with sharing class OmnishiftAction {
         if (recordId == null) return out;
         String sObj = recordId.getSObjectType().getDescribe().getName();
         List<Omnishift_Signal__c> sigs = (sObj == 'Contact')
-            ? [SELECT Signal_Type__c, Occurred_On__c, Confidence__c, Source__c, Detail__c
+            ? [SELECT Signal_Type__c, Occurred_On__c, Observed_On__c, Confidence__c,
+                      Source__c, Source_System__c, Detail__c, Evidence__c, External_Id__c
                FROM Omnishift_Signal__c WHERE Omnishift_Contact__c = :recordId
                ORDER BY Occurred_On__c DESC LIMIT 10]
-            : [SELECT Signal_Type__c, Occurred_On__c, Confidence__c, Source__c, Detail__c
+            : [SELECT Signal_Type__c, Occurred_On__c, Observed_On__c, Confidence__c,
+                      Source__c, Source_System__c, Detail__c, Evidence__c, External_Id__c
                FROM Omnishift_Signal__c WHERE Omnishift_Lead__c = :recordId
                ORDER BY Occurred_On__c DESC LIMIT 10];
         for (Omnishift_Signal__c g : sigs) {
             Integer ageDays = (g.Occurred_On__c == null)
                 ? null : g.Occurred_On__c.daysBetween(Date.today());
+            // How long the feed took to tell us. Being early is the whole
+            // proposition, so the lag is worth showing rather than hiding.
+            String lag = '';
+            if (g.Observed_On__c != null && g.Occurred_On__c != null) {
+                // Occurred_On__c is a Date, so it has to be lifted to a Datetime
+                // before the two can be subtracted.
+                Datetime occurredAt =
+                    Datetime.newInstance(g.Occurred_On__c, Time.newInstance(0, 0, 0, 0));
+                Integer h = Integer.valueOf(
+                    (g.Observed_On__c.getTime() - occurredAt.getTime()) / 3600000);
+                lag = (h < 24) ? h + 'h after the event'
+                    : (h / 24) + 'd after the event';
+            }
             out.add(new Map<String, Object>{
                 'type'       => g.Signal_Type__c,
-                'source'     => g.Source__c,
+                'source'     => String.isBlank(g.Source_System__c) ? g.Source__c : g.Source_System__c,
+                'evidence'   => g.Evidence__c,
+                'externalId' => g.External_Id__c,
+                'lag'        => lag,
                 'detail'     => g.Detail__c,
                 'confidence' => g.Confidence__c == null ? null : g.Confidence__c.setScale(0),
                 'occurredOn' => g.Occurred_On__c,

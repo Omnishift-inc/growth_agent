@@ -13,6 +13,11 @@
             <value><fullName>Property transaction</fullName><default>false</default><label>Property transaction</label></value>
             <value><fullName>Inheritance filing</fullName><default>false</default><label>Inheritance filing</label></value>
             <value><fullName>Retirement</fullName><default>false</default><label>Retirement</label></value>
+            <value><fullName>Website research</fullName><default>false</default><label>Website research</label></value>
+            <value><fullName>Marketplace enquiry</fullName><default>false</default><label>Marketplace enquiry</label></value>
+            <value><fullName>Email engagement</fullName><default>false</default><label>Email engagement</label></value>
+            <value><fullName>Survey response</fullName><default>false</default><label>Survey response</label></value>
+            <value><fullName>Webinar attendance</fullName><default>false</default><label>Webinar attendance</label></value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

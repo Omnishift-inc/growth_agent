@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>External_Id__c</fullName>
+    <label>External Id</label>
+    <type>Text</type>
+    <length>80</length>
+    <externalId>true</externalId>
+    <unique>false</unique>
+    <description>The record id in the source system, so a re-import updates rather than duplicates.</description>
+</CustomField>

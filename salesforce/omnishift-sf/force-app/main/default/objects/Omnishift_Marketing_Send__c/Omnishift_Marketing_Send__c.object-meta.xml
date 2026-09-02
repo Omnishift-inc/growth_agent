@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Omnishift Marketing Send</label>
+    <pluralLabel>Omnishift Marketing Sends</pluralLabel>
+    <nameField><label>Send Name</label><type>Text</type></nameField>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <sharingModel>ReadWrite</sharingModel>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <description>The marketing calendar, as it exists in Account Engagement. The agent reads it so an advisor is never sent at someone the same week marketing is.</description>
+</CustomObject>

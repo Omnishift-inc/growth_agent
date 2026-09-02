@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Source_System__c</fullName>
+    <label>Source System</label>
+    <type>Picklist</type>
+    <description>Which tool observed this. The firm runs several and they see different things: a filing is not a page view is not a survey answer.</description>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>WealthFeed</fullName><default>false</default><label>WealthFeed</label></value>
+            <value><fullName>VisitIQ</fullName><default>false</default><label>VisitIQ</label></value>
+            <value><fullName>SmartAsset AMP</fullName><default>false</default><label>SmartAsset AMP</label></value>
+            <value><fullName>Account Engagement</fullName><default>false</default><label>Account Engagement</label></value>
+            <value><fullName>GetFeedback</fullName><default>false</default><label>GetFeedback</label></value>
+            <value><fullName>CorralData</fullName><default>false</default><label>CorralData</label></value>
+            <value><fullName>Zoom</fullName><default>false</default><label>Zoom</label></value>
+            <value><fullName>LinkedIn</fullName><default>false</default><label>LinkedIn</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

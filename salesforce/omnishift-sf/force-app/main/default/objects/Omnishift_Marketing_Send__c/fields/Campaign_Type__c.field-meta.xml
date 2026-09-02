@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Campaign_Type__c</fullName>
+    <label>Campaign Type</label>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Dow drip</fullName><default>false</default><label>Dow drip</label></value>
+            <value><fullName>Newsletter</fullName><default>false</default><label>Newsletter</label></value>
+            <value><fullName>Webinar invitation</fullName><default>false</default><label>Webinar invitation</label></value>
+            <value><fullName>Tax season</fullName><default>false</default><label>Tax season</label></value>
+            <value><fullName>Market commentary</fullName><default>false</default><label>Market commentary</label></value>
+            <value><fullName>Event follow-up</fullName><default>false</default><label>Event follow-up</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

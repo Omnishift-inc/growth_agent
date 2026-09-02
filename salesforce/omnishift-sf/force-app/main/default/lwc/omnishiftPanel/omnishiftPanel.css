@@ -293,3 +293,10 @@
     display: block;
     text-align: left;
 }
+
+/* Provenance on one line: how sure the source is, how long it took to tell us,
+   and the id to look it up with. An advisor challenged on "how do you know
+   that" needs all three. */
+.signal__prov { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .25rem; }
+.signal__prov span { font-size: .6875rem; color: #706e6b; }
+.src_third { background: #f4eefb; color: #6b3fa0; }

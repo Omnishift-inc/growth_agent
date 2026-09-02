@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Omnishift_Rank_Score__c</fullName>
+    <label>Omnishift Rank Score</label>
+    <type>Number</type>
+    <precision>10</precision>
+    <scale>3</scale>
+    <required>false</required>
+    <description>The uncapped score, used only for ordering. The displayed score is bounded at 100 so it reads as a percentage; ordering on the bounded figure made records tie at the ceiling and lose their true sequence.</description>
+</CustomField>

@@ -114,16 +114,20 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
             key: `${g.type}-${i}`,
             type: g.type,
             source: g.source,
-            detail: g.detail,
+            detail: g.evidence || g.detail,
             age: g.age,
+            lag: g.lag,
+            externalId: g.externalId,
             confidence: g.confidence === null ? null : `${g.confidence}% confidence`,
             // The provider is the useful distinction: a public filing and a
             // pattern of website visits are different kinds of evidence.
             sourceClass:
                 g.source === 'WealthFeed'
                     ? 'src src_filing'
-                    : g.source === 'VisitIQ'
+                    : g.source === 'VisitIQ' || g.source === 'Account Engagement'
                     ? 'src src_web'
+                    : g.source === 'SmartAsset AMP' || g.source === 'LinkedIn'
+                    ? 'src src_third'
                     : 'src'
         }));
     }
