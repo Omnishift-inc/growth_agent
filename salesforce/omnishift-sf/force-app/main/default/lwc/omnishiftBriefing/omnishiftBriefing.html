@@ -36,12 +36,15 @@
                     </div>
                 </template>
 
-                <lightning-button
-                    label="Open today's list"
-                    variant="neutral"
-                    onclick={openQueue}
-                    class="slds-m-top_medium"
-                ></lightning-button>
+                <!-- Own block with its own space. A utility class on the button's
+                     host did not reliably keep it off the last feed row. -->
+                <div class="cta">
+                    <lightning-button
+                        label="Open today's list"
+                        variant="neutral"
+                        onclick={openQueue}
+                    ></lightning-button>
+                </div>
 
                 <p class="run">{runLine}</p>
             </template>
