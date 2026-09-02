@@ -48,7 +48,7 @@
             <dashboardComponent>
                     <componentType>Metric</componentType>
                     <drillEnabled>true</drillEnabled>
-                    <footer>rank 50 or better, no disposition</footer>
+                    <footer>top 50, nobody acted</footer>
                     <header>Top of list untouched</header>
                     <indicatorBreakpoint1>0.0</indicatorBreakpoint1>
                     <indicatorBreakpoint2>1.0</indicatorBreakpoint2>
@@ -67,7 +67,7 @@
             <dashboardComponent>
                     <componentType>Metric</componentType>
                     <drillEnabled>true</drillEnabled>
-                    <footer>flagged or blocked drafts</footer>
+                    <footer>flagged or blocked</footer>
                     <header>Compliance holds</header>
                     <indicatorBreakpoint1>0.0</indicatorBreakpoint1>
                     <indicatorBreakpoint2>1.0</indicatorBreakpoint2>
