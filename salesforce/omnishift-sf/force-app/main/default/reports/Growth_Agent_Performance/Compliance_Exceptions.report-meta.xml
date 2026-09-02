@@ -42,7 +42,7 @@
         <field>Lead.Omnishift_Compliance_Status__c</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>Compliance Holds</name>
+    <name>Compliance</name>
     <reportType>LeadList</reportType>
     <scope>org</scope>
     <showDetails>true</showDetails>

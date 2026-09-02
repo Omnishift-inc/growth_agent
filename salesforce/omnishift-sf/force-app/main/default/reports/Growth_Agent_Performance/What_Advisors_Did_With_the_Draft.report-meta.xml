@@ -55,7 +55,7 @@
         <field>Lead.Omnishift_Disposition__c</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>Draft Dispositions</name>
+    <name>Decisions</name>
     <reportType>LeadList</reportType>
     <scope>org</scope>
     <showDetails>false</showDetails>

@@ -59,7 +59,7 @@
         <field>Lead.Omnishift_Run_Id__c</field>
         <sortOrder>Desc</sortOrder>
     </groupingsDown>
-    <name>Surfaced Prospects</name>
+    <name>Surfaced</name>
     <reportType>LeadList</reportType>
     <scope>org</scope>
     <showDetails>true</showDetails>
