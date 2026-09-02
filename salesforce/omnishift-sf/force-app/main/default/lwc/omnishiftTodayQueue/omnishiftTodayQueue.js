@@ -198,11 +198,18 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
             // The reason and its consequence, not the boilerplate that follows.
             const firstSentence = why.split(/(?<=\.)\s/).slice(0, 2).join(' ') || why;
             const statusHelp = {
-                'Passed': 'Draft passed every compliance check. Can be sent as written.',
-                'Auto-corrected': 'A prohibited term was removed automatically. Re-read before sending.',
-                'Flagged': 'A principal should look at the draft before it goes out.',
-                'Blocked': 'Cannot be sent as written.',
+                'Passed': 'The draft was checked against the SEC marketing rule and nothing was found. Send as written.',
+                'Auto-corrected': 'A prohibited term was removed from the draft automatically. Read the corrected sentence before sending.',
+                'Flagged': 'The draft contains something a principal should look at before it goes out.',
+                'Blocked': 'The draft cannot be sent as written. Rewrite it first.',
                 'Not checked': 'No draft has been checked yet.'
+            }[status || 'Not checked'];
+            const statusLabel = {
+                'Passed': 'Cleared to send',
+                'Auto-corrected': 'Corrected - re-read',
+                'Flagged': 'Needs review',
+                'Blocked': 'Blocked',
+                'Not checked': 'No draft yet'
             }[status || 'Not checked'];
             return {
                 id: r.id,
@@ -220,6 +227,7 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
                 whyNow: v('Omnishift_Why_Now__c'),
                 status: status || 'Not checked',
                 statusHelp,
+                statusLabel,
                 done: Boolean(f.Omnishift_Disposition__c && f.Omnishift_Disposition__c.value),
                 statusClass:
                     status === 'Blocked'

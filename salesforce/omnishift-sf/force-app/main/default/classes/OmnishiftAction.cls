@@ -63,6 +63,14 @@ public with sharing class OmnishiftAction {
         if (!canUpdate(sObj)) {
             throw new ActionException('You do not have permission to update this record.');
         }
+        // The standard record moves with the agent's record. A prospect who has
+        // just been emailed or called is no longer "Open - Not Contacted", and
+        // the Path at the top of the page should say so without a second click.
+        if (sObj == 'Lead' && (disposition == 'Approved and sent' || disposition == 'Edited before send'
+                || disposition == 'Call logged')) {
+            Lead cur = [SELECT Status FROM Lead WHERE Id = :recordId LIMIT 1];
+            if (cur.Status == 'Open - Not Contacted') rec.put('Status', 'Working - Contacted');
+        }
         update rec;
 
         if (disposition != 'Snoozed') return 'Logged as ' + disposition.toLowerCase();

@@ -51,7 +51,7 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
         // One query for the whole run. Keep only the strongest signal per person:
         // most recent wins, and confidence breaks a tie on the same day.
         for (Omnishift_Signal__c sig : [
-                SELECT Signal_Type__c, Occurred_On__c, Confidence__c, Source__c,
+                SELECT Signal_Type__c, Occurred_On__c, Confidence__c, Source__c, Evidence__c, Detail__c,
                        Omnishift_Lead__c, Omnishift_Contact__c
                 FROM Omnishift_Signal__c
                 WHERE Occurred_On__c != null
@@ -97,7 +97,8 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
             SELECT Id, FirstName, LastName, Company, Email, State, Status, LeadSource,
                    AnnualRevenue, NumberOfEmployees, Rating, Industry, DoNotCall,
                    HasOptedOutOfEmail, IsConverted, CreatedDate, LastActivityDate,
-                   Omnishift_Draft_Edited__c, Omnishift_Escalated__c
+                   Omnishift_Draft_Edited__c, Omnishift_Escalated__c,
+                   Omnishift_Disposition__c, Omnishift_Outcome__c, Omnishift_Next_Action_Date__c
             FROM Lead
             WHERE IsConverted = false
             LIMIT :SCOPE_CAP
@@ -119,7 +120,8 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
         String soql =
             'SELECT Id, FirstName, LastName, Email, MailingState, Title, LeadSource, '
           + 'AccountId, Account.AnnualRevenue, DoNotCall, HasOptedOutOfEmail, '
-          + 'CreatedDate, LastActivityDate, Omnishift_Draft_Edited__c, Omnishift_Escalated__c FROM Contact';
+          + 'CreatedDate, LastActivityDate, Omnishift_Draft_Edited__c, Omnishift_Escalated__c, '
+          + 'Omnishift_Disposition__c, Omnishift_Outcome__c, Omnishift_Next_Action_Date__c FROM Contact';
         if (OmnishiftEngine.personAccountsEnabled()) soql += ' WHERE IsPersonAccount = false';
         soql += ' LIMIT ' + SCOPE_CAP;
         return (List<Contact>) Database.query(soql);
@@ -219,8 +221,21 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
                 escalations.add(new OmnishiftEscalation.Candidate(
                     rec.Id, p.firstName + ' ' + p.lastName, p.fitValue, s.whyNow));
             }
-            // Anything scoring 50+ is worth a touch today; the rest get a nurture date.
-            u.put('Omnishift_Next_Action_Date__c', (s.score >= 50) ? Date.today() : Date.today().addDays(30));
+            // Anything scoring 50+ is worth a touch today; the rest get a nurture
+            // date. A snooze the advisor set stands: "not now, come back on the
+            // 14th" was being undone by the next night's run, which is the
+            // fastest way to teach an advisor that the button does nothing.
+            // A fresh confirmed event is the one thing that overrides it.
+            Boolean snoozed = p.nextActionDate != null && p.nextActionDate > Date.today()
+                && p.disposition == 'Snoozed';
+            if (snoozed && !sup.surfacedEarly) {
+                Boolean freshEvent = p.signalType != null && p.signalOn != null
+                    && p.signalOn >= Date.today().addDays(-2) && !OmnishiftEngine.isEngagement(p.signalType);
+                if (!freshEvent) u.put('Omnishift_Next_Action_Date__c', p.nextActionDate);
+                else u.put('Omnishift_Next_Action_Date__c', Date.today());
+            } else {
+                u.put('Omnishift_Next_Action_Date__c', (s.score >= 50) ? Date.today() : Date.today().addDays(30));
+            }
             scored++;
             if (isLead) leadUpdates.add((Lead) u); else contactUpdates.add((Contact) u);
         }

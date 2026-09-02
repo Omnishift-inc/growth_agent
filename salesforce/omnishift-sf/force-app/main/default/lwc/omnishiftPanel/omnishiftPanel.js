@@ -424,15 +424,25 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         };
         return 'Why this record is on the list today. ' + (h[this.driverLabel] || '');
     }
+    // The check's verdict in the advisor's terms. "Passed" named the check;
+    // "Cleared to send" says what to do.
+    get complianceLabel() {
+        return {
+            'Passed': 'Draft cleared to send',
+            'Auto-corrected': 'Draft corrected - re-read it',
+            'Flagged': 'Draft needs a principal\'s review',
+            'Blocked': 'Draft blocked - rewrite it'
+        }[this.complianceStatus] || 'No draft checked yet';
+    }
     get complianceHelp() {
         const h = {
-            'Passed': 'The draft passed every SEC marketing-rule check. It can be sent as written.',
-            'Auto-corrected': 'A prohibited term was removed automatically. Re-read the sentence before sending.',
-            'Flagged': 'Something a principal should look at before it goes out.',
-            'Blocked': 'Cannot be sent as written. Rewrite it first.',
+            'Passed': 'The draft was checked against the SEC marketing rule - no guarantees, no performance claims, no superlatives - and nothing was found. Send as written.',
+            'Auto-corrected': 'A prohibited term was removed from the draft automatically. Read the corrected sentence before sending.',
+            'Flagged': 'The draft contains something a principal should look at before it goes out.',
+            'Blocked': 'The draft cannot be sent as written. Rewrite it first.',
             'Not checked': 'No draft has been checked yet.'
         };
-        return 'Result of the compliance check on the draft. ' + (h[this.complianceStatus] || '');
+        return h[this.complianceStatus] || h['Not checked'];
     }
     get driverLabel() {
         const w = this.whyNow || '';

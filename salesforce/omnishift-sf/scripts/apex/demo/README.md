@@ -24,3 +24,5 @@ After any of these, run the engine (`System.debug(OmnishiftEngineBatch.runNow())
 twice if outcomes changed: the first pass records drivers, the second learns from them.
 | 12 | `demo-consistent.apex` | Every seeded advisor decision gets its date and the email or call it implies; a blocked draft cannot have been sent |
 | 13 | `demo-outcomes.apex` | Removes outcomes from records that were never worked |
+| 14 | `demo-status.apex` | Lead status agrees with the recorded outreach |
+| 15 | `demo-evidence.apex` | Evidence that matches each signal's type, in the source tool's words, varying per household; runs the engine |

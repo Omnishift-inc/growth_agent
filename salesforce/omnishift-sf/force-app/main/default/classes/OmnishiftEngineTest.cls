@@ -519,4 +519,35 @@ private class OmnishiftEngineTest {
         System.assert(OmnishiftEngine.suppressionCheck(p, new Set<String>(), new Set<String>()).suppressed,
             'Opening an email is not enough to override a plan.');
     }
+
+    @isTest static void aWrongPersonStaysHeldUntilTheAdvisorSaysOtherwise() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.lastName = 'Pemberton'; p.disposition = 'Wrong person';
+        OmnishiftEngine.Outcome o = OmnishiftEngine.suppressionCheck(p, new Set<String>(), new Set<String>());
+        System.assert(o.suppressed, 'the advisor said no; the model does not get a vote');
+        System.assert(o.suppressReason.contains('wrong person'), o.suppressReason);
+    }
+
+    @isTest static void aBookedMeetingTakesTheRecordOffTheList() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.lastName = 'Marlowe'; p.outcome = 'Meeting booked';
+        OmnishiftEngine.Outcome o = OmnishiftEngine.suppressionCheck(p, new Set<String>(), new Set<String>());
+        System.assert(o.suppressed);
+        System.assert(o.suppressReason.startsWith('Meeting booked'), o.suppressReason);
+    }
+
+    @isTest static void theWhyNowSaysWhatTheFeedActuallySaw() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.firstName = 'Wren'; p.lastName = 'Ashcombe'; p.intakeChannel = 'Web';
+        p.createdDate = Datetime.now().addDays(-40); p.lastActivityDate = Date.today().addDays(-10);
+        p.fitValue = 12000000;
+        Omnishift_Signal__c s = new Omnishift_Signal__c(Signal_Type__c = 'Business sale', Source__c = 'WealthFeed',
+            Occurred_On__c = Date.today(), Confidence__c = 95,
+            Evidence__c = 'Form D filed, total offering $18.4m. Filer address matches the household. [Generated demonstration record.]');
+        OmnishiftEngine.attachSignal(p, s);
+        OmnishiftEngine.Outcome o = OmnishiftEngine.score(p);
+        System.assertEquals('Event', o.topDriver);
+        System.assert(o.whyNow.contains('Form D filed, total offering $18.4m.'), o.whyNow);
+        System.assert(!o.whyNow.contains('Generated'), 'the data notice is not part of the reason');
+    }
 }

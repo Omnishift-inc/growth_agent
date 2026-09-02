@@ -24,6 +24,9 @@ public with sharing class OmnishiftEngine {
         'Website research', 'Marketplace enquiry', 'Email engagement',
         'Survey response', 'Webinar attendance'
     };
+    public static Boolean isEngagement(String signalType) {
+        return ENGAGEMENT_TYPES.contains(signalType);
+    }
     @TestVisible
     private static Integer windowFor(String signalType) {
         return ENGAGEMENT_TYPES.contains(signalType) ? ENGAGEMENT_WINDOW_DAYS : SIGNAL_WINDOW_DAYS;
@@ -94,6 +97,14 @@ public with sharing class OmnishiftEngine {
         public Date   signalOn;
         public Decimal signalConfidence;
         public String signalSource;
+        // The one sentence of evidence behind the signal, so the why-now can
+        // say what was seen rather than only what kind of thing it was.
+        public String signalEvidence;
+        // What the advisor already decided about this person. A record they
+        // marked as the wrong person, or booked a meeting with, is theirs.
+        public String disposition;
+        public String outcome;
+        public Date   nextActionDate;
     }
 
     /** Scoring needs FirstName, LastName, LeadSource, AnnualRevenue, CreatedDate
@@ -110,6 +121,15 @@ public with sharing class OmnishiftEngine {
         p.signalOn         = sig.Occurred_On__c;
         p.signalConfidence = sig.Confidence__c;
         p.signalSource     = String.isBlank(sig.Source__c) ? 'an external feed' : sig.Source__c;
+        String ev = sig.isSet('Evidence__c') && String.isNotBlank(sig.Evidence__c) ? sig.Evidence__c
+                  : (sig.isSet('Detail__c') ? sig.Detail__c : null);
+        if (String.isNotBlank(ev)) {
+            // First sentence only, and never the generated-data notice.
+            ev = ev.replaceAll('\\s*\\[Generated[^\\]]*\\]', '').trim();
+            Integer dot = ev.indexOf('. ');
+            if (dot > 0) ev = ev.substring(0, dot + 1);
+            p.signalEvidence = ev;
+        }
     }
 
     public static Prospect fromLead(Lead l) {
@@ -130,6 +150,9 @@ public with sharing class OmnishiftEngine {
         else if (text(l, 'Status') == 'Closed - Not Converted') p.closedReason = 'Closed';
         // Only a Lead can be a duplicate of an owned Contact.
         p.checkOwnedDuplicates = true;
+        p.disposition = text(l, 'Omnishift_Disposition__c');
+        p.outcome = text(l, 'Omnishift_Outcome__c');
+        p.nextActionDate = l.isSet('Omnishift_Next_Action_Date__c') ? (Date) l.get('Omnishift_Next_Action_Date__c') : null;
         return p;
     }
 
@@ -156,6 +179,9 @@ public with sharing class OmnishiftEngine {
         // play. That is a gap in the data, not a decision.
         p.closedReason = null;
         p.checkOwnedDuplicates = false;
+        p.disposition = text(c, 'Omnishift_Disposition__c');
+        p.outcome = text(c, 'Omnishift_Outcome__c');
+        p.nextActionDate = c.isSet('Omnishift_Next_Action_Date__c') ? (Date) c.get('Omnishift_Next_Action_Date__c') : null;
         return p;
     }
 
@@ -206,6 +232,16 @@ public with sharing class OmnishiftEngine {
     public static Outcome suppressionCheck(Prospect p, Set<String> ownedEmails, Set<String> ownedNames) {
         Outcome o = new Outcome();
         if (p.closedReason != null) { o.suppressed = true; o.suppressReason = p.closedReason; return o; }
+        // The advisor's own decision outranks anything the model can say. A
+        // record marked as the wrong person is not re-surfaced the next night
+        // to be marked again, and a booked meeting means the work is done -
+        // both stay held until the advisor records something else.
+        if (p.disposition == 'Wrong person') {
+            o.suppressed = true; o.suppressReason = 'Marked as the wrong person by the advisor'; return o;
+        }
+        if (p.outcome == 'Meeting booked') {
+            o.suppressed = true; o.suppressReason = 'Meeting booked - off the list until the outcome changes'; return o;
+        }
         // Consent applies to a client exactly as it does to a stranger.
         if (p.doNotCall && p.optedOutOfEmail) {
             o.suppressed = true; o.suppressReason = 'Do not call and opted out of email'; return o;
@@ -491,6 +527,13 @@ public with sharing class OmnishiftEngine {
                 o.whyNow = t + ' picked up ' + whenPhrase + ' by ' + p.signalSource
                     + '. That is the window, and it closes as the decisions get made '
                     + 'without you.';
+            }
+            // The evidence goes right after the headline: "Business sale picked
+            // up today by WealthFeed. Form D filed ..., $18.4m." An advisor
+            // reads that and knows what to say on the phone.
+            if (String.isNotBlank(p.signalEvidence)) {
+                Integer cut = o.whyNow.indexOf('. ');
+                if (cut > 0) o.whyNow = o.whyNow.substring(0, cut + 1) + ' ' + p.signalEvidence + o.whyNow.substring(cut + 1);
             }
         } else if (driver == 'Review overdue') {
             o.whyNow = 'Nothing recorded against this relationship for roughly ' + (idleDays / 30)

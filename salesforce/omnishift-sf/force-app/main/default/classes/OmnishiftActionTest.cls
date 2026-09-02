@@ -326,4 +326,11 @@ private class OmnishiftActionTest {
         System.assert(titles.contains('Call: Growth Agent call'), titles);
         System.assert(titles.contains('Email: A question about timing'), titles);
     }
+
+    @isTest static void sendingMovesTheLeadOutOfNotContacted() {
+        Lead l = newLead();
+        OmnishiftAction.recordDisposition(l.Id, 'Approved and sent', null, 'A note', 'Hello Ada', null);
+        System.assertEquals('Working - Contacted', [SELECT Status FROM Lead WHERE Id = :l.Id].Status,
+            'the Path should say the prospect has been contacted, because they have');
+    }
 }
