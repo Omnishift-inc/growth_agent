@@ -116,37 +116,42 @@
                             <template if:true={hasDisposition}><dt>Last recorded</dt><dd>{lastDisposition}</dd></template>
                             <template if:true={dispositionReason}><dt>Note</dt><dd class="muted">{dispositionReason}</dd></template>
                         </dl>
-                        <template if:true={draftSubject}>
-                            <lightning-button label={draftButtonLabel} variant="neutral" onclick={toggleDraft} class="slds-m-top_small"></lightning-button>
-                        </template>
                     </section>
                 </div>
 
-                <!-- draft, full width when open -->
+                <!-- draft: the toggle is the section header, so what you click and
+                     what opens are the same place -->
                 <template if:true={draftSubject}>
-                    <template if:true={showDraft}>
-                        <div class="draftwrap">
-                            <template if:false={isEditing}>
-                                <div class="envelope">
-                                    <div class="envelope__hdr">
-                                        <span class="envelope__lbl">From</span><span>{emailFrom}</span>
-                                        <span class="envelope__lbl">To</span><span>{emailTo}</span>
-                                        <span class="envelope__lbl">Subject</span><span class="envelope__subj">{workingSubject}</span>
-                                    </div>
-                                    <div class="envelope__body"><lightning-formatted-text value={workingBody}></lightning-formatted-text></div>
-                                </div>
-                                <template if:true={sendModeNote}><p class="muted slds-m-top_x-small">{sendModeNote}</p></template>
-                            </template>
-                            <template if:true={isEditing}>
-                                <lightning-input label="Subject" value={workingSubject} data-field="subject" onchange={handleDraftChange} class="slds-m-bottom_x-small"></lightning-input>
-                                <lightning-textarea label="Message" value={workingBody} data-field="body" onchange={handleDraftChange}></lightning-textarea>
-                                <div class="slds-m-top_x-small">
-                                    <lightning-button label="Save draft" variant="brand" disabled={isSaving} onclick={handleSaveDraft} class="slds-m-right_xx-small"></lightning-button>
-                                    <lightning-button label="Cancel" onclick={handleCancelEdit}></lightning-button>
-                                </div>
-                            </template>
+                    <section class="draftsec">
+                        <div class="draftsec__head">
+                            <h3 class="sec">Draft</h3>
+                            <span class="draftsec__subj">{workingSubject}</span>
+                            <lightning-button label={draftButtonLabel} variant="base" onclick={toggleDraft}></lightning-button>
                         </div>
-                    </template>
+                        <template if:true={showDraft}>
+                            <div class="draftwrap">
+                                <template if:false={isEditing}>
+                                    <div class="envelope">
+                                        <div class="envelope__hdr">
+                                            <span class="envelope__lbl">From</span><span>{emailFrom}</span>
+                                            <span class="envelope__lbl">To</span><span>{emailTo}</span>
+                                            <span class="envelope__lbl">Subject</span><span class="envelope__subj">{workingSubject}</span>
+                                        </div>
+                                        <div class="envelope__body"><lightning-formatted-text value={workingBody}></lightning-formatted-text></div>
+                                    </div>
+                                    <template if:true={sendModeNote}><p class="muted slds-m-top_x-small">{sendModeNote}</p></template>
+                                </template>
+                                <template if:true={isEditing}>
+                                    <lightning-input label="Subject" value={workingSubject} data-field="subject" onchange={handleDraftChange} class="slds-m-bottom_x-small"></lightning-input>
+                                    <lightning-textarea label="Message" value={workingBody} data-field="body" onchange={handleDraftChange}></lightning-textarea>
+                                    <div class="slds-m-top_x-small">
+                                        <lightning-button label="Save draft" variant="brand" disabled={isSaving} onclick={handleSaveDraft} class="slds-m-right_xx-small"></lightning-button>
+                                        <lightning-button label="Cancel" onclick={handleCancelEdit}></lightning-button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </section>
                 </template>
             </template>
         </div>

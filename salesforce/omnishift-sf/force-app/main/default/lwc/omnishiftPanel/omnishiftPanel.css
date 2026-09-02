@@ -401,3 +401,10 @@
 
 .acts__foot { justify-content: flex-end; }
 .acts__note { flex: 1 1 auto; }
+
+/* draft section: subject visible even when collapsed, toggle on the right */
+.draftsec { border-top: 1px solid #e5e5e5; padding-top: .75rem; margin-top: .25rem; }
+.draftsec__head { display: flex; align-items: center; gap: .75rem; }
+.draftsec__head .sec { margin: 0; }
+.draftsec__subj { flex: 1 1 auto; min-width: 0; font-size: .8125rem; color: #181818; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.draftwrap { margin-top: .5rem; }
