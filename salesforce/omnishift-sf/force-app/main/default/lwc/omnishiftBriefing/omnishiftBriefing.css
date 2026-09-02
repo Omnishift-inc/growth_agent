@@ -35,6 +35,8 @@
 .cta { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .75rem; }
 /* The standard list views sit to the right as quiet, labelled buttons - the
    same control the main action uses, one weight down, not a sentence. */
-.cta__views { display: flex; align-items: center; gap: .1rem; margin-left: auto; }
-.cta__lbl { font-size: .625rem; letter-spacing: .06em; text-transform: uppercase; color: #706e6b; margin-right: .35rem; }
+/* Their own row: the card is narrow, and two labelled buttons beside the
+   main one wrapped the label onto two lines. */
+.cta__views { display: flex; align-items: center; flex-wrap: wrap; gap: .1rem .25rem; flex-basis: 100%; margin-top: .1rem; }
+.cta__lbl { font-size: .625rem; letter-spacing: .06em; text-transform: uppercase; color: #706e6b; margin-right: .35rem; white-space: nowrap; }
 .cta__views lightning-button { --slds-c-button-text-color: #0b5cab; }
