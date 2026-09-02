@@ -32,3 +32,7 @@
 
 .skel { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; min-height: 9rem; }
 .skel__t { height: 3.6rem; background: #f3f3f3; border-radius: .25rem; }
+.cta { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .75rem; }
+.cta__alt { font-size: .6875rem; color: #706e6b; }
+.cta__alt a { color: #0b5cab; text-decoration: none; }
+.cta__alt a:hover { text-decoration: underline; }

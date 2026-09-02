@@ -362,4 +362,8 @@
         <object>Omnishift_Signal__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+    <tabSettings>
+        <tab>Omnishift_Today</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>

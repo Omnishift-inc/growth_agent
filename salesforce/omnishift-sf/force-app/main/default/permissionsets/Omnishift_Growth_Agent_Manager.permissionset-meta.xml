@@ -3,4 +3,8 @@
     <description>Receives the high-value prospect escalation. On the call the client named the people who take a second look when a large household surfaces; holding this set is how the firm says who they are, without a code change.</description>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Omnishift Growth Agent Manager</label>
+    <tabSettings>
+        <tab>Omnishift_Today</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>

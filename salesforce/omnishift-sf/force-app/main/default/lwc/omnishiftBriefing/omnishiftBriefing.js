@@ -68,10 +68,19 @@ export default class OmnishiftBriefing extends NavigationMixin(LightningElement)
         return `${d.runId} · ${when}`;
     }
 
+    // One list, both objects. The old target was the Lead list view, which
+    // is half of today - the clients live on Contact and were not on it.
     openQueue() {
         this[NavigationMixin.Navigate]({
+            type: 'standard__navItemPage',
+            attributes: { apiName: 'Omnishift_Today' }
+        });
+    }
+    openListView(event) {
+        const objectApiName = event.currentTarget.dataset.object;
+        this[NavigationMixin.Navigate]({
             type: 'standard__objectPage',
-            attributes: { objectApiName: 'Lead', actionName: 'list' },
+            attributes: { objectApiName, actionName: 'list' },
             state: { filterName: 'Omnishift_Today' }
         });
     }

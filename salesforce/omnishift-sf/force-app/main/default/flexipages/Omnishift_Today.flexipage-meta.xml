@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlexiPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Today&apos;s list: prospects and clients in one ranked queue, with the marketing calendar beneath.</description>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>omnishiftTodayQueue</componentName>
+                <identifier>c_omnishiftTodayQueue_today</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>omnishiftMarketingCalendar</componentName>
+                <identifier>c_omnishiftMarketingCalendar_today</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>main</name>
+        <type>Region</type>
+    </flexiPageRegions>
+    <masterLabel>Today&apos;s list</masterLabel>
+    <template>
+        <name>flexipage:defaultAppHomeTemplate</name>
+    </template>
+    <type>AppPage</type>
+</FlexiPage>

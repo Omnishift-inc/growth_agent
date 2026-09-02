@@ -44,6 +44,11 @@
                         variant="neutral"
                         onclick={openQueue}
                     ></lightning-button>
+                    <span class="cta__alt">
+                        or as a Salesforce list view:
+                        <a href="#" data-object="Lead" onclick={openListView}>prospects</a> ·
+                        <a href="#" data-object="Contact" onclick={openListView}>clients</a>
+                    </span>
                 </div>
 
                 <p class="run">{runLine}</p>
