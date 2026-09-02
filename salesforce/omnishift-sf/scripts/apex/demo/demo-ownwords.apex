@@ -35,3 +35,11 @@ for (Contact c : [SELECT Id, Name FROM Contact WHERE Name IN :SAID.keySet()]) {
 insert sigs;
 System.debug('OWNWORDS cleared=' + clear.size() + ' signals=' + sigs.size());
 System.debug(OmnishiftEngineBatch.runNow());
+// The person's own words must be the newest thing on the record, or the
+// engine reads the older signal and never quotes them.
+List<Omnishift_Signal__c> s = [SELECT Id, Occurred_On__c, Evidence__c FROM Omnishift_Signal__c WHERE External_Id__c LIKE 'SMA-OWN%' OR External_Id__c LIKE 'GFB-OWN%'];
+for (Omnishift_Signal__c x : s) { x.Occurred_On__c = Date.today(); x.Observed_On__c = Datetime.now().addHours(-2); x.Confidence__c = 99;
+    x.Evidence__c = x.Evidence__c.replaceAll('(enquiry|response) \\d+/\\d+/\\d+', '$1 ' + Date.today().format()); x.Detail__c = x.Evidence__c.left(180) + ' [Generated demonstration record - no real person or event.]'; }
+update s;
+System.debug('OWNWORDS-FIX ' + s.size());
+System.debug(OmnishiftEngineBatch.runNow());
