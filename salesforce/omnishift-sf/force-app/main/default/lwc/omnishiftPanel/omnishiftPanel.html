@@ -82,6 +82,9 @@
                         </div>
                         <div class="slds-media__body">
                             <p class="slds-text-body_small">Compliance: {complianceStatus}</p>
+                            <template if:true={complianceReason}>
+                                <p class="slds-text-body_small">{complianceReason}</p>
+                            </template>
                         </div>
                     </div>
                 </div>

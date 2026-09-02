@@ -105,4 +105,34 @@ private class OmnishiftEngineTest {
         System.assertNotEquals(null, after.Omnishift_Compliance_Reason__c,
             'The compliance reason belongs in its own field.');
     }
+
+    @isTest static void aFreshWebEnquirySaysSoEvenWhenTimingWins() {
+        Lead l = new Lead(FirstName='Wren', LastName='Ashcombe', Company='Ashcombe Partners',
+                          LeadSource='Web', Status='Open - Not Contacted');
+        insert l;
+        Lead fresh = [SELECT Id, FirstName, LastName, Company, Email, State, Status, LeadSource,
+                             AnnualRevenue, DoNotCall, HasOptedOutOfEmail, IsConverted,
+                             CreatedDate, LastActivityDate FROM Lead WHERE Id = :l.Id];
+        OmnishiftEngine.Outcome o = OmnishiftEngine.score(fresh);
+        System.assertEquals('New and unworked', o.topDriver,
+            'Timing outweighs web intake for a brand new lead - that is the model.');
+        System.assert(o.whyNow.contains('inbound web enquiry'),
+            'But the advisor still has to be told it came from a form: ' + o.whyNow);
+        System.assert(o.whyNow.contains('five-minute'), o.whyNow);
+    }
+
+    @isTest static void aReferralThatLosesOnTimingIsStillNamedAReferral() {
+        Lead l = new Lead(FirstName='Soren', LastName='Blackwood', Company='Blackwood Holdings',
+                          LeadSource='Partner Referral', Status='Open - Not Contacted',
+                          AnnualRevenue=50000000);
+        insert l;
+        Lead fresh = [SELECT Id, FirstName, LastName, Company, Email, State, Status, LeadSource,
+                             AnnualRevenue, DoNotCall, HasOptedOutOfEmail, IsConverted,
+                             CreatedDate, LastActivityDate FROM Lead WHERE Id = :l.Id];
+        OmnishiftEngine.Outcome o = OmnishiftEngine.score(fresh);
+        if (o.topDriver != 'Referral') {
+            System.assert(o.whyNow.contains('referral'),
+                'A referral must never disappear from the explanation: ' + o.whyNow);
+        }
+    }
 }

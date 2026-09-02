@@ -15,6 +15,7 @@ const OMNISHIFT_FIELDS = [
     'Omnishift_Next_Action_Date__c',
     'Omnishift_Recommended_Owner__c',
     'Omnishift_Compliance_Status__c',
+    'Omnishift_Compliance_Reason__c',
     'Omnishift_Draft_Subject__c',
     'Omnishift_Draft_Body__c',
     'Omnishift_Disposition__c',
@@ -151,6 +152,11 @@ export default class OmnishiftPanel extends LightningElement {
 
     get complianceStatus() {
         return this.val('Omnishift_Compliance_Status__c') || 'Not checked';
+    }
+    get complianceReason() {
+        // The status says what happened; the reason says why. A blocked draft is
+        // useless to an advisor without the term that blocked it.
+        return this.val('Omnishift_Compliance_Reason__c');
     }
     get complianceIsBlocked() {
         return this.raw('Omnishift_Compliance_Status__c') === 'Blocked';

@@ -113,6 +113,17 @@ public with sharing class OmnishiftEngine {
         } else {
             o.whyNow = 'Profile fit against the ideal client, with no stronger timing signal. A nurture candidate rather than a call-today candidate.';
         }
+
+        // A single top driver hides the rest of the picture. A fresh inbound web
+        // enquiry scores lower on intake than it does on recency, so timing wins
+        // and the why-now would read "created 2 days ago" for someone who just
+        // filled in a form - true, but not the fact the advisor needs. Where a
+        // strong intake signal lost, say so alongside the reason that won.
+        if (driver != intakeDriver && intakeDriver != 'ICP fit') {
+            o.whyNow += (intakeDriver == 'Referral')
+                ? ' It also arrived as a referral.'
+                : ' It also arrived as an inbound web enquiry, which carries the five-minute response SLA.';
+        }
         return o;
     }
 
