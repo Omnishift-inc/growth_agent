@@ -554,6 +554,30 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
             : s === 'Auto-corrected' ? 'chip chip_info'
             : 'chip chip_pass';
     }
+    // The verdict in words an advisor can act on: what was found, what the
+    // rule says about it, and what to do. The raw reason is a rule citation.
+    get complianceNoteClass() {
+        return this.complianceIsBlocked ? 'note note_block' : 'note note_flag';
+    }
+    get complianceNoteTitle() {
+        const s = this.raw('Omnishift_Compliance_Status__c');
+        if (s === 'Blocked') return 'Blocked: this draft cannot be sent as written.';
+        if (s === 'Flagged') return 'Needs a principal\'s review before it goes out.';
+        return 'Corrected automatically - re-read it before sending.';
+    }
+    get complianceNoteText() {
+        const r = this.complianceReason || '';
+        const m = r.match(/"([^"]+)"/);
+        const term = m ? m[1] : null;
+        const s = this.raw('Omnishift_Compliance_Status__c');
+        if (s === 'Blocked' && term) {
+            return ` The draft says "${term}". Under the SEC marketing rule (206(4)-1) that is a claim the firm cannot substantiate, so the send button is off until the phrase is gone. Edit the draft and remove it; the check runs again when you save.`;
+        }
+        if (s === 'Auto-corrected' && term) {
+            return ` "${term}" was removed from the draft. Read the corrected sentence so it still makes sense.`;
+        }
+        return ' ' + r;
+    }
     get complianceNeedsAttention() {
         return this.complianceStatus !== 'Passed' && this.complianceStatus !== 'Not checked';
     }

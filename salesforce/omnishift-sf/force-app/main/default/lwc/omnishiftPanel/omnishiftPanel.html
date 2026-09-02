@@ -72,10 +72,19 @@
                 </div>
 
                 <template if:true={complianceNeedsAttention}>
-                    <p class="note note_block" role="status">{complianceReason}</p>
+                    <div class={complianceNoteClass} role="status">
+                        <strong>{complianceNoteTitle}</strong>
+                        <span>{complianceNoteText}</span>
+                        <template if:true={complianceIsBlocked}>
+                            <lightning-button label="Rewrite the draft" variant="base" data-disposition="Edited before send" onclick={handleDisposition} class="note__act"></lightning-button>
+                        </template>
+                    </div>
                 </template>
                 <template if:true={upcomingSend}>
-                    <p class="note note_mkt" role="status">Marketing: <strong>{upcomingSend.title}</strong> goes to this person on {upcomingSend.when}.</p>
+                    <p class="note note_mkt" role="status">
+                        <strong>Marketing is emailing this person on {upcomingSend.when}</strong>
+                        <span> - "{upcomingSend.title}", from the Account Engagement calendar. More than three days out, so reaching out today is fine; a send inside the next three days would have held this record back.</span>
+                    </p>
                 </template>
 
                 <div class="cols">

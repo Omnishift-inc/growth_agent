@@ -437,3 +437,8 @@
 .pill:focus-visible { outline: 2px solid #0176d3; outline-offset: 2px; }
 .pill:disabled { opacity: .5; cursor: default; }
 .pill_on { background: #16325c; border-color: #16325c; color: #fff; font-weight: 700; }
+
+.note { display: block; line-height: 1.45; }
+.note strong { display: block; font-weight: 700; }
+.note_flag { color: #8a5a0b; background: #fdf3e3; }
+.note__act { display: block; margin-top: .25rem; --slds-c-button-text-color: #a4271b; }

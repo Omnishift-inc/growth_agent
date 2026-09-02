@@ -1,11 +1,11 @@
 /* Four numbers, sized so the one that matters is read first. The standard
    Assistant beside this lists today's assignments and nothing else. */
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
 .stat {
     border: 1px solid #e5e5e5; border-radius: .25rem;
-    padding: .45rem .55rem; background: #fbfbfb;
+    padding: .4rem .55rem .35rem; background: #fbfbfb;
 }
-.stat__n { display: block; font-size: 1.375rem; font-weight: 700; line-height: 1.15;
+.stat__n { display: block; font-size: 1.25rem; font-weight: 700; line-height: 1.15;
            font-variant-numeric: tabular-nums; color: #16325c; }
 .stat__l { display: block; font-size: .6875rem; color: #706e6b; line-height: 1.3; }
 .stat_lead { background: #eef4ff; border-color: #cfe0f7; }
@@ -13,18 +13,20 @@
 .stat_warn { background: #fdecea; border-color: #f4c7c3; }
 .stat_warn .stat__n { color: #a4271b; }
 
-.split { font-size: .75rem; color: #706e6b; margin: .5rem 0 0; }
+.split { font-size: .75rem; color: #706e6b; margin: .4rem 0 0; }
 .lbl { font-size: .625rem; letter-spacing: .06em; text-transform: uppercase;
-       color: #706e6b; margin: .75rem 0 .25rem; }
-.srcs { display: grid; gap: .25rem; }
-.srcrow { display: flex; align-items: center; gap: .4rem; }
-.srcrow__n { font-size: .75rem; font-variant-numeric: tabular-nums; color: #3e3e3e; margin-left: auto; }
+       color: #706e6b; margin: .75rem 0 .35rem; }
+/* Eight feeds in two columns: half the height, and the count sits by its
+   name instead of a card-width away from it. */
+.srcs { display: grid; grid-template-columns: 1fr 1fr; gap: .3rem .75rem; }
+.srcrow { display: flex; align-items: center; gap: .4rem; min-width: 0; }
+.srcrow__n { font-size: .75rem; font-weight: 600; font-variant-numeric: tabular-nums; color: #3e3e3e; margin-left: auto; }
 .src { font-size: .625rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
        padding: .1rem .4rem; border-radius: 2px; background: #eee; color: #444; }
 .src_filing { background: #eef4ff; color: #0b5cab; }
 .src_web    { background: #edf7f0; color: #1d6b40; }
 
-.run { font-size: .625rem; color: #a8a8a8; margin: .5rem 0 0; word-break: break-all; }
+.run { font-size: .625rem; color: #a8a8a8; margin: .6rem 0 0; word-break: break-all; }
 .err { font-size: .75rem; color: #a4271b; }
 
 .skel { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; min-height: 9rem; }
