@@ -1,5 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
 import { getRecord, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
+import { refreshApex } from '@salesforce/apex';
 import { getListRecordsByName } from 'lightning/uiListsApi';
 import { NavigationMixin } from 'lightning/navigation';
 import recordDisposition from '@salesforce/apex/OmnishiftAction.recordDisposition';
@@ -21,6 +22,7 @@ const OMNISHIFT_FIELDS = [
     'Omnishift_Compliance_Reason__c',
     'Omnishift_Escalated__c',
     'Omnishift_Outcome__c',
+    'Omnishift_Quarantined__c',
     'Omnishift_Draft_Subject__c',
     'Omnishift_Draft_Body__c',
     'Omnishift_Disposition__c',
@@ -189,8 +191,13 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     timeline = [];
     signals = [];
     showAllTimeline = false;
+    _ctx;
     @wire(getPanelContext, { recordId: '$recordId' })
-    wiredContext({ data }) {
+    wiredContext(result) {
+        // kept so the timeline can be re-read after the advisor acts; the
+        // cacheable wire otherwise serves yesterday's history back to them
+        this._ctx = result;
+        const { data } = result;
         if (!data) return;
         this.personAccounts = Boolean(data.personAccounts);
         this.liveEmail = Boolean(data.liveEmail);
@@ -248,6 +255,7 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         try {
             const msg = await recordOutcome({ recordId: this.recordId, outcome });
             await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            if (this._ctx) await refreshApex(this._ctx);
             this.toast('Outcome recorded', msg, 'success');
         } catch (e) {
             this.toast('Could not record the outcome', this.messageOf(e), 'error');
@@ -326,6 +334,10 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     }
     get scoredOn() {
         return this.val('Omnishift_Scored_On__c');
+    }
+    get draftHeadline() {
+        if (this.draftSubject) return this.workingSubject;
+        return this.raw('Omnishift_Quarantined__c') ? 'No draft - this record was held back' : 'No draft yet';
     }
     get draftSubject() {
         return this.val('Omnishift_Draft_Subject__c');
@@ -565,6 +577,7 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
                 snoozeUntil: iso
             });
             await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            if (this._ctx) await refreshApex(this._ctx);
             this.showSnooze = false;
             this.justDispositioned = true;
             this.toast('Snoozed', message, 'success');
@@ -614,6 +627,7 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
             this.wasEdited = true;
             this.isEditing = false;
             await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            if (this._ctx) await refreshApex(this._ctx);
             this.toast(
                 res.blocked ? 'Saved, but blocked' : 'Draft saved',
                 res.reason,
@@ -636,6 +650,7 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
                 wasEdited: this.wasEdited
             });
             await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            if (this._ctx) await refreshApex(this._ctx);
             this.justDispositioned = true;
             this.toast('Done', message, 'success');
         } catch (e) {
@@ -697,6 +712,7 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
                 snoozeUntil: null
             });
             await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            if (this._ctx) await refreshApex(this._ctx);
             this.justDispositioned = true;
             this.toast('Recorded', message, 'success');
             this.dispatchEvent(

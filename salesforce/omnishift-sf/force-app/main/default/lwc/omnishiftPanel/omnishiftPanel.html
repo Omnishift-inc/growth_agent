@@ -121,13 +121,15 @@
 
                 <!-- draft: the toggle is the section header, so what you click and
                      what opens are the same place -->
-                <template if:true={draftSubject}>
-                    <section class="draftsec">
-                        <div class="draftsec__head">
-                            <h3 class="sec">Draft</h3>
-                            <span class="draftsec__subj">{workingSubject}</span>
+                <section class="draftsec">
+                    <div class="draftsec__head">
+                        <h3 class="sec">Draft</h3>
+                        <span class="draftsec__subj">{draftHeadline}</span>
+                        <template if:true={draftSubject}>
                             <lightning-button label={draftButtonLabel} variant="base" onclick={toggleDraft}></lightning-button>
-                        </div>
+                        </template>
+                    </div>
+                    <template if:true={draftSubject}>
                         <template if:true={showDraft}>
                             <div class="draftwrap">
                                 <template if:false={isEditing}>
@@ -151,8 +153,8 @@
                                 </template>
                             </div>
                         </template>
-                    </section>
-                </template>
+                    </template>
+                </section>
             </template>
         </div>
 
