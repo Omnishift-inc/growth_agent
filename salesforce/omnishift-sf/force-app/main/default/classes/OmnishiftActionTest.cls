@@ -147,4 +147,37 @@ private class OmnishiftActionTest {
         System.assertEquals(false, OmnishiftAction.liveEmailEnabled(),
             'No org should deliver email until the firm has switched it on deliberately.');
     }
+
+    @isTest static void snoozeHonoursTheDateTheAdvisorChose() {
+        Lead l = newLead();
+        Date want = Date.today().addDays(31);
+        Test.startTest();
+        String msg = OmnishiftAction.snoozeForTest(l.Id, want);
+        Test.stopTest();
+        Lead after = [SELECT Omnishift_Next_Action_Date__c FROM Lead WHERE Id = :l.Id];
+        System.assertEquals(want, after.Omnishift_Next_Action_Date__c,
+            'A month means a month, not the seven-day default.');
+        System.assert(msg.contains(want.format()), msg);
+    }
+
+    @isTest static void snoozeFallsBackToAWeekWhenNoDateIsGiven() {
+        Lead l = newLead();
+        OmnishiftAction.snoozeForTest(l.Id, null);
+        Lead after = [SELECT Omnishift_Next_Action_Date__c FROM Lead WHERE Id = :l.Id];
+        System.assertEquals(Date.today().addDays(7), after.Omnishift_Next_Action_Date__c);
+    }
+
+    @isTest static void aSnoozeDateInThePastIsIgnored() {
+        Lead l = newLead();
+        OmnishiftAction.snoozeForTest(l.Id, Date.today().addDays(-5));
+        Lead after = [SELECT Omnishift_Next_Action_Date__c FROM Lead WHERE Id = :l.Id];
+        System.assertEquals(Date.today().addDays(7), after.Omnishift_Next_Action_Date__c,
+            'A past date would put the record straight back on today list.');
+    }
+
+    @isTest static void personAccountDetectionMatchesTheOrg() {
+        Boolean expected = Schema.SObjectType.Contact.fields.getMap().containsKey('ispersonaccount');
+        System.assertEquals(expected, OmnishiftAction.personAccountsEnabled(),
+            'The panel decides whether to request IsPersonAccount from this.');
+    }
 }

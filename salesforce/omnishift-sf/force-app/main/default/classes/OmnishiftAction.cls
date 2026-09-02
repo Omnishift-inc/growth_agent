@@ -11,7 +11,7 @@ public with sharing class OmnishiftAction {
     public class ActionException extends Exception {}
 
         private static String recordDispositionImpl(Id recordId, String disposition, String reason,
-                                           String subject, String body) {
+                                           String subject, String body, Date snoozeUntil) {
         if (recordId == null || String.isBlank(disposition)) {
             throw new ActionException('A record and a disposition are both required.');
         }
@@ -23,12 +23,20 @@ public with sharing class OmnishiftAction {
 
         SObject rec = Schema.getGlobalDescribe().get(sObj).newSObject(recordId);
         rec.put('Omnishift_Disposition__c', disposition);
+        // Nothing else records when the advisor acted. LastModifiedDate cannot
+        // stand in for it, because the nightly run rewrites that on every record.
+        rec.put('Omnishift_Dispositioned_On__c', Datetime.now());
         if (String.isNotBlank(reason)) rec.put('Omnishift_Disposition_Reason__c', reason);
 
         // The next action date is what the Today queue filters on, so it is the
         // field that decides whether this record comes back tomorrow.
         if (disposition == 'Snoozed') {
-            rec.put('Omnishift_Next_Action_Date__c', Date.today().addDays(7));
+            // The advisor knows when to come back better than a constant does. A
+            // week is only the fallback when they express no preference.
+            Date returnOn = (snoozeUntil != null && snoozeUntil > Date.today())
+                ? snoozeUntil
+                : Date.today().addDays(7);
+            rec.put('Omnishift_Next_Action_Date__c', returnOn);
         } else if (disposition == 'Wrong person') {
             rec.put('Omnishift_Next_Action_Date__c', null);
         } else {
@@ -57,9 +65,10 @@ public with sharing class OmnishiftAction {
         }
         update rec;
 
-        return disposition == 'Snoozed'
-            ? 'Snoozed until ' + Date.today().addDays(7).format()
-            : 'Logged as ' + disposition.toLowerCase();
+        if (disposition != 'Snoozed') return 'Logged as ' + disposition.toLowerCase();
+        Date shown = (snoozeUntil != null && snoozeUntil > Date.today())
+            ? snoozeUntil : Date.today().addDays(7);
+        return 'Snoozed until ' + shown.format();
     }
 
     private static Task buildTask(Id recordId, String sObj, String type, String subject, String body) {
@@ -117,6 +126,8 @@ public with sharing class OmnishiftAction {
         rec.put('Omnishift_Draft_Body__c', finalBody);
         rec.put('Omnishift_Compliance_Status__c', c.complianceStatus);
         rec.put('Omnishift_Compliance_Reason__c', c.complianceReason);
+        // Tells the nightly run to leave this draft alone.
+        rec.put('Omnishift_Draft_Edited__c', true);
         update rec;
 
         return new Map<String, Object>{
@@ -164,12 +175,12 @@ public with sharing class OmnishiftAction {
                     ? 'unknown error' : res[0].getErrors()[0].getMessage();
                 throw new ActionException('Salesforce refused the send: ' + why);
             }
-            recordDispositionImpl(recordId, disposition, null, null, null);
+            recordDispositionImpl(recordId, disposition, null, null, null, null);
             return 'Sent to the prospect and logged.';
         }
 
         // Not live: recordDisposition writes the Task that is the audit trail.
-        recordDispositionImpl(recordId, disposition, null, outSubject, outBody);
+        recordDispositionImpl(recordId, disposition, null, outSubject, outBody, null);
         return 'Recorded as ' + disposition.toLowerCase()
              + '. Live email is off in this org, so nothing left Salesforce.';
     }
@@ -196,9 +207,9 @@ public with sharing class OmnishiftAction {
 
     @AuraEnabled
     public static String recordDisposition(Id recordId, String disposition, String reason,
-                                           String subject, String body) {
+                                           String subject, String body, Date snoozeUntil) {
         try {
-            return recordDispositionImpl(recordId, disposition, reason, subject, body);
+            return recordDispositionImpl(recordId, disposition, reason, subject, body, snoozeUntil);
         } catch (ActionException e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -232,6 +243,22 @@ public with sharing class OmnishiftAction {
     }
     @TestVisible
     private static String dispositionForTest(Id recordId, String d, String r, String s2, String b) {
-        return recordDispositionImpl(recordId, d, r, s2, b);
+        return recordDispositionImpl(recordId, d, r, s2, b, null);
+    }
+    @TestVisible
+    private static String snoozeForTest(Id recordId, Date until) {
+        return recordDispositionImpl(recordId, 'Snoozed', null, null, null, until);
+    }
+
+    /**
+     * Whether this org has Person Accounts turned on.
+     *
+     * Contact.IsPersonAccount only exists when it does. The panel was asking for
+     * it on every Contact, so getRecord failed on all of them and reported a
+     * field-level-security problem that was not the cause.
+     */
+    @AuraEnabled(cacheable=true)
+    public static Boolean personAccountsEnabled() {
+        return OmnishiftEngine.personAccountsEnabled();
     }
 }
