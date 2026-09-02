@@ -636,12 +636,14 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
             value: this.inQueue ? `#${this.queueIndex + 1} of ${total}` : (this.rank ? `Rank ${this.rank}` : 'Not on it'),
             cls: 'fact__v', help: 'Position on today\'s list, Leads and Contacts ranked together'
         });
+        const held = this.raw('Omnishift_Quarantined__c') ? this.val('Omnishift_Quarantine_Reason__c') : null;
         const src = this.triggerSource;
-        out.push({
-            key: 'why', label: 'Surfaced for',
-            value: src ? `${this.driverLabel} · ${src}` : this.driverLabel,
-            cls: 'fact__v', help: this.driverHelp
-        });
+        out.push(held
+            ? { key: 'why', label: 'Held back', value: held, dot: 'dot dot_grey', cls: 'fact__v',
+                help: 'The engine saw this record and chose not to surface it. The reason is the rule that held it.' }
+            : { key: 'why', label: 'Surfaced for',
+                value: src ? `${this.driverLabel} · ${src}` : this.driverLabel,
+                cls: 'fact__v', help: this.driverHelp });
         const s = this.raw('Omnishift_Compliance_Status__c');
         out.push({
             key: 'draft', label: 'Draft',
