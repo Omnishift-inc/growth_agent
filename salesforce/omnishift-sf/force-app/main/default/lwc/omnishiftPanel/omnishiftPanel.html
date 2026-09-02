@@ -96,14 +96,50 @@
                     ></lightning-button>
                     <template if:true={showDraft}>
                         <div class="slds-box slds-box_xx-small slds-m-bottom_medium">
-                            <p class="slds-text-body_small slds-m-bottom_xx-small">
-                                <strong>{draftSubject}</strong>
-                            </p>
-                            <lightning-formatted-text value={draftBody}></lightning-formatted-text>
-                            <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
-                                Insert this into the standard Send Email action via the Growth Agent
-                                email template, then review and send.
-                            </p>
+
+                            <!-- reading -->
+                            <template if:false={isEditing}>
+                                <p class="slds-text-body_small slds-m-bottom_xx-small">
+                                    <strong>{workingSubject}</strong>
+                                </p>
+                                <lightning-formatted-text value={workingBody}></lightning-formatted-text>
+                            </template>
+
+                            <!-- editing -->
+                            <template if:true={isEditing}>
+                                <lightning-input
+                                    label="Subject"
+                                    value={workingSubject}
+                                    data-field="subject"
+                                    onchange={handleDraftChange}
+                                    class="slds-m-bottom_x-small"
+                                ></lightning-input>
+                                <lightning-textarea
+                                    label="Message"
+                                    value={workingBody}
+                                    data-field="body"
+                                    onchange={handleDraftChange}
+                                ></lightning-textarea>
+                                <div class="slds-m-top_x-small">
+                                    <lightning-button
+                                        label="Save draft"
+                                        variant="brand"
+                                        disabled={isSaving}
+                                        onclick={handleSaveDraft}
+                                        class="slds-m-right_xx-small"
+                                    ></lightning-button>
+                                    <lightning-button
+                                        label="Cancel"
+                                        onclick={handleCancelEdit}
+                                    ></lightning-button>
+                                </div>
+                            </template>
+
+                            <template if:false={isEditing}>
+                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                    {sendModeNote}
+                                </p>
+                            </template>
                         </div>
                     </template>
                 </template>
@@ -138,7 +174,7 @@
                     </template>
                 </div>
                 <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
-                    Each button writes the disposition, logs the activity and sets the next action date. The disposition is the training label.
+                    Approve and send checks compliance again before anything leaves. Every button logs what happened and sets the next action date.
                 </p>
             </footer>
         </template>

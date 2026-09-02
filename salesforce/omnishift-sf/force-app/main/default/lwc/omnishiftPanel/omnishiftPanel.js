@@ -1,6 +1,9 @@
 import { LightningElement, api, wire } from 'lwc';
 import { getRecord, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
 import recordDisposition from '@salesforce/apex/OmnishiftAction.recordDisposition';
+import saveDraft from '@salesforce/apex/OmnishiftAction.saveDraft';
+import sendDraft from '@salesforce/apex/OmnishiftAction.sendDraft';
+import liveEmailEnabled from '@salesforce/apex/OmnishiftAction.liveEmailEnabled';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 // Field API names are identical on Lead and Contact, so we build the qualified list
@@ -36,6 +39,11 @@ export default class OmnishiftPanel extends LightningElement {
     error;
     isSaving = false;
     showDraft = false;
+    isEditing = false;
+    editedSubject;
+    editedBody;
+    wasEdited = false;
+    liveEmail = false;
 
     get fieldList() {
         const obj = this.objectApiName || 'Lead';
@@ -47,6 +55,11 @@ export default class OmnishiftPanel extends LightningElement {
         // the spanning field instead.
         extra.push(`${obj}.Omnishift_Recommended_Owner__r.Name`);
         return OMNISHIFT_FIELDS.map((f) => `${obj}.${f}`).concat(extra);
+    }
+
+    @wire(liveEmailEnabled)
+    wiredLiveEmail({ data }) {
+        if (data !== undefined) this.liveEmail = data;
     }
 
     @wire(getRecord, { recordId: '$recordId', fields: '$fieldList' })
@@ -173,13 +186,100 @@ export default class OmnishiftPanel extends LightningElement {
         }));
     }
 
+    get workingSubject() {
+        return this.editedSubject !== undefined ? this.editedSubject : this.draftSubject;
+    }
+    get workingBody() {
+        return this.editedBody !== undefined ? this.editedBody : this.draftBody;
+    }
+    get sendModeNote() {
+        return this.liveEmail
+            ? 'Approve and send delivers this to the prospect and logs it on the record.'
+            : 'Live email is off in this org. Approve and send records the outreach without delivering it.';
+    }
+
     // ---- behaviour ---------------------------------------------------------
     toggleDraft() {
         this.showDraft = !this.showDraft;
+        if (!this.showDraft) this.isEditing = false;
+    }
+
+    handleDraftChange(event) {
+        const which = event.currentTarget.dataset.field;
+        if (which === 'subject') this.editedSubject = event.detail.value;
+        else this.editedBody = event.detail.value;
+    }
+
+    handleCancelEdit() {
+        this.editedSubject = undefined;
+        this.editedBody = undefined;
+        this.isEditing = false;
+    }
+
+    async handleSaveDraft() {
+        this.isSaving = true;
+        try {
+            const res = await saveDraft({
+                recordId: this.recordId,
+                subject: this.workingSubject,
+                body: this.workingBody
+            });
+            // Compliance may have cleaned the text; show what was actually stored.
+            this.editedSubject = res.subject;
+            this.editedBody = res.body;
+            this.wasEdited = true;
+            this.isEditing = false;
+            await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            this.toast(
+                res.blocked ? 'Saved, but blocked' : 'Draft saved',
+                res.reason,
+                res.blocked ? 'warning' : 'success'
+            );
+        } catch (e) {
+            this.toast('Could not save the draft', this.messageOf(e), 'error');
+        } finally {
+            this.isSaving = false;
+        }
+    }
+
+    async handleSend() {
+        this.isSaving = true;
+        try {
+            const message = await sendDraft({
+                recordId: this.recordId,
+                subject: this.workingSubject,
+                body: this.workingBody,
+                wasEdited: this.wasEdited
+            });
+            await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            this.toast('Done', message, 'success');
+        } catch (e) {
+            this.toast('Not sent', this.messageOf(e), 'error');
+        } finally {
+            this.isSaving = false;
+        }
+    }
+
+    messageOf(e) {
+        return (
+            (e && e.body && (e.body.message || JSON.stringify(e.body))) ||
+            (e && e.message) ||
+            'Unknown error'
+        );
     }
 
     async handleDisposition(event) {
         const disposition = event.currentTarget.dataset.disposition;
+        // These two are not plain dispositions: one sends, one opens the editor.
+        if (disposition === 'Approved and sent') {
+            this.showDraft = true;
+            return this.handleSend();
+        }
+        if (disposition === 'Edited before send') {
+            this.showDraft = true;
+            this.isEditing = true;
+            return undefined;
+        }
         if (this.isPersonContact) {
             this.toast(
                 'Person account',
