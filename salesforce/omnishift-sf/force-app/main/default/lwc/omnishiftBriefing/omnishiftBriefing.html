@@ -3,7 +3,7 @@
         <div class="slds-p-horizontal_medium slds-p-bottom_medium">
 
             <template if:true={isLoading}>
-                <p class="slds-text-body_small slds-text-color_weak">Reading the last run…</p>
+                <div class="skel" aria-busy="true"><div class="skel__t"></div><div class="skel__t"></div><div class="skel__t"></div><div class="skel__t"></div></div>
             </template>
 
             <template if:true={hasError}>

@@ -2,7 +2,8 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Omnishift_Quarantined__c</fullName>
     <defaultValue>false</defaultValue>
-    <label>Omnishift Quarantined</label>
-    <type>Checkbox</type>
     <description>The agent held this record back rather than surfacing it. Set so the decision is auditable: a suppression nobody can see is indistinguishable from a record the agent never found.</description>
+    <label>Omnishift Quarantined</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Checkbox</type>
 </CustomField>

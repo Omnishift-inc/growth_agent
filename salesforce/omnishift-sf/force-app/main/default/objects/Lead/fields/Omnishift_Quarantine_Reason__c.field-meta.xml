@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Omnishift_Quarantine_Reason__c</fullName>
+    <description>Which rule held the record back, in the rule&apos;s own words, so it can be argued with.</description>
+    <externalId>false</externalId>
     <label>Omnishift Quarantine Reason</label>
     <length>255</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
     <type>Text</type>
-    <description>Which rule held the record back, in the rule's own words, so it can be argued with.</description>
+    <unique>false</unique>
 </CustomField>

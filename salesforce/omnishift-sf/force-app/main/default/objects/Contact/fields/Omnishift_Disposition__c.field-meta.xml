@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Omnishift_Disposition__c</fullName>
+    <description>What the advisor did with the draft. This metadata previously declared a restricted picklist while the org has always held Text(80); Salesforce cannot convert Text to Picklist, so every deploy of this file failed and the restriction never existed. A value outside the intended set had already been written and had to be corrected by hand. The restricted training label is Omnishift_Outcome__c, which was created as a picklist from the start.</description>
+    <externalId>false</externalId>
     <label>Omnishift Disposition</label>
-    <type>Text</type>
     <length>80</length>
     <required>false</required>
-    <externalId>false</externalId>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Text</type>
     <unique>false</unique>
-    <trackTrending>false</trackTrending>
-    <description>What the advisor did with the draft. This metadata previously declared a restricted picklist while the org has always held Text(80); Salesforce cannot convert Text to Picklist, so every deploy of this file failed and the restriction never existed. A value outside the intended set had already been written and had to be corrected by hand. The restricted training label is Omnishift_Outcome__c, which was created as a picklist from the start.</description>
 </CustomField>

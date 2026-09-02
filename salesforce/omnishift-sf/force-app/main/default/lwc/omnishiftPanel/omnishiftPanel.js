@@ -204,6 +204,12 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
             key: `${r.kind}-${i}`,
             ...r,
             rowClass: r.upcoming ? 'tl tl_upcoming' : `tl tl_${r.kind}`,
+            iconName: r.upcoming ? 'utility:event'
+                : r.kind === 'signal' ? 'utility:trending'
+                : r.kind === 'marketing' ? 'utility:email'
+                : r.kind === 'activity' ? 'utility:call'
+                : r.kind === 'outcome' ? 'utility:success'
+                : 'utility:sparkles',
             sourceClass: srcClass(r.source)
         }));
         this.signals = this.timeline.filter((r) => r.kind === 'signal');
@@ -446,6 +452,9 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     // Shown beside the global rank so the two numbers an advisor sees - the
     // position on the Home queue and the rank on the record - can be read
     // together instead of looking like a disagreement.
+    get rankChip() {
+        return this.inQueue ? `Rank ${this.rank} · #${this.queueIndex + 1} today` : `Rank ${this.rank}`;
+    }
     get positionChip() {
         return this.inQueue ? `#${this.queueIndex + 1} today` : null;
     }

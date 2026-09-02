@@ -21,3 +21,5 @@
 .send__held { font-size: .625rem; color: #a4271b; }
 .err { font-size: .75rem; color: #a4271b; }
 @media (max-width: 900px) { .grid { grid-template-columns: repeat(7, minmax(6rem, 1fr)); overflow-x: auto; } }
+
+.skel__d { background: #f7f7f7; }

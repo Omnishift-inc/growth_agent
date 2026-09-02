@@ -52,90 +52,80 @@
             </template>
 
             <template if:true={isScored}>
-                <!-- the three things worth knowing before reading anything -->
-                <div class="hdr">
+                <!-- hero: the score, the reason, the state - one glance -->
+                <div class="hero">
                     <div class={scoreBand}>
                         <span class="band__n">{score}</span>
                         <span class="band__l">score</span>
                     </div>
-                    <div class="hdr__mid">
-                        <div class="hdr__chips">
-                            <span class="chip chip_rank">Rank {rank}</span>
-                            <template if:true={positionChip}>
-                                <span class="chip chip_pos">{positionChip}</span>
-                            </template>
+                    <div class="hero__main">
+                        <p class="hero__why">{whyNow}</p>
+                        <div class="hero__chips">
+                            <span class="chip chip_rank">{rankChip}</span>
                             <span class="chip chip_driver">{driverLabel}</span>
                             <span class={complianceChipClass}>{complianceStatus}</span>
-                            <template if:true={isEscalated}>
-                                <span class="chip chip_esc">Leadership notified</span>
-                            </template>
-                            <template if:true={outcome}>
-                                <span class="chip chip_outcome">{outcome}</span>
-                            </template>
+                            <template if:true={isEscalated}><span class="chip chip_esc">Leadership notified</span></template>
+                            <template if:true={outcome}><span class="chip chip_outcome">{outcome}</span></template>
                         </div>
-                        <p class="hdr__why">{whyNow}</p>
                     </div>
                 </div>
 
                 <template if:true={complianceNeedsAttention}>
-                    <p class="cmpl-note" role="status">{complianceReason}</p>
+                    <p class="note note_block" role="status">{complianceReason}</p>
                 </template>
                 <template if:true={upcomingSend}>
-                    <p class="mkt-note" role="status">
-                        Marketing has <strong>{upcomingSend.title}</strong> going to this person on {upcomingSend.when}. 
-                    </p>
+                    <p class="note note_mkt" role="status">Marketing: <strong>{upcomingSend.title}</strong> goes to this person on {upcomingSend.when}.</p>
                 </template>
 
-                <!-- engagement history: every touch, one order. The Pardot tab the client
-                     pointed at shows opens and clicks; this shows those, the external
-                     feeds, what the firm did, and what the agent did, together. -->
-                <template if:true={hasTimeline}>
-                    <p class="sec">Engagement history</p>
-                    <ol class="tls slds-m-bottom_medium">
-                        <template for:each={visibleTimeline} for:item="r">
-                            <li key={r.key} class={r.rowClass}>
-                                <span class="tl__when">{r.when}</span>
-                                <span class="tl__body">
-                                    <span class="tl__head">
-                                        <span class={r.sourceClass}>{r.source}</span>
-                                        <span class="tl__title">{r.title}</span>
-                                    </span>
-                                    <template if:true={r.detail}>
-                                        <span class="tl__detail">{r.detail}</span>
-                                    </template>
-                                    <template if:true={r.meta}>
-                                        <span class="tl__meta">{r.meta}</span>
-                                    </template>
-                                </span>
-                            </li>
+                <div class="cols">
+                    <!-- left: the evidence -->
+                    <section class="col">
+                        <h3 class="sec">Engagement history</h3>
+                        <template if:true={hasTimeline}>
+                            <ol class="tls">
+                                <template for:each={visibleTimeline} for:item="r">
+                                    <li key={r.key} class={r.rowClass}>
+                                        <span class="tl__when">{r.when}</span>
+                                        <span class="tl__icon"><lightning-icon icon-name={r.iconName} size="xx-small"></lightning-icon></span>
+                                        <span class="tl__body">
+                                            <span class="tl__head">
+                                                <span class="tl__title">{r.title}</span>
+                                                <span class={r.sourceClass}>{r.source}</span>
+                                            </span>
+                                            <template if:true={r.detail}><span class="tl__detail">{r.detail}</span></template>
+                                            <template if:true={r.meta}><span class="tl__meta">{r.meta}</span></template>
+                                        </span>
+                                    </li>
+                                </template>
+                            </ol>
+                            <template if:true={timelineHasMore}>
+                                <lightning-button variant="base" label={timelineToggleLabel} onclick={toggleTimeline}></lightning-button>
+                            </template>
                         </template>
-                    </ol>
-                    <template if:true={timelineHasMore}>
-                        <lightning-button variant="base" label={timelineToggleLabel} onclick={toggleTimeline} class="slds-m-bottom_small"></lightning-button>
-                    </template>
-                </template>
+                        <template if:false={hasTimeline}>
+                            <p class="muted">No touches on record yet.</p>
+                        </template>
+                    </section>
 
-                <!-- who and by when, as facts rather than a form -->
-                <div class="meta slds-m-bottom_medium">
-                    <div class="meta__i"><span class="meta__l">Assign to</span><span class="meta__v">{recommendedOwner}</span></div>
-                    <div class="meta__i"><span class="meta__l">Act by</span><span class="meta__v">{nextActionDate}</span></div>
-                    <template if:true={hasDisposition}>
-                        <div class="meta__i"><span class="meta__l">Last recorded</span><span class="meta__v">{lastDisposition}</span></div>
-                    </template>
+                    <!-- right: what to do with it -->
+                    <section class="col col_facts">
+                        <h3 class="sec">Next step</h3>
+                        <dl class="facts">
+                            <dt>Assign to</dt><dd>{recommendedOwner}</dd>
+                            <dt>Act by</dt><dd>{nextActionDate}</dd>
+                            <template if:true={hasDisposition}><dt>Last recorded</dt><dd>{lastDisposition}</dd></template>
+                            <template if:true={dispositionReason}><dt>Note</dt><dd class="muted">{dispositionReason}</dd></template>
+                        </dl>
+                        <template if:true={draftSubject}>
+                            <lightning-button label={draftButtonLabel} variant="neutral" onclick={toggleDraft} class="slds-m-top_small"></lightning-button>
+                        </template>
+                    </section>
                 </div>
 
-                <!-- draft -->
+                <!-- draft, full width when open -->
                 <template if:true={draftSubject}>
-                    <lightning-button
-                        label={draftButtonLabel}
-                        variant="neutral"
-                        onclick={toggleDraft}
-                        class="slds-m-bottom_x-small"
-                    ></lightning-button>
                     <template if:true={showDraft}>
-                        <div class="slds-box slds-box_xx-small slds-m-bottom_medium">
-
-                            <!-- reading -->
+                        <div class="draftwrap">
                             <template if:false={isEditing}>
                                 <div class="envelope">
                                     <div class="envelope__hdr">
@@ -143,53 +133,20 @@
                                         <span class="envelope__lbl">To</span><span>{emailTo}</span>
                                         <span class="envelope__lbl">Subject</span><span class="envelope__subj">{workingSubject}</span>
                                     </div>
-                                    <div class="envelope__body">
-                                        <lightning-formatted-text value={workingBody}></lightning-formatted-text>
-                                    </div>
+                                    <div class="envelope__body"><lightning-formatted-text value={workingBody}></lightning-formatted-text></div>
                                 </div>
+                                <template if:true={sendModeNote}><p class="muted slds-m-top_x-small">{sendModeNote}</p></template>
                             </template>
-
-                            <!-- editing -->
                             <template if:true={isEditing}>
-                                <lightning-input
-                                    label="Subject"
-                                    value={workingSubject}
-                                    data-field="subject"
-                                    onchange={handleDraftChange}
-                                    class="slds-m-bottom_x-small"
-                                ></lightning-input>
-                                <lightning-textarea
-                                    label="Message"
-                                    value={workingBody}
-                                    data-field="body"
-                                    onchange={handleDraftChange}
-                                ></lightning-textarea>
+                                <lightning-input label="Subject" value={workingSubject} data-field="subject" onchange={handleDraftChange} class="slds-m-bottom_x-small"></lightning-input>
+                                <lightning-textarea label="Message" value={workingBody} data-field="body" onchange={handleDraftChange}></lightning-textarea>
                                 <div class="slds-m-top_x-small">
-                                    <lightning-button
-                                        label="Save draft"
-                                        variant="brand"
-                                        disabled={isSaving}
-                                        onclick={handleSaveDraft}
-                                        class="slds-m-right_xx-small"
-                                    ></lightning-button>
-                                    <lightning-button
-                                        label="Cancel"
-                                        onclick={handleCancelEdit}
-                                    ></lightning-button>
+                                    <lightning-button label="Save draft" variant="brand" disabled={isSaving} onclick={handleSaveDraft} class="slds-m-right_xx-small"></lightning-button>
+                                    <lightning-button label="Cancel" onclick={handleCancelEdit}></lightning-button>
                                 </div>
-                            </template>
-
-                            <template if:false={isEditing}>
-                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
-                                    {sendModeNote}
-                                </p>
                             </template>
                         </div>
                     </template>
-                </template>
-
-                <template if:true={dispositionReason}>
-                    <p class="disp-reason">{dispositionReason}</p>
                 </template>
             </template>
         </div>
@@ -266,7 +223,7 @@
                     </div>
                 </div>
                 <div class="acts__foot">
-                    <p class="acts__note">{sendFootnote}</p>
+                    <template if:true={sendFootnote}><p class="acts__note">{sendFootnote}</p></template>
                     <lightning-button
                         variant="base"
                         label="Wrong person"

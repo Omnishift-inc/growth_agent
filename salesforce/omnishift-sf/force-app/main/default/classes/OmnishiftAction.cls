@@ -461,8 +461,8 @@ public with sharing class OmnishiftAction {
             + 'Omnishift_Escalated_On__c FROM ' + sObj + ' WHERE Id = :recordId LIMIT 1');
         if (rec.get('Omnishift_Scored_On__c') != null) {
             out.add(row((Datetime) rec.get('Omnishift_Scored_On__c'), 'agent', 'Omnishift',
-                        'Surfaced by the agent', 'Driver: ' + rec.get('Omnishift_Driver__c')
-                        + '. Run ' + rec.get('Omnishift_Run_Id__c') + '.', '', false));
+                        'Surfaced by the agent', 'Driver: ' + rec.get('Omnishift_Driver__c') + '.',
+                        'run ' + rec.get('Omnishift_Run_Id__c'), false));
         }
         if (rec.get('Omnishift_Dispositioned_On__c') != null) {
             out.add(row((Datetime) rec.get('Omnishift_Dispositioned_On__c'), 'agent', 'Omnishift',

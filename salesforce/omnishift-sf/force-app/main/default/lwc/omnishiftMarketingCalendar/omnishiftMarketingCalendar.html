@@ -14,6 +14,10 @@
                 <p class="err" role="alert">Could not read the marketing calendar.</p>
             </template>
 
+            <template if:true={isLoading}>
+                <div class="grid skelgrid" aria-busy="true"><div class="day skel__d"></div><div class="day skel__d"></div><div class="day skel__d"></div><div class="day skel__d"></div><div class="day skel__d"></div><div class="day skel__d"></div><div class="day skel__d"></div></div>
+            </template>
+            <template if:false={isLoading}>
             <div class="grid" role="grid" aria-label="Marketing calendar, one week">
                 <template for:each={days} for:item="d">
                     <div key={d.key} class={d.cls} role="gridcell">
@@ -33,6 +37,7 @@
                     </div>
                 </template>
             </div>
+            </template>
         </div>
     </lightning-card>
 </template>

@@ -21,6 +21,7 @@ export default class OmnishiftMarketingCalendar extends LightningElement {
     @track weekStart = startOfWeek(new Date());
     entries = [];
     error;
+    loaded = false;
 
     get weekStartIso() {
         return iso(this.weekStart);
@@ -31,12 +32,17 @@ export default class OmnishiftMarketingCalendar extends LightningElement {
         if (data) {
             this.entries = data;
             this.error = undefined;
+            this.loaded = true;
         } else if (error) {
             this.error = error;
             this.entries = [];
+            this.loaded = true;
         }
     }
 
+    get isLoading() {
+        return !this.loaded;
+    }
     get rangeLabel() {
         const end = new Date(this.weekStart);
         end.setDate(end.getDate() + 6);

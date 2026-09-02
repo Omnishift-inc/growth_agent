@@ -357,3 +357,47 @@
 .tl { background: #fff; border: 1px solid #e5e5e5; border-left-width: 3px; }
 .signal, .envelope { border-color: #e5e5e5; }
 .acts__note, .tl__meta, .signal__prov span, .meta__l { color: #5c5c5c; }
+
+/* ================= layout: one hero, two columns, one rhythm =================
+   Everything sits on an 0.75rem / 1rem rhythm. Sections are separated by space,
+   not by boxes, so the eye moves down the page instead of between frames. */
+.slds-card__body_inner { padding: 1rem; }
+.hero { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: .75rem; }
+.hero__main { min-width: 0; flex: 1 1 auto; }
+.hero__why { font-size: .9375rem; line-height: 1.5; color: #181818; margin: 0 0 .5rem; }
+.hero__chips { display: flex; flex-wrap: wrap; gap: .375rem; }
+.band { width: 3.75rem; padding: .5rem .25rem .4rem; }
+.band__n { font-size: 1.75rem; }
+.note { font-size: .75rem; padding: .5rem .75rem; border-radius: .25rem; margin: 0 0 .75rem; }
+.note_block { color: #a4271b; background: #fdecea; }
+.note_mkt { color: #8a5a0b; background: #fdf3e3; }
+.cols { display: grid; grid-template-columns: minmax(0, 3fr) minmax(14rem, 2fr); gap: 1.25rem; margin-bottom: 1rem; }
+@media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+.col { min-width: 0; }
+.col_facts { border-left: 1px solid #e5e5e5; padding-left: 1.25rem; }
+@media (max-width: 760px) { .col_facts { border-left: 0; padding-left: 0; } }
+.sec { margin: 0 0 .5rem; }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: .35rem .75rem; margin: 0; font-size: .8125rem; }
+.facts dt { color: #5c5c5c; }
+.facts dd { margin: 0; font-weight: 600; color: #181818; }
+.facts dd.muted { font-weight: 400; }
+.muted { font-size: .75rem; color: #5c5c5c; margin: 0; }
+.draftwrap { margin: 0 0 .5rem; }
+
+/* timeline: date gutter, icon, then the entry; long detail clamps to two lines */
+.tls { gap: .25rem; }
+.tl { grid-template-columns: 4.75rem 1.25rem minmax(0, 1fr); gap: .5rem; padding: .45rem .6rem; background: #fff; border: 1px solid #e5e5e5; border-left-width: 3px; }
+.tl__icon { padding-top: .1rem; }
+.tl__head { justify-content: space-between; }
+.tl__title { font-size: .8125rem; }
+.tl__detail { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* footer rhythm */
+.slds-card__footer { padding: .75rem 1rem; }
+.acts { gap: .5rem; }
+.outcome { margin-top: .75rem; padding-top: .75rem; }
+.acts__foot { margin-top: .5rem; padding-top: .5rem; }
+.queue-nav { margin-top: .5rem; padding-top: .5rem; }
+
+.acts__foot { justify-content: flex-end; }
+.acts__note { flex: 1 1 auto; }

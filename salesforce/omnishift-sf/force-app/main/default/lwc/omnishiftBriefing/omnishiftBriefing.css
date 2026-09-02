@@ -26,3 +26,6 @@
 
 .run { font-size: .625rem; color: #a8a8a8; margin: .5rem 0 0; word-break: break-all; }
 .err { font-size: .75rem; color: #a4271b; }
+
+.skel { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; min-height: 9rem; }
+.skel__t { height: 3.6rem; background: #f3f3f3; border-radius: .25rem; }
