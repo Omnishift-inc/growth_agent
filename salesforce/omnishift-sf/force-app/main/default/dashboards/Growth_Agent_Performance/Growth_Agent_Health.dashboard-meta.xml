@@ -21,7 +21,7 @@
                     <report>Growth_Agent_Performance/Recommendations_Produced</report>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
-            <rowSpan>2</rowSpan>
+            <rowSpan>3</rowSpan>
         </dashboardGridComponents>
         <dashboardGridComponents>
             <colSpan>3</colSpan>
@@ -40,7 +40,7 @@
                     <report>Growth_Agent_Performance/What_Advisors_Did_With_the_Draft</report>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
-            <rowSpan>2</rowSpan>
+            <rowSpan>3</rowSpan>
         </dashboardGridComponents>
         <dashboardGridComponents>
             <colSpan>3</colSpan>
@@ -59,7 +59,7 @@
                     <report>Growth_Agent_Performance/Top_Recommendations_Not_Worked</report>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
-            <rowSpan>2</rowSpan>
+            <rowSpan>3</rowSpan>
         </dashboardGridComponents>
         <dashboardGridComponents>
             <colSpan>3</colSpan>
@@ -78,7 +78,7 @@
                     <report>Growth_Agent_Performance/Compliance_Exceptions</report>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
-            <rowSpan>2</rowSpan>
+            <rowSpan>3</rowSpan>
         </dashboardGridComponents>
         <dashboardGridComponents>
             <colSpan>8</colSpan>
@@ -94,7 +94,7 @@
                     <sortBy>RowLabelAscending</sortBy>
                     <useReportChart>true</useReportChart>
             </dashboardComponent>
-            <rowIndex>2</rowIndex>
+            <rowIndex>3</rowIndex>
             <rowSpan>5</rowSpan>
         </dashboardGridComponents>
         <dashboardGridComponents>
@@ -111,7 +111,7 @@
                     <sortBy>RowValueDescending</sortBy>
                     <useReportChart>true</useReportChart>
             </dashboardComponent>
-            <rowIndex>2</rowIndex>
+            <rowIndex>3</rowIndex>
             <rowSpan>5</rowSpan>
         </dashboardGridComponents>
         <dashboardGridComponents>
@@ -127,7 +127,7 @@
                     <sortBy>RowValueDescending</sortBy>
                     <useReportChart>true</useReportChart>
             </dashboardComponent>
-            <rowIndex>7</rowIndex>
+            <rowIndex>8</rowIndex>
             <rowSpan>4</rowSpan>
         </dashboardGridComponents>
         <dashboardGridComponents>
@@ -143,7 +143,7 @@
                     <sortBy>RowValueDescending</sortBy>
                     <useReportChart>true</useReportChart>
             </dashboardComponent>
-            <rowIndex>7</rowIndex>
+            <rowIndex>8</rowIndex>
             <rowSpan>4</rowSpan>
         </dashboardGridComponents>
         <dashboardGridComponents>
@@ -163,7 +163,7 @@
                     <maxValuesDisplayed>10</maxValuesDisplayed>
                     <report>Growth_Agent_Performance/Top_Recommendations_Not_Worked</report>
             </dashboardComponent>
-            <rowIndex>11</rowIndex>
+            <rowIndex>12</rowIndex>
             <rowSpan>5</rowSpan>
         </dashboardGridComponents>
         <numberOfColumns>12</numberOfColumns>
