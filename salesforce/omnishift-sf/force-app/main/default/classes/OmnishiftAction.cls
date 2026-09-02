@@ -257,6 +257,42 @@ public with sharing class OmnishiftAction {
      * it on every Contact, so getRecord failed on all of them and reported a
      * field-level-security problem that was not the cause.
      */
+    /**
+     * The signal trail behind a recommendation.
+     *
+     * The panel shows where each piece of evidence came from, because an advisor
+     * about to call someone deserves to know whether the reason is a public
+     * filing or a pattern of visits to the website - and how sure the provider is.
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, Object>> getSignals(Id recordId) {
+        List<Map<String, Object>> out = new List<Map<String, Object>>();
+        if (recordId == null) return out;
+        String sObj = recordId.getSObjectType().getDescribe().getName();
+        List<Omnishift_Signal__c> sigs = (sObj == 'Contact')
+            ? [SELECT Signal_Type__c, Occurred_On__c, Confidence__c, Source__c, Detail__c
+               FROM Omnishift_Signal__c WHERE Omnishift_Contact__c = :recordId
+               ORDER BY Occurred_On__c DESC LIMIT 10]
+            : [SELECT Signal_Type__c, Occurred_On__c, Confidence__c, Source__c, Detail__c
+               FROM Omnishift_Signal__c WHERE Omnishift_Lead__c = :recordId
+               ORDER BY Occurred_On__c DESC LIMIT 10];
+        for (Omnishift_Signal__c g : sigs) {
+            Integer ageDays = (g.Occurred_On__c == null)
+                ? null : g.Occurred_On__c.daysBetween(Date.today());
+            out.add(new Map<String, Object>{
+                'type'       => g.Signal_Type__c,
+                'source'     => g.Source__c,
+                'detail'     => g.Detail__c,
+                'confidence' => g.Confidence__c == null ? null : g.Confidence__c.setScale(0),
+                'occurredOn' => g.Occurred_On__c,
+                'age'        => ageDays == null ? '' :
+                                ageDays == 0 ? 'today' :
+                                ageDays == 1 ? 'yesterday' : ageDays + ' days ago'
+            });
+        }
+        return out;
+    }
+
     @AuraEnabled(cacheable=true)
     public static Boolean personAccountsEnabled() {
         return OmnishiftEngine.personAccountsEnabled();

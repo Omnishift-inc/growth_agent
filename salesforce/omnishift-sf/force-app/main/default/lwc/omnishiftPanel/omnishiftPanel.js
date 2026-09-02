@@ -4,6 +4,7 @@ import { getListRecordsByName } from 'lightning/uiListsApi';
 import { NavigationMixin } from 'lightning/navigation';
 import recordDisposition from '@salesforce/apex/OmnishiftAction.recordDisposition';
 import personAccountsEnabled from '@salesforce/apex/OmnishiftAction.personAccountsEnabled';
+import getSignals from '@salesforce/apex/OmnishiftAction.getSignals';
 import saveDraft from '@salesforce/apex/OmnishiftAction.saveDraft';
 import sendDraft from '@salesforce/apex/OmnishiftAction.sendDraft';
 import liveEmailEnabled from '@salesforce/apex/OmnishiftAction.liveEmailEnabled';
@@ -77,6 +78,7 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     wasEdited = false;
     liveEmail = false;
     personAccounts = false;
+    signals = [];
 
     showSnooze = false;
     snoozeChoice = '7';
@@ -101,7 +103,43 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         // put a raw 005... id on screen where the advisor's name belongs. Ask for
         // the spanning field instead.
         extra.push(`${obj}.Omnishift_Recommended_Owner__r.Name`);
+        extra.push(`${obj}.Name`);
         return OMNISHIFT_FIELDS.map((f) => `${obj}.${f}`).concat(extra);
+    }
+
+    @wire(getSignals, { recordId: '$recordId' })
+    wiredSignals({ data }) {
+        if (!data) return;
+        this.signals = data.map((g, i) => ({
+            key: `${g.type}-${i}`,
+            type: g.type,
+            source: g.source,
+            detail: g.detail,
+            age: g.age,
+            confidence: g.confidence === null ? null : `${g.confidence}% confidence`,
+            // The provider is the useful distinction: a public filing and a
+            // pattern of website visits are different kinds of evidence.
+            sourceClass:
+                g.source === 'WealthFeed'
+                    ? 'src src_filing'
+                    : g.source === 'VisitIQ'
+                    ? 'src src_web'
+                    : 'src'
+        }));
+    }
+
+    get hasSignals() {
+        return this.signals && this.signals.length > 0;
+    }
+
+    // ---- the draft, shown as the email it will become ----------------------
+    get emailFrom() {
+        return this.recommendedOwner && this.recommendedOwner !== 'Unassigned'
+            ? this.recommendedOwner
+            : 'Unassigned';
+    }
+    get emailTo() {
+        return this.val('Name') || 'the prospect';
     }
 
     @wire(personAccountsEnabled)

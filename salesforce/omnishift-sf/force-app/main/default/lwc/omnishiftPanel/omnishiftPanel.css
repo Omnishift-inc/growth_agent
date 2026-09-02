@@ -150,3 +150,42 @@
     border-top: 1px solid #e5e5e5;
     padding-top: 0.65rem;
 }
+
+/* ---- signal trail -------------------------------------------------------
+   Where the evidence came from. The provider matters: a public filing and a
+   pattern of website visits are different kinds of claim, and an advisor about
+   to pick up the phone should be able to tell them apart at a glance. */
+.signals { display: grid; gap: .5rem; }
+.signal {
+    border: 1px solid #e5e5e5;
+    border-left: 3px solid #c9c9c9;
+    border-radius: .25rem;
+    padding: .5rem .65rem;
+    background: #fbfbfb;
+}
+.signal__head { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; }
+.signal__type { font-weight: 600; font-size: .8125rem; }
+.signal__age { color: #6b6b6b; font-size: .75rem; margin-left: auto; }
+.signal__detail { font-size: .75rem; color: #3e3e3e; margin-top: .25rem; line-height: 1.4; }
+.signal__conf { font-size: .6875rem; color: #706e6b; margin-top: .15rem; }
+.src {
+    font-size: .625rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    padding: .1rem .4rem; border-radius: 2px; background: #eee; color: #444;
+}
+.src_filing { background: #eef4ff; color: #0b5cab; }   /* WealthFeed - public record */
+.src_web    { background: #edf7f0; color: #1d6b40; }   /* VisitIQ - own site behaviour */
+
+/* ---- the draft, shown as the email it becomes -------------------------- */
+.envelope { border: 1px solid #d8d8d8; border-radius: .25rem; background: #fff; overflow: hidden; }
+.envelope__hdr {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .15rem .6rem;
+    padding: .5rem .7rem;
+    background: #f7f7f7;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: .75rem;
+}
+.envelope__lbl { color: #706e6b; }
+.envelope__subj { font-weight: 600; }
+.envelope__body { padding: .7rem; font-size: .8125rem; line-height: 1.55; white-space: pre-wrap; }

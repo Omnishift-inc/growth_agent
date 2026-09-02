@@ -12,6 +12,16 @@
  */
 public with sharing class OmnishiftEngine {
 
+    // How long an event stays relevant. Past this it is history, not a reason to
+    // call today.
+    private static final Integer SIGNAL_WINDOW_DAYS = 120;
+
+    // What a confirmed, current event is worth on top of the weighted base, and
+    // how strong one has to be before it becomes the reason shown to the advisor
+    // rather than a quiet contributor to the score.
+    private static final Decimal SIGNAL_MAX_BOOST = 35;
+    private static final Decimal SIGNAL_NARRATIVE_FLOOR = 14;
+
     public class Outcome {
         public Boolean suppressed = false;
         public String suppressReason;
@@ -54,12 +64,32 @@ public with sharing class OmnishiftEngine {
         public Boolean doNotCall = false;
         public Boolean optedOutOfEmail = false;
         public Boolean checkOwnedDuplicates = false;
+
+        // The strongest timing evidence there is: something actually happened to
+        // this person. Populated from Omnishift_Signal__c, which is where a
+        // provider feed lands.
+        public String signalType;
+        public Date   signalOn;
+        public Decimal signalConfidence;
+        public String signalSource;
     }
 
     /** Scoring needs FirstName, LastName, LeadSource, AnnualRevenue, CreatedDate
      *  and LastActivityDate. Everything else is read through the guards below,
      *  so a caller that only wants a score need not select what only suppression
      *  and routing use. */
+    /**
+     * Attaches the strongest current signal. The batch loads them once for the
+     * whole run rather than querying per record.
+     */
+    public static void attachSignal(Prospect p, Omnishift_Signal__c sig) {
+        if (sig == null) return;
+        p.signalType       = sig.Signal_Type__c;
+        p.signalOn         = sig.Occurred_On__c;
+        p.signalConfidence = sig.Confidence__c;
+        p.signalSource     = String.isBlank(sig.Source__c) ? 'an external feed' : sig.Source__c;
+    }
+
     public static Prospect fromLead(Lead l) {
         Prospect p = new Prospect();
         p.recordId = l.Id;
@@ -244,6 +274,22 @@ public with sharing class OmnishiftEngine {
             eventDriver = 'New and unworked';
         }
 
+        // A real event outranks every proxy for one. "Created three days ago" is a
+        // guess that something might be happening; "sold the business eleven days
+        // ago" is the thing itself. Confidence and age both discount it, so a weak
+        // match on a common name cannot outrank a firm one, and a stale event
+        // decays back toward the recency signal instead of sitting at the top of
+        // the queue forever.
+        Decimal signalBoost = 0;
+        if (p.signalType != null && p.signalOn != null) {
+            Integer signalAge = p.signalOn.daysBetween(Date.today());
+            if (signalAge >= 0 && signalAge <= SIGNAL_WINDOW_DAYS) {
+                Decimal conf = (p.signalConfidence == null) ? 60 : p.signalConfidence;
+                Decimal recency = 1 - (Decimal.valueOf(signalAge) / SIGNAL_WINDOW_DAYS * 0.5);
+                signalBoost = SIGNAL_MAX_BOOST * (conf / 100) * recency;
+            }
+        }
+
         // ---- ICP fit
         // The firm holds no view of a household's investable assets, so corporate
         // revenue is the only proxy either object offers, and both objects climb
@@ -279,7 +325,13 @@ public with sharing class OmnishiftEngine {
         if (cFit  > best) { best = cFit;  driver = 'ICP fit'; }
         if (cDorm > best) { best = cDorm; driver = 'Dormant'; }
 
-        Decimal total = cIntake + cEvent + cFit + cDorm;
+        // An event sits outside the weighted base rather than inside the timing
+        // dimension. Inside it, capped at the same ceiling as "created three days
+        // ago", a business sale could never outrank a plain referral - which is
+        // backwards. It is added evidence, so it adds.
+        if (signalBoost >= SIGNAL_NARRATIVE_FLOOR) driver = 'Event';
+
+        Decimal total = cIntake + cEvent + cFit + cDorm + signalBoost;
         o.score = Integer.valueOf(total.setScale(0, System.RoundingMode.HALF_UP));
         if (o.score > 100) o.score = 100;
         if (o.score < 1) o.score = 1;
@@ -294,6 +346,14 @@ public with sharing class OmnishiftEngine {
             o.whyNow = 'Inbound web enquiry. The stated SLA is a response inside five minutes, and this record has not been worked yet.';
         } else if (driver == 'New and unworked') {
             o.whyNow = 'Created ' + ageDays + ' days ago and never contacted. The window is open now and closes as it ages.';
+        } else if (driver == 'Event') {
+            Integer sAge = p.signalOn.daysBetween(Date.today());
+            String whenPhrase = (sAge == 0) ? 'today'
+                : (sAge == 1) ? 'yesterday'
+                : sAge + ' days ago';
+            o.whyNow = p.signalType + ' picked up ' + whenPhrase
+                + ' by ' + p.signalSource + '. That is the window, and it closes as the '
+                + 'decisions get made without you.';
         } else if (driver == 'Review overdue') {
             o.whyNow = 'Nothing recorded against this relationship for roughly ' + (idleDays / 30)
                 + ' months. The firm works to an annual review, so this one is past due.';
@@ -393,6 +453,15 @@ public with sharing class OmnishiftEngine {
             o.draftBody = first + ' - we were introduced through a mutual contact, so I wanted to reach out '
                 + 'directly rather than through a form. No agenda. If there is a question worth twenty minutes, '
                 + 'I am glad to make the time.';
+        } else if (driver == 'Event') {
+            // Deliberately does not name the event. The feed's confidence is not
+            // certainty, and opening with "congratulations on selling the company"
+            // to someone who did not is unrecoverable.
+            o.draftSubject = 'A question about timing';
+            o.draftBody = first + ' - I gather this may be a period of change. The months around '
+                + 'one tend to raise more questions than the change itself: where proceeds sit, '
+                + 'how the tax year lands, whether the existing plan still fits. No pitch and no '
+                + 'materials. Twenty minutes if it is useful.';
         } else if (driver == 'Inbound web') {
             o.draftSubject = 'Following up on your enquiry';
             o.draftBody = first + ' - thank you for getting in touch. Happy to answer whatever prompted it, and '

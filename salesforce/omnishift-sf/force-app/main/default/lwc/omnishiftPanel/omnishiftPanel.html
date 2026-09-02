@@ -65,6 +65,26 @@
                     </template>
                 </div>
 
+                <!-- where the evidence came from -->
+                <template if:true={hasSignals}>
+                    <p class="slds-text-title_caps slds-m-bottom_xx-small">Signals</p>
+                    <div class="signals slds-m-bottom_medium">
+                        <template for:each={signals} for:item="g">
+                            <div key={g.key} class="signal">
+                                <div class="signal__head">
+                                    <span class={g.sourceClass}>{g.source}</span>
+                                    <span class="signal__type">{g.type}</span>
+                                    <span class="signal__age">{g.age}</span>
+                                </div>
+                                <p class="signal__detail">{g.detail}</p>
+                                <template if:true={g.confidence}>
+                                    <p class="signal__conf">{g.confidence}</p>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
                 <!-- why now -->
                 <p class="slds-text-title_caps slds-m-bottom_xx-small">Why now</p>
                 <p class="slds-text-body_regular slds-m-bottom_medium">{whyNow}</p>
@@ -107,10 +127,16 @@
 
                             <!-- reading -->
                             <template if:false={isEditing}>
-                                <p class="slds-text-body_small slds-m-bottom_xx-small">
-                                    <strong>{workingSubject}</strong>
-                                </p>
-                                <lightning-formatted-text value={workingBody}></lightning-formatted-text>
+                                <div class="envelope">
+                                    <div class="envelope__hdr">
+                                        <span class="envelope__lbl">From</span><span>{emailFrom}</span>
+                                        <span class="envelope__lbl">To</span><span>{emailTo}</span>
+                                        <span class="envelope__lbl">Subject</span><span class="envelope__subj">{workingSubject}</span>
+                                    </div>
+                                    <div class="envelope__body">
+                                        <lightning-formatted-text value={workingBody}></lightning-formatted-text>
+                                    </div>
+                                </div>
                             </template>
 
                             <!-- editing -->

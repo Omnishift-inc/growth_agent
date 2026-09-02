@@ -10,6 +10,7 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
     private Set<String> ownedEmails = new Set<String>();
     private Set<String> ownedNames  = new Set<String>();
     private List<User>  pool        = new List<User>();
+    private Map<Id, Omnishift_Signal__c> signals = new Map<Id, Omnishift_Signal__c>();
     private Map<Id, Integer> load   = new Map<Id, Integer>();
     public  Integer scored = 0;
     public  Integer suppressed = 0;
@@ -39,6 +40,20 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
             eligible.add(psa.AssigneeId);
         }
         if (eligible.isEmpty()) eligible.add(UserInfo.getUserId());
+
+        // One query for the whole run. Keep only the strongest signal per person:
+        // most recent wins, and confidence breaks a tie on the same day.
+        for (Omnishift_Signal__c sig : [
+                SELECT Signal_Type__c, Occurred_On__c, Confidence__c, Source__c,
+                       Omnishift_Lead__c, Omnishift_Contact__c
+                FROM Omnishift_Signal__c
+                WHERE Occurred_On__c != null
+                  AND Occurred_On__c >= LAST_N_DAYS:120
+                ORDER BY Occurred_On__c DESC, Confidence__c DESC
+                LIMIT 20000]) {
+            Id key = (sig.Omnishift_Lead__c != null) ? sig.Omnishift_Lead__c : sig.Omnishift_Contact__c;
+            if (key != null && !signals.containsKey(key)) signals.put(key, sig);
+        }
 
         pool = [SELECT Id, Name, State FROM User
                 WHERE IsActive = true AND Id IN :eligible
@@ -100,6 +115,7 @@ public with sharing class OmnishiftEngineBatch implements Database.Batchable<sOb
             OmnishiftEngine.Prospect p = isLead
                 ? OmnishiftEngine.fromLead((Lead) rec)
                 : OmnishiftEngine.fromContact((Contact) rec);
+            OmnishiftEngine.attachSignal(p, signals.get(rec.Id));
 
             // Every Omnishift field carries the same API name on both objects, so
             // the writes below are identical once the shell is the right type.

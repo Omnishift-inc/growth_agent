@@ -386,4 +386,47 @@ private class OmnishiftEngineTest {
         System.assert(after.Omnishift_Draft_Body__c.contains('guaranteed'),
             'The advisor edit must survive the run.');
     }
+
+    @isTest static void aRecentEventOutranksAPlainReferral() {
+        OmnishiftEngine.Prospect ref = new OmnishiftEngine.Prospect();
+        ref.firstName='Wren'; ref.lastName='Ashcombe'; ref.intakeChannel='Partner Referral';
+        ref.createdDate=Datetime.now(); ref.fitValue=12000000;
+        OmnishiftEngine.Outcome refOut = OmnishiftEngine.score(ref);
+
+        OmnishiftEngine.Prospect ev = new OmnishiftEngine.Prospect();
+        ev.firstName='Soren'; ev.lastName='Blackwood'; ev.intakeChannel='Other';
+        ev.createdDate=Datetime.now(); ev.fitValue=12000000;
+        ev.signalType='Business sale'; ev.signalOn=Date.today().addDays(-5);
+        ev.signalConfidence=90; ev.signalSource='WealthFeed';
+        OmnishiftEngine.Outcome evOut = OmnishiftEngine.score(ev);
+
+        System.assert(evOut.score > refOut.score,
+            'Someone who just sold a business is a better call than someone who merely '
+            + 'arrived by referral. event=' + evOut.score + ' referral=' + refOut.score);
+        System.assertEquals('Event', evOut.topDriver);
+        System.assert(evOut.whyNow.contains('WealthFeed'),
+            'The advisor has to know which feed made the claim: ' + evOut.whyNow);
+        System.assert(evOut.whyNow.contains('5 days ago'), evOut.whyNow);
+    }
+
+    @isTest static void aStaleOrWeakSignalDoesNotTakeOver() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.firstName='Thea'; p.lastName='Marlowe'; p.intakeChannel='Partner Referral';
+        p.createdDate=Datetime.now(); p.fitValue=12000000;
+        p.signalType='Business sale'; p.signalOn=Date.today().addDays(-400);
+        p.signalConfidence=95; p.signalSource='WealthFeed';
+        OmnishiftEngine.Outcome o = OmnishiftEngine.score(p);
+        System.assertNotEquals('Event', o.topDriver,
+            'An event from over a year ago is history, not a reason to call today.');
+    }
+
+    @isTest static void theEventDraftDoesNotAssertWhatHappened() {
+        OmnishiftEngine.Prospect p = new OmnishiftEngine.Prospect();
+        p.firstName='Ida'; p.lastName='Vexley';
+        OmnishiftEngine.Outcome d = OmnishiftEngine.draft(p, 'Event');
+        System.assert(!d.draftBody.toLowerCase().contains('congratulations'),
+            'A feed is not certainty. Congratulating someone on a sale that did not '
+            + 'happen is unrecoverable: ' + d.draftBody);
+        System.assert(d.draftBody.contains('Ida'), d.draftBody);
+    }
 }
