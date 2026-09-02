@@ -26,6 +26,7 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
     checkedAt;
     slow = false;
     isRefreshing = false;
+    segment = 'all';   // all | prospects | clients
     slowTimer;
 
     connectedCallback() {
@@ -190,8 +191,17 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
                 f.Account && f.Account.value && f.Account.value.fields
                     ? f.Account.value.fields.Name.value
                     : '';
+            const score = Number(v('Omnishift_Score__c')) || 0;
+            const why = String(v('Omnishift_Why_Now__c') || '');
+            // Every reason ends with the same explanatory clause. Useful once on
+            // the record, pure noise repeated down thirty rows.
+            const firstSentence = why.split(/(?<=\.)\s/)[0] || why;
             return {
                 id: r.id,
+                isLead,
+                score,
+                scoreClass: score >= 80 ? 'sc sc_high' : score >= 60 ? 'sc sc_mid' : 'sc sc_low',
+                whyShort: firstSentence,
                 objectApiName: isLead ? 'Lead' : 'Contact',
                 sortRank: rank === null ? Number.MAX_SAFE_INTEGER : Number(rank),
                 rank: rank === null ? '--' : String(rank).padStart(2, '0'),
@@ -212,11 +222,41 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
                         : 'badge badge_success'
             };
         };
-        const all = (this.leadRows || [])
+        let all = (this.leadRows || [])
             .map((r) => map(r, true))
             .concat((this.contactRows || []).map((r) => map(r, false)));
         // One ranking across both objects, which is how the engine produced it.
-        return all.sort((a, b) => a.sortRank - b.sortRank);
+        all.sort((a, b) => a.sortRank - b.sortRank);
+        if (this.segment === 'prospects') all = all.filter((r) => r.isLead);
+        if (this.segment === 'clients') all = all.filter((r) => !r.isLead);
+        // Number by position in today's list, not by global rank. Anything
+        // already handled drops out, so the ranks have gaps - and a numbered
+        // list that skips 03 reads as a bug rather than as work already done.
+        return all.map((r, i) => ({ ...r, pos: String(i + 1).padStart(2, '0') }));
+    }
+
+    get counts() {
+        const all = (this.leadRows || []).length + (this.contactRows || []).length;
+        return {
+            all,
+            prospects: (this.leadRows || []).length,
+            clients: (this.contactRows || []).length
+        };
+    }
+    get segments() {
+        const c = this.counts;
+        return [
+            { key: 'all', label: `All ${c.all}` },
+            { key: 'prospects', label: `Prospects ${c.prospects}` },
+            { key: 'clients', label: `Clients ${c.clients}` }
+        ].map((s) => ({
+            ...s,
+            cls: this.segment === s.key ? 'seg seg_on' : 'seg',
+            pressed: this.segment === s.key ? 'true' : 'false'
+        }));
+    }
+    handleSegment(event) {
+        this.segment = event.currentTarget.dataset.seg;
     }
 
     // Checked against the org: neither refreshApex nor RefreshEvent re-provisions
