@@ -25,7 +25,12 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
     })
     wiredList({ data, error }) {
         if (data) {
-            this.records = (data.records && data.records.records) || [];
+            // getListRecordsByName returns the array at data.records. Reaching for
+            // data.records.records found undefined every time, so the queue
+            // reported "nothing due today" no matter what the list view held.
+            this.records = Array.isArray(data.records)
+                ? data.records
+                : (data.records && data.records.records) || [];
             this.error = undefined;
         } else if (error) {
             this.error = error;
