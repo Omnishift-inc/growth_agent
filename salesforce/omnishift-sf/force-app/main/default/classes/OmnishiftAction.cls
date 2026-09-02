@@ -293,6 +293,57 @@ public with sharing class OmnishiftAction {
         return out;
     }
 
+    /**
+     * The morning briefing: what the last run produced, across both objects.
+     *
+     * Every number is counted from the records themselves rather than stored, so
+     * it cannot drift from what the queue and the panels show.
+     */
+    @AuraEnabled(cacheable=true)
+    public static Map<String, Object> getBriefing() {
+        Integer dueLeads = [SELECT COUNT() FROM Lead
+                            WHERE Omnishift_Next_Action_Date__c <= TODAY AND IsConverted = false];
+        Integer dueCons  = [SELECT COUNT() FROM Contact WHERE Omnishift_Next_Action_Date__c <= TODAY];
+        Integer blocked  = [SELECT COUNT() FROM Lead WHERE Omnishift_Compliance_Status__c = 'Blocked']
+                         + [SELECT COUNT() FROM Contact WHERE Omnishift_Compliance_Status__c = 'Blocked'];
+        Integer worked   = [SELECT COUNT() FROM Lead WHERE Omnishift_Dispositioned_On__c = TODAY]
+                         + [SELECT COUNT() FROM Contact WHERE Omnishift_Dispositioned_On__c = TODAY];
+        Integer suppressed = [SELECT COUNT() FROM Lead
+                              WHERE Omnishift_Score__c = 0 AND IsConverted = false];
+
+        // Signal provenance, which is the part a prospective client asks about.
+        Map<String, Integer> bySource = new Map<String, Integer>();
+        for (AggregateResult ar : [SELECT Source__c src, COUNT(Id) n FROM Omnishift_Signal__c
+                                   WHERE Occurred_On__c >= LAST_N_DAYS:120 GROUP BY Source__c]) {
+            bySource.put((String) ar.get('src'), (Integer) ar.get('n'));
+        }
+        List<Map<String, Object>> sources = new List<Map<String, Object>>();
+        for (String k : bySource.keySet()) {
+            sources.add(new Map<String, Object>{ 'name' => k, 'count' => bySource.get(k) });
+        }
+
+        String runId;
+        Datetime scoredOn;
+        for (Lead l : [SELECT Omnishift_Run_Id__c, Omnishift_Scored_On__c FROM Lead
+                       WHERE Omnishift_Scored_On__c != null
+                       ORDER BY Omnishift_Scored_On__c DESC LIMIT 1]) {
+            runId = l.Omnishift_Run_Id__c;
+            scoredOn = l.Omnishift_Scored_On__c;
+        }
+
+        return new Map<String, Object>{
+            'due'        => dueLeads + dueCons,
+            'dueLeads'   => dueLeads,
+            'dueContacts'=> dueCons,
+            'blocked'    => blocked,
+            'worked'     => worked,
+            'suppressed' => suppressed,
+            'sources'    => sources,
+            'runId'      => runId,
+            'scoredOn'   => scoredOn
+        };
+    }
+
     @AuraEnabled(cacheable=true)
     public static Boolean personAccountsEnabled() {
         return OmnishiftEngine.personAccountsEnabled();

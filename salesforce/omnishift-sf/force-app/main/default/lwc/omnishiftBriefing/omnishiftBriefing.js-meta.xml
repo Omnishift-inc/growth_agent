@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Growth Agent Briefing</masterLabel>
+    <description>What the last nightly run produced: how much is waiting, how much is handled, what compliance stopped, and where the signals came from.</description>
+    <targets>
+        <target>lightning__HomePage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+</LightningComponentBundle>

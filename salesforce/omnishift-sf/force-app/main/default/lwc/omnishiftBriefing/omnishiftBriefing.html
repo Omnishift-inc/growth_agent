@@ -1,0 +1,50 @@
+<template>
+    <lightning-card title="Growth Agent briefing" icon-name="utility:sparkles">
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+
+            <template if:true={isLoading}>
+                <p class="slds-text-body_small slds-text-color_weak">Reading the last run…</p>
+            </template>
+
+            <template if:true={hasError}>
+                <p class="err" role="alert">
+                    Could not read the last run. {errorText}
+                </p>
+            </template>
+
+            <template if:true={data}>
+                <div class="stats">
+                    <template for:each={stats} for:item="s">
+                        <div key={s.key} class={s.cls}>
+                            <span class="stat__n">{s.n}</span>
+                            <span class="stat__l">{s.label}</span>
+                        </div>
+                    </template>
+                </div>
+
+                <p class="split">{split}</p>
+
+                <template if:true={hasSources}>
+                    <p class="lbl">Signals in the last 120 days</p>
+                    <div class="srcs">
+                        <template for:each={sources} for:item="s">
+                            <span key={s.key} class="srcrow">
+                                <span class={s.cls}>{s.name}</span>
+                                <span class="srcrow__n">{s.count}</span>
+                            </span>
+                        </template>
+                    </div>
+                </template>
+
+                <lightning-button
+                    label="Open today's list"
+                    variant="neutral"
+                    onclick={openQueue}
+                    class="slds-m-top_small"
+                ></lightning-button>
+
+                <p class="run">{runLine}</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>
