@@ -1,0 +1,38 @@
+<template>
+    <lightning-card icon-name="standard:event">
+        <span slot="title">Marketing Calendar <span class="src">Account Engagement</span></span>
+        <div slot="actions" class="nav">
+            <lightning-button-icon icon-name="utility:chevronleft" alternative-text="Previous week" onclick={prev} size="small"></lightning-button-icon>
+            <lightning-button label="This week" variant="base" onclick={today}></lightning-button>
+            <lightning-button-icon icon-name="utility:chevronright" alternative-text="Next week" onclick={next} size="small"></lightning-button-icon>
+        </div>
+
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+            <p class="range">{rangeLabel} <span class="summary">{summary}</span></p>
+
+            <template if:true={error}>
+                <p class="err" role="alert">Could not read the marketing calendar.</p>
+            </template>
+
+            <div class="grid" role="grid" aria-label="Marketing calendar, one week">
+                <template for:each={days} for:item="d">
+                    <div key={d.key} class={d.cls} role="gridcell">
+                        <div class="day__head">
+                            <span class="day__name">{d.name}</span>
+                            <span class="day__num">{d.num}</span>
+                        </div>
+                        <template for:each={d.sends} for:item="s">
+                            <div key={s.key} class={s.cls} title={s.audience}>
+                                <span class="send__label">{s.label}</span>
+                                <span class="send__meta">{s.type} · {s.peopleLabel}</span>
+                                <template if:true={s.hasDeferred}>
+                                    <span class="send__held">{s.deferredLabel}</span>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>

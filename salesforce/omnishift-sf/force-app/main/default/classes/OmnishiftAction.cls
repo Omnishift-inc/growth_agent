@@ -505,6 +505,56 @@ public with sharing class OmnishiftAction {
         }
     }
 
+    /**
+     * The marketing calendar, as Account Engagement shows it and as Deana had it
+     * on screen: a week grid of scheduled sends. Here it also carries what the
+     * agent did about each send - how many people it held back so the firm does
+     * not arrive twice in one inbox.
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, Object>> getCalendar(Date weekStart) {
+        Date start = (weekStart == null) ? Date.today().toStartOfWeek() : weekStart;
+        Date stop = start.addDays(7);
+        // from, to and like are SOQL keywords and cannot name variables.
+        Datetime windowStart = Datetime.newInstance(start, Time.newInstance(0,0,0,0));
+        Datetime windowEnd = Datetime.newInstance(stop, Time.newInstance(0,0,0,0));
+
+        // group by send name + day: one calendar entry per campaign per day
+        Map<String, Map<String, Object>> entries = new Map<String, Map<String, Object>>();
+        for (Omnishift_Marketing_Send__c m : [
+                SELECT Name, Scheduled_For__c, Campaign_Type__c, Audience__c, Source_System__c,
+                       Omnishift_Lead__c, Omnishift_Contact__c
+                FROM Omnishift_Marketing_Send__c
+                WHERE Scheduled_For__c >= :windowStart AND Scheduled_For__c < :windowEnd
+                ORDER BY Scheduled_For__c LIMIT 2000]) {
+            Date d = m.Scheduled_For__c.date();
+            String key = d.format() + '|' + m.Name;
+            Map<String, Object> e = entries.get(key);
+            if (e == null) {
+                e = new Map<String, Object>{
+                    'key' => key, 'name' => m.Name, 'day' => d,
+                    'dayIndex' => start.daysBetween(d),
+                    'time' => m.Scheduled_For__c.format('h:mma').toLowerCase(),
+                    'type' => m.Campaign_Type__c, 'audience' => m.Audience__c,
+                    'source' => m.Source_System__c, 'people' => 0, 'deferred' => 0
+                };
+                entries.put(key, e);
+            }
+            e.put('people', (Integer) e.get('people') + 1);
+        }
+        // how many the agent held back for each send, by the reason it wrote
+        for (String key : entries.keySet()) {
+            String nm = (String) entries.get(key).get('name');
+            String pattern = '%"' + nm + '"%';
+            Integer held = [SELECT COUNT() FROM Lead WHERE Omnishift_Quarantined__c = true
+                            AND Omnishift_Quarantine_Reason__c LIKE :pattern]
+                         + [SELECT COUNT() FROM Contact WHERE Omnishift_Quarantined__c = true
+                            AND Omnishift_Quarantine_Reason__c LIKE :pattern];
+            entries.get(key).put('deferred', held);
+        }
+        return entries.values();
+    }
+
     @AuraEnabled(cacheable=true)
     public static Boolean personAccountsEnabled() {
         return OmnishiftEngine.personAccountsEnabled();

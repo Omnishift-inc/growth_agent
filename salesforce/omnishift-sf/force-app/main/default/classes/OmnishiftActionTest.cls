@@ -241,4 +241,29 @@ private class OmnishiftActionTest {
             if (at != null) prev = at;
         }
     }
+
+    @isTest static void theCalendarGroupsSendsByCampaignAndDay() {
+        Lead a = newLead();
+        Lead b = new Lead(FirstName='Bram', LastName='Kirkbride', Company='Kirkbride Holdings',
+                          Email='bram.kirkbride@example.com', Status='Open - Not Contacted');
+        insert b;
+        Date monday = Date.today().toStartOfWeek().addDays(1);
+        Datetime at = Datetime.newInstance(monday, Time.newInstance(17,0,0,0));
+        insert new List<Omnishift_Marketing_Send__c>{
+            new Omnishift_Marketing_Send__c(Name='Aug 26 Gus Dow Send', Omnishift_Lead__c=a.Id,
+                Scheduled_For__c=at, Campaign_Type__c='Dow drip', Audience__c='Prospects - all',
+                Source_System__c='Account Engagement'),
+            new Omnishift_Marketing_Send__c(Name='Aug 26 Gus Dow Send', Omnishift_Lead__c=b.Id,
+                Scheduled_For__c=at, Campaign_Type__c='Dow drip', Audience__c='Prospects - all',
+                Source_System__c='Account Engagement')
+        };
+        Test.startTest();
+        List<Map<String, Object>> cal = OmnishiftAction.getCalendar(Date.today().toStartOfWeek());
+        Test.stopTest();
+        Map<String, Object> hit;
+        for (Map<String, Object> e : cal) if (e.get('name') == 'Aug 26 Gus Dow Send') hit = e;
+        System.assertNotEquals(null, hit, 'The send must appear on its day.');
+        System.assertEquals(2, hit.get('people'), 'Two people, one calendar entry - as Pardot shows it.');
+        System.assertEquals(1, hit.get('dayIndex'), 'Monday is one day after the week start.');
+    }
 }

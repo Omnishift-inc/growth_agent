@@ -15,6 +15,12 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
+                <componentName>omnishiftMarketingCalendar</componentName>
+                <identifier>omnishiftMarketingCalendar_home</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentName>home:heroChart</componentName>
                 <identifier>home_heroChart</identifier>
             </componentInstance>

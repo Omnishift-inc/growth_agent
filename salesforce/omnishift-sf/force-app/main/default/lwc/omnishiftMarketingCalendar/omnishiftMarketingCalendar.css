@@ -1,0 +1,23 @@
+/* Seven equal columns, the way Account Engagement draws it, so the two
+   calendars read as the same thing. Today is the only tinted column. */
+.src { font-size: .625rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+       padding: .1rem .4rem; border-radius: 2px; background: #eef4ff; color: #0b5cab; margin-left: .5rem; vertical-align: middle; }
+.nav { display: flex; align-items: center; gap: .25rem; }
+.range { font-size: .8125rem; font-weight: 600; color: #16325c; margin: 0 0 .5rem; }
+.summary { font-weight: 400; color: #706e6b; margin-left: .5rem; }
+.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; background: #e5e5e5; border: 1px solid #e5e5e5; }
+.day { background: #fff; min-height: 7rem; padding: .35rem .4rem; display: flex; flex-direction: column; gap: .3rem; }
+.day_today { background: #fbf6e5; }
+.day__head { display: flex; justify-content: space-between; align-items: baseline; }
+.day__name { font-size: .625rem; letter-spacing: .06em; color: #706e6b; }
+.day__num { font-size: .8125rem; font-weight: 600; color: #16325c; font-variant-numeric: tabular-nums; }
+.send { display: flex; flex-direction: column; gap: .1rem; padding: .3rem .4rem; border-radius: .2rem;
+        background: #eaf5ee; border-left: 3px solid #1c6b41; }
+.send_newsletter, .send_market-commentary { background: #eef4ff; border-left-color: #0b5cab; }
+.send_webinar-invitation, .send_event-follow-up { background: #f4eefb; border-left-color: #6b3fa0; }
+.send_tax-season { background: #fdf3e3; border-left-color: #8a5a0b; }
+.send__label { font-size: .6875rem; font-weight: 600; color: #16325c; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.send__meta { font-size: .625rem; color: #706e6b; }
+.send__held { font-size: .625rem; color: #a4271b; }
+.err { font-size: .75rem; color: #a4271b; }
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(7, minmax(6rem, 1fr)); overflow-x: auto; } }
