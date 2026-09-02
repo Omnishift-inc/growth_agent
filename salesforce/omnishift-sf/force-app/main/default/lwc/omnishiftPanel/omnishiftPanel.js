@@ -410,6 +410,30 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
     }
 
     // What the advisor should read first: how strong, why, and whether it can go.
+    // One sentence per label, for the tooltip. The chip is the headline; this
+    // is what it means to the person reading it.
+    get driverHelp() {
+        const h = {
+            'Event': 'A confirmed event from a data feed - a filing, a sale, a role change - is the strongest thing on this record.',
+            'Referral': 'Arrived through an introduction. Referred prospects convert better than any other intake.',
+            'Inbound web': 'Came in through the website. The stated SLA is a response inside five minutes.',
+            'New and unworked': 'Created recently and nobody has contacted them yet.',
+            'Review overdue': 'An existing client past the annual review.',
+            'Dormant': 'Nothing recorded for a long time. Ageing out unworked.',
+            'Profile fit': 'No timing signal. Surfaced on profile alone: seniority and size against the ideal client.'
+        };
+        return 'Why this record is on the list today. ' + (h[this.driverLabel] || '');
+    }
+    get complianceHelp() {
+        const h = {
+            'Passed': 'The draft passed every SEC marketing-rule check. It can be sent as written.',
+            'Auto-corrected': 'A prohibited term was removed automatically. Re-read the sentence before sending.',
+            'Flagged': 'Something a principal should look at before it goes out.',
+            'Blocked': 'Cannot be sent as written. Rewrite it first.',
+            'Not checked': 'No draft has been checked yet.'
+        };
+        return 'Result of the compliance check on the draft. ' + (h[this.complianceStatus] || '');
+    }
     get driverLabel() {
         const w = this.whyNow || '';
         if (w.includes('picked up')) return 'Event';

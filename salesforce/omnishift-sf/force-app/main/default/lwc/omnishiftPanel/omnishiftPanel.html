@@ -62,11 +62,11 @@
                         <p class="sec sec_why">Why now</p>
                         <p class="hero__why">{whyNow}</p>
                         <div class="hero__chips">
-                            <span class="chip chip_rank">{rankChip}</span>
-                            <span class="chip chip_driver">{driverLabel}</span>
-                            <span class={complianceChipClass}>{complianceStatus}</span>
-                            <template if:true={isEscalated}><span class="chip chip_esc">Leadership notified</span></template>
-                            <template if:true={outcome}><span class="chip chip_outcome">{outcome}</span></template>
+                            <span class="chip chip_rank" title="Position on today's list, across prospects and clients">{rankChip}</span>
+                            <span class="chip chip_driver" title={driverHelp}><span class="chip__k">Reason</span>{driverLabel}</span>
+                            <span class={complianceChipClass} title={complianceHelp}><span class="chip__k">Compliance</span>{complianceStatus}</span>
+                            <template if:true={isEscalated}><span class="chip chip_esc" title="Household above the $10M threshold. John and Deana were notified the first time it was surfaced."><span class="chip__k">Escalated</span>Leadership notified</span></template>
+                            <template if:true={outcome}><span class="chip chip_outcome" title="What happened after the outreach, as recorded by the advisor. This is what the ranking learns from."><span class="chip__k">Outcome</span>{outcome}</span></template>
                         </div>
                     </div>
                 </div>

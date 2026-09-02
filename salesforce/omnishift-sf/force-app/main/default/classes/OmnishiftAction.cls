@@ -449,8 +449,15 @@ public with sharing class OmnishiftAction {
                        FROM Task WHERE WhoId = :recordId ORDER BY CreatedDate DESC LIMIT 30]) {
             Datetime at = t.ActivityDate != null
                 ? Datetime.newInstance(t.ActivityDate, Time.newInstance(12,0,0,0)) : t.CreatedDate;
+            // Seeded activity does not always carry a Type; the subject says
+            // what it was, and "Activity:" says nothing.
+            String kind = t.Type;
+            if (String.isBlank(kind)) {
+                String s = t.Subject == null ? '' : t.Subject.toLowerCase();
+                kind = s.contains('call') ? 'Call' : (s.contains('email') || s.contains('note') || s.contains('question') || s.contains('conversation') || s.contains('timing')) ? 'Email' : 'Activity';
+            }
             out.add(row(at, 'activity', 'Salesforce',
-                        (String.isBlank(t.Type) ? 'Activity' : t.Type) + ': ' + t.Subject,
+                        kind + ': ' + t.Subject,
                         String.isBlank(t.Description) ? t.Status : t.Description.left(220),
                         t.Owner.Name, false));
         }
@@ -523,7 +530,8 @@ public with sharing class OmnishiftAction {
         Map<String, Map<String, Object>> entries = new Map<String, Map<String, Object>>();
         for (Omnishift_Marketing_Send__c m : [
                 SELECT Name, Scheduled_For__c, Campaign_Type__c, Audience__c, Source_System__c,
-                       Omnishift_Lead__c, Omnishift_Contact__c
+                       Omnishift_Lead__c, Omnishift_Lead__r.Name, Omnishift_Lead__r.Omnishift_Quarantine_Reason__c,
+                       Omnishift_Contact__c, Omnishift_Contact__r.Name, Omnishift_Contact__r.Omnishift_Quarantine_Reason__c
                 FROM Omnishift_Marketing_Send__c
                 WHERE Scheduled_For__c >= :windowStart AND Scheduled_For__c < :windowEnd
                 ORDER BY Scheduled_For__c LIMIT 2000]) {
@@ -536,11 +544,25 @@ public with sharing class OmnishiftAction {
                     'dayIndex' => start.daysBetween(d),
                     'time' => m.Scheduled_For__c.format('h:mma').toLowerCase(),
                     'type' => m.Campaign_Type__c, 'audience' => m.Audience__c,
-                    'source' => m.Source_System__c, 'people' => 0, 'deferred' => 0
+                    'source' => m.Source_System__c, 'people' => 0, 'deferred' => 0,
+                    'recipients' => new List<Map<String, Object>>()
                 };
                 entries.put(key, e);
             }
             e.put('people', (Integer) e.get('people') + 1);
+            // Who is on the send, so the calendar entry can open to the people
+            // behind the count and each one to the record.
+            Boolean isLead = m.Omnishift_Lead__c != null;
+            String heldReason = isLead ? m.Omnishift_Lead__r.Omnishift_Quarantine_Reason__c
+                                       : m.Omnishift_Contact__r.Omnishift_Quarantine_Reason__c;
+            if (isLead || m.Omnishift_Contact__c != null) {
+                ((List<Map<String, Object>>) e.get('recipients')).add(new Map<String, Object>{
+                    'id' => isLead ? m.Omnishift_Lead__c : m.Omnishift_Contact__c,
+                    'name' => isLead ? m.Omnishift_Lead__r.Name : m.Omnishift_Contact__r.Name,
+                    'objectApiName' => isLead ? 'Lead' : 'Contact',
+                    'held' => heldReason != null && heldReason.contains('"' + m.Name + '"')
+                });
+            }
         }
         // How many the agent held back for each send. One query per object,
         // counted in memory - the previous version ran two COUNT queries per

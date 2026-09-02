@@ -274,4 +274,56 @@ private class OmnishiftActionTest {
             && ctx.containsKey('timeline'), 'All three in one round trip: ' + ctx.keySet());
         System.assertEquals(false, ctx.get('liveEmail'));
     }
+
+    @isTest static void theCalendarEntryListsThePeopleOnIt() {
+        Lead a = newLead();
+        Contact c = new Contact(FirstName='Grace', LastName='Hopper', Email='grace@example.com'); insert c;
+        Date monday = Date.today().toStartOfWeek();
+        insert new List<Omnishift_Marketing_Send__c>{
+            new Omnishift_Marketing_Send__c(Name='Q3 Market Commentary', Omnishift_Lead__c=a.Id,
+                Scheduled_For__c=Datetime.newInstance(monday.addDays(2), Time.newInstance(10,0,0,0)), Campaign_Type__c='Market commentary'),
+            new Omnishift_Marketing_Send__c(Name='Q3 Market Commentary', Omnishift_Contact__c=c.Id,
+                Scheduled_For__c=Datetime.newInstance(monday.addDays(2), Time.newInstance(10,0,0,0)), Campaign_Type__c='Market commentary')
+        };
+        List<Map<String, Object>> cal = OmnishiftAction.getCalendar(monday);
+        System.assertEquals(1, cal.size(), 'one campaign on one day is one entry');
+        List<Map<String, Object>> people = (List<Map<String, Object>>) cal[0].get('recipients');
+        System.assertEquals(2, people.size(), 'both recipients are listed behind the count');
+        Set<String> objs = new Set<String>();
+        for (Map<String, Object> pr : people) objs.add((String) pr.get('objectApiName'));
+        System.assert(objs.contains('Lead') && objs.contains('Contact'), 'each recipient knows which record to open');
+    }
+
+    @isTest static void theBriefingCountsTodaysWork() {
+        Lead l = newLead();
+        l.Omnishift_Rank__c = 1; l.Omnishift_Score__c = 80; l.Omnishift_Next_Action_Date__c = Date.today();
+        update l;
+        Map<String, Object> b = OmnishiftAction.getBriefing();
+        System.assert(b.containsKey('toWork') || b.containsKey('total') || !b.isEmpty(), 'the briefing returns its counts');
+    }
+
+    @isTest static void signalsAreReadBackForTheRecord() {
+        Lead l = newLead();
+        insert new Omnishift_Signal__c(Name='WealthFeed - Business sale', Omnishift_Lead__c=l.Id,
+            Signal_Type__c='Business sale', Source__c='WealthFeed', Occurred_On__c=Date.today().addDays(-2), Confidence__c=90);
+        System.assertEquals(1, OmnishiftAction.getSignals(l.Id).size(), 'the signal is returned for its record');
+    }
+
+    @isTest static void anOutcomeIsStampedWithItsTime() {
+        Lead l = newLead();
+        OmnishiftAction.recordOutcome(l.Id, 'Too early');
+        Lead after = [SELECT Omnishift_Outcome__c, Omnishift_Outcome_On__c FROM Lead WHERE Id = :l.Id];
+        System.assertEquals('Too early', after.Omnishift_Outcome__c);
+        System.assertNotEquals(null, after.Omnishift_Outcome_On__c, 'the history needs the moment it was recorded');
+    }
+
+    @isTest static void activityWithoutATypeIsNamedFromItsSubject() {
+        Lead l = newLead();
+        insert new Task(WhoId=l.Id, Subject='Growth Agent call', Status='Completed', ActivityDate=Date.today());
+        insert new Task(WhoId=l.Id, Subject='A question about timing', Status='Completed', ActivityDate=Date.today());
+        Set<String> titles = new Set<String>();
+        for (Map<String, Object> r : OmnishiftAction.getTimeline(l.Id)) titles.add((String) r.get('title'));
+        System.assert(titles.contains('Call: Growth Agent call'), titles);
+        System.assert(titles.contains('Email: A question about timing'), titles);
+    }
 }

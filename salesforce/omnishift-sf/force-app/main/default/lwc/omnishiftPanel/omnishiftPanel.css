@@ -409,3 +409,7 @@
 .draftsec__head .sec { margin: 0; }
 .draftsec__subj { flex: 1 1 auto; min-width: 0; font-size: .8125rem; color: #181818; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .draftwrap { margin-top: .5rem; }
+
+/* Every chip says what it is before it says its value: "Compliance Passed"
+   reads on its own; "Passed" next to "Event" did not. */
+.chip__k { font-size: .5625rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; opacity: .65; margin-right: .3rem; }

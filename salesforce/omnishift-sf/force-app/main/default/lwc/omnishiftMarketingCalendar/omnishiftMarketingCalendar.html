@@ -26,11 +26,23 @@
                             <span class="day__num">{d.num}</span>
                         </div>
                         <template for:each={d.sends} for:item="s">
-                            <div key={s.key} class={s.cls} title={s.audience}>
-                                <span class="send__label">{s.label}</span>
-                                <span class="send__meta">{s.type} · {s.peopleLabel}</span>
-                                <template if:true={s.hasDeferred}>
-                                    <span class="send__held">{s.deferredLabel}</span>
+                            <div key={s.key} class={s.cls}>
+                                <button class="send__btn" title={s.audience} data-key={s.key} aria-expanded={s.open} onclick={toggleEntry}>
+                                    <span class="send__label">{s.label}</span>
+                                    <span class="send__meta">{s.type} · {s.peopleLabel}</span>
+                                    <template if:true={s.hasDeferred}>
+                                        <span class="send__held">{s.deferredLabel}</span>
+                                    </template>
+                                </button>
+                                <template if:true={s.open}>
+                                    <ul class="people">
+                                        <template for:each={s.recipients} for:item="p">
+                                            <li key={p.id}>
+                                                <a href="#" class="people__link" data-id={p.id} data-object={p.objectApiName} onclick={openPerson}>{p.name}</a>
+                                                <template if:true={p.held}><span class="people__held">agent deferred</span></template>
+                                            </li>
+                                        </template>
+                                    </ul>
                                 </template>
                             </div>
                         </template>

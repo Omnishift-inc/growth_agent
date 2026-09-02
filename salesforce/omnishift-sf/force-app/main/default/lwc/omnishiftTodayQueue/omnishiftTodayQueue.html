@@ -118,10 +118,10 @@
                         <span class={r.scoreClass}>{r.score}</span>
                         <span class="qrow__body">
                             <span class="qrow__name">{r.name} <span class="qrow__co">&middot; {r.company}</span></span>
-                            <span class="qrow__why">{r.whyShort}</span>
+                            <span class="qrow__why"><span class="qrow__k">Why now</span>{r.whyShort}</span>
                             <span class="qrow__meta">{r.kind} &middot; rank {r.rank}</span>
                         </span>
-                        <span class={r.statusClass}>{r.status}</span>
+                        <span class={r.statusClass} title={r.statusHelp}><span class="badge__k">Compliance</span>{r.status}</span>
                     </button>
                 </template>
                 </div>

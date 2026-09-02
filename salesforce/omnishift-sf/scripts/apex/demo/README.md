@@ -22,3 +22,5 @@ Run with `sf apex run -o <org> -f scripts/apex/demo/<file>.apex`.
 
 After any of these, run the engine (`System.debug(OmnishiftEngineBatch.runNow());`)
 twice if outcomes changed: the first pass records drivers, the second learns from them.
+| 12 | `demo-consistent.apex` | Every seeded advisor decision gets its date and the email or call it implies; a blocked draft cannot have been sent |
+| 13 | `demo-outcomes.apex` | Removes outcomes from records that were never worked |

@@ -1,4 +1,5 @@
 import { LightningElement, wire, track } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 import getCalendar from '@salesforce/apex/OmnishiftAction.getCalendar';
 
 // The week grid Deana had on screen from Account Engagement, with one thing it
@@ -17,7 +18,8 @@ function iso(d) {
     return `${d.getFullYear()}-${m}-${day}`;
 }
 
-export default class OmnishiftMarketingCalendar extends LightningElement {
+export default class OmnishiftMarketingCalendar extends NavigationMixin(LightningElement) {
+    @track openKey;
     @track weekStart = startOfWeek(new Date());
     entries = [];
     error;
@@ -63,6 +65,8 @@ export default class OmnishiftMarketingCalendar extends LightningElement {
                     peopleLabel: `${e.people} ${e.people === 1 ? 'person' : 'people'}`,
                     hasDeferred: e.deferred > 0,
                     deferredLabel: `${e.deferred} deferred`,
+                    open: this.openKey === e.key,
+                    recipients: e.recipients || [],
                     cls: `send send_${String(e.type || '').toLowerCase().replace(/\s+/g, '-')}`
                 }));
             const isToday = iso(d) === today;
@@ -88,6 +92,21 @@ export default class OmnishiftMarketingCalendar extends LightningElement {
         const d = this.totalDeferred;
         if (!s) return 'Nothing scheduled this week.';
         return `${s} send${s === 1 ? '' : 's'} · ${d} deferred`;
+    }
+
+    // An entry opens to the people on it. The count alone answered "how many";
+    // the names answer "who", which is what an advisor actually wants to know.
+    toggleEntry(event) {
+        const key = event.currentTarget.dataset.key;
+        this.openKey = this.openKey === key ? undefined : key;
+    }
+    openPerson(event) {
+        event.preventDefault();
+        const { id, object } = event.currentTarget.dataset;
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: { recordId: id, objectApiName: object, actionName: 'view' }
+        });
     }
 
     prev() {

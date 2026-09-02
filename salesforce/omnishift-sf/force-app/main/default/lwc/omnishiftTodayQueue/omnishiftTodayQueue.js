@@ -195,7 +195,15 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
             const why = String(v('Omnishift_Why_Now__c') || '');
             // Every reason ends with the same explanatory clause. Useful once on
             // the record, pure noise repeated down thirty rows.
-            const firstSentence = why.split(/(?<=\.)\s/)[0] || why;
+            // The reason and its consequence, not the boilerplate that follows.
+            const firstSentence = why.split(/(?<=\.)\s/).slice(0, 2).join(' ') || why;
+            const statusHelp = {
+                'Passed': 'Draft passed every compliance check. Can be sent as written.',
+                'Auto-corrected': 'A prohibited term was removed automatically. Re-read before sending.',
+                'Flagged': 'A principal should look at the draft before it goes out.',
+                'Blocked': 'Cannot be sent as written.',
+                'Not checked': 'No draft has been checked yet.'
+            }[status || 'Not checked'];
             return {
                 id: r.id,
                 isLead,
@@ -211,6 +219,7 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
                 score: v('Omnishift_Score__c'),
                 whyNow: v('Omnishift_Why_Now__c'),
                 status: status || 'Not checked',
+                statusHelp,
                 done: Boolean(f.Omnishift_Disposition__c && f.Omnishift_Disposition__c.value),
                 statusClass:
                     status === 'Blocked'
