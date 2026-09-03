@@ -624,4 +624,28 @@ private class OmnishiftEngineTest {
         System.assertEquals(0, OmnishiftEscalation.escalate(null));
         System.assertEquals(0, OmnishiftEscalation.escalate(new List<OmnishiftEscalation.Candidate>()));
     }
+
+    @isTest static void escalationTextIsShortAndTheMoneyReadsAsMoney() {
+        System.assertEquals('$12.0m', OmnishiftEscalation.formatMoney(12000000));
+        System.assertEquals('$5.2m', OmnishiftEscalation.formatMoney(5200000));
+        System.assertEquals('$750000', OmnishiftEscalation.formatMoney(750000));
+        System.assertEquals('', OmnishiftEscalation.formatMoney(null));
+        System.assertEquals('', OmnishiftEscalation.shorten(null, 10));
+        System.assertEquals('short', OmnishiftEscalation.shorten('short', 10));
+        String cut = OmnishiftEscalation.shorten('a sentence that runs well past the limit', 12);
+        System.assertEquals(12, cut.length());
+        System.assert(cut.endsWith('\u2026'), cut);
+    }
+
+    @isTest static void escalationWithNobodyToTellStillMarksTheRecord() {
+        // No Manager permission set holders in the test context: the bell rings
+        // in an empty room, the record is still flagged so the queue can show it.
+        Contact c = new Contact(FirstName='Big', LastName='Household', Email='big@example.com');
+        insert c;
+        Integer sent = OmnishiftEscalation.escalate(new List<OmnishiftEscalation.Candidate>{
+            new OmnishiftEscalation.Candidate(c.Id, 'Big Household', 15000000, 'Business sale picked up today.')
+        });
+        System.assertEquals(0, sent);
+        System.assertEquals(true, [SELECT Omnishift_Escalated__c FROM Contact WHERE Id = :c.Id].Omnishift_Escalated__c);
+    }
 }

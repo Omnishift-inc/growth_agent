@@ -21,5 +21,5 @@ Everything runs inside Salesforce (Apex, Lightning Web Components, standard obje
 | Details tab | Growth Agent section on both layouts, read-only | layouts |
 | Measurement | 16 reports, dashboard "Growth Agent: Is It Working?" | folder `Growth_Agent_Performance` |
 | Safety | All emails `@example.com`, phones 555-01xx, generated names and events; live email behind `Omnishift_Config__mdt.Send_Live_Email__c` (off) | |
-| Tests | 73 Apex tests, every class above 75% coverage | `OmnishiftEngineTest`, `OmnishiftActionTest` |
-| Demo data | 21 scripts under `salesforce/omnishift-sf/scripts/apex/demo` rebuild the demo state | |
+| Tests | 75 Apex tests, every class above 75% coverage, org-wide 87% | `OmnishiftEngineTest`, `OmnishiftActionTest` |
+| Demo data | 23 scripts under `salesforce/omnishift-sf/scripts/apex/demo` rebuild the demo state | |

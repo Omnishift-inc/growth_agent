@@ -88,11 +88,13 @@ public with sharing class OmnishiftEscalation {
         return sent;
     }
 
+    @TestVisible
     private static String formatMoney(Decimal d) {
         if (d == null) return '';
         if (d >= 1000000) return '$' + (d / 1000000).setScale(1) + 'm';
         return '$' + d.setScale(0);
     }
+    @TestVisible
     private static String shorten(String s, Integer n) {
         if (s == null) return '';
         return s.length() <= n ? s : s.left(n - 1) + '…';
