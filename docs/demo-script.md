@@ -23,7 +23,7 @@ https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/page/hom
 
   *Say:* "Half the value is in the book you already have. Nobody is looking for the client whose company just sold; the agent is."
 - Briefing card on the right: 25 to work, how many handled today, how many drafts held by compliance, how many records **held back overnight** (the tile opens them) - and the eight feeds the signals came from in the last 120 days (VisitIQ, WealthFeed, SmartAsset, Account Engagement, LinkedIn, Zoom, GetFeedback, public web). That last list is the point of the integrator: any source that can be read becomes a signal here.
-- **It is all ordinary Salesforce data.** Press **Leads** under "List views" on the briefing: the same people as a standard Salesforce list view - rank, score, reason, draft verdict, decision, outcome, act-by date, recommended advisor, why-now - sortable, filterable, exportable, reportable, and editable inline by anyone with the rights. Nothing lives in a black box; every number the agent produces is a field on the record. Same for **Contacts**.
+- **It is all ordinary Salesforce data.** Press **Leads** under "List views" on the briefing (https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/o/Lead/list?filterName=Omnishift_Today, and for Contacts https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/o/Contact/list?filterName=Omnishift_Today): the same people as a standard Salesforce list view - rank, score, reason, draft verdict, decision, outcome, act-by date, recommended advisor, why-now - sortable, filterable, exportable, reportable, and editable inline by anyone with the rights. Nothing lives in a black box; every number the agent produces is a field on the record. Same for **Contacts**.
 
 ## 2. A prospect record: the reasoning, then the action (3 min)
 
@@ -85,3 +85,31 @@ Dashboard: https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightni
 - **Why is someone not on the list?** Open the record; the Omnishift tab says the hold reason in words.
 - **Who wrote the draft?** The agent. Every draft is a template written to pass the check; personal lines come only from what the person themselves wrote, and those are checked too.
 - **Where do the compliance rules come from?** The OmniShift compliance library your compliance officer manages: the SEC baseline plus the firm's own lexicon. The agent applies it; it does not define it.
+
+---
+
+## Every link
+
+| What | Link |
+|---|---|
+| Org | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com |
+| Home | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/page/home |
+| Today's list tab | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/n/Omnishift_Today |
+| Today's list, Held segment | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/n/Omnishift_Today?c__segment=held |
+| Lead list view (Growth Agent - Today) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/o/Lead/list?filterName=Omnishift_Today |
+| Contact list view (Growth Agent - Today) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/o/Contact/list?filterName=Omnishift_Today |
+| Lead list view (Growth Agent - Held) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/o/Lead/list?filterName=Omnishift_Held |
+| Contact list view (Growth Agent - Held) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/o/Contact/list?filterName=Omnishift_Held |
+| Wren Ashcombe (#1, escalated) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Lead/00Qg800000CPTmHEAX/view |
+| Thea Mossgrove (#2, client) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Contact/003g800000ZN7L6AAL/view |
+| Dashiell Netherby (#3, referral + retirement) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Lead/00Qg800000Bc2vXEAR/view |
+| Rosalind Wexford (#4, client, survey quoted in the draft) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Contact/003g800000ZN7L4AAL/view |
+| Pamela Whitaker (blocked draft) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Lead/00Qg800000CN71TEAT/view |
+| Jarek Quarrymore (auto-corrected draft) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Contact/003g800000ZN7KwAAL/view |
+| Diane Okafor (integrator person) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Lead/00Qg800000CQanJEAT/view |
+| Juno Hartrigg (held by rule: open follow-up) | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Lead/00Qg800000Bc2vREAR/view |
+| Dashboard | https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Dashboard/01Zg8000002ppNVEAY/view |
+| Universal Integrator | http://127.0.0.1:8788 (local, separate session) |
+| Walkthrough (how it works) | https://claude.ai/code/artifact/5cbf5b84-eb1f-4a3b-a1ff-5639cc18c19c |
+| Demo script (this, as a page) | https://claude.ai/code/artifact/fc82c1c4-2ac9-4013-9b81-d0eb8b643807 |
+| Code | https://github.com/Omnishift-inc/growth_agent (main) |
