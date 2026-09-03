@@ -30,6 +30,7 @@ const OMNISHIFT_FIELDS = [
     'Omnishift_Disposition_Reason__c',
     'Omnishift_Scored_On__c',
     'Omnishift_Run_Id__c',
+    'Omnishift_Driver__c',
     'Omnishift_Draft_Edited__c',
     'Omnishift_Dispositioned_On__c'
 ];
@@ -407,7 +408,13 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         // Held by a rule: nothing to approve, edit or snooze. The record is not
         // on the list; the only thing to show is why, and when it comes back.
         if (this.raw('Omnishift_Quarantined__c') === true) return 'held';
-        if (d === 'Snoozed') return 'snoozed';
+        // A snooze whose date has arrived - or that the engine lifted for a
+        // fresh confirmed event - is over. The record is open again.
+        if (d === 'Snoozed') {
+            const until = this.raw('Omnishift_Next_Action_Date__c');
+            const today = new Date().toISOString().slice(0, 10);
+            if (until && until > today) return 'snoozed';
+        }
         if (o) return 'closed';
         if (d === 'Approved and sent' || d === 'Edited before send' || d === 'Call logged') return 'sent';
         return 'open';
@@ -542,6 +549,11 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         return h[this.complianceStatus] || h['Not checked'];
     }
     get driverLabel() {
+        // The engine writes the driver to its own field; read that first. The
+        // text heuristics below only stand in when the field is empty.
+        const d = this.raw('Omnishift_Driver__c');
+        if (d === 'ICP fit') return 'Profile fit';
+        if (d) return d;
         const w = this.whyNow || '';
         if (w.includes('picked up')) return 'Event';
         if (w.startsWith('Referral') || w.includes('introduction')) return 'Referral';

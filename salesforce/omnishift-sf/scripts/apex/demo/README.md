@@ -33,3 +33,4 @@ twice if outcomes changed: the first pass records drivers, the second learns fro
 | 20 | `demo-diane.apex` | Diane Okafor matches the Universal Integrator's sandboxes exactly (WealthFeed 29 Aug $5.2M, VisitIQ 30 Aug, directory) |
 | 21 | `demo-final-tune.apex` | Final placement: clean top ten, the blocked example just below, Diane's evidence as one sentence; runs the engine |
 | 22 | `demo-review-overdue.apex` | One client on the list for the annual review itself, not an event; runs the engine |
+| 24 | `demo-restore-final.apex` | Run last, and again right before the demo: undoes test clicks and edits, restores the named demo people, runs the engine |
