@@ -293,6 +293,7 @@
                     </template>
                 </template>
 
+                <template if:false={isHeldStage}>
                 <template if:true={inQueue}>
                     <div class="queue-nav slds-m-top_small">
                         <template if:true={hasNext}>
@@ -314,6 +315,7 @@
                             ></lightning-button>
                         </template>
                     </div>
+                </template>
                 </template>
             </footer>
         </template>

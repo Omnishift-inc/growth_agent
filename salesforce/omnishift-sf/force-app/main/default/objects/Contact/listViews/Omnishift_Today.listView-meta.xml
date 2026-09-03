@@ -6,8 +6,12 @@
     <columns>ACCOUNT.NAME</columns>
     <columns>Omnishift_Rank__c</columns>
     <columns>Omnishift_Score__c</columns>
+    <columns>Omnishift_Driver__c</columns>
     <columns>Omnishift_Compliance_Status__c</columns>
     <columns>Omnishift_Disposition__c</columns>
+    <columns>Omnishift_Outcome__c</columns>
+    <columns>Omnishift_Next_Action_Date__c</columns>
+    <columns>Omnishift_Recommended_Owner__c</columns>
     <columns>Omnishift_Why_Now__c</columns>
     <filterScope>Everything</filterScope>
     <filters>
