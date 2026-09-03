@@ -56,7 +56,7 @@ Briefing card -> press the **"held back overnight"** tile (or the **Held** pill 
 
 - One list of every record the engine removed, each with its reason in words: *Duplicate of an owned Contact - cross-reference* (what Tom's team does by hand today), *Closed*, *Contacted within 14 days - cooling period*, *Already being worked - an open follow-up is scheduled*, *Marketing has a send scheduled*, *Marked as the wrong person by the advisor*, *Meeting booked*.
 - Two kinds, labelled: **Held by rule** (the engine; comes back when the rule no longer applies) and **Held by advisor** (a decision; the nightly run never overrides it, undo it from the record).
-- Held, not deleted. Open one, press Undo, and it is back on the list and re-scored on the spot.
+- Held, not deleted. Open one: the Omnishift tab says why and offers nothing to press, because it is not work. An advisor hold has Undo; press it and the record is back on the list and re-scored on the spot.
 
 ## 6. Universal Integrator: any source becomes a signal (2 min)
 

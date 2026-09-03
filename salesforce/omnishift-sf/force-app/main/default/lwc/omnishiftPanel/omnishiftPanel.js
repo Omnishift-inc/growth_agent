@@ -446,7 +446,8 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
                     text: ' Off the list until the outcome changes.' };
             case 'held':
                 return { cls: 'dstate dstate_wrong', icon: 'utility:ban',
-                    title: 'Held back: ' + (this.val('Omnishift_Quarantine_Reason__c') || 'suppressed by the engine'),
+                    title: 'Held back: ' + (this.val('Omnishift_Quarantine_Reason__c')
+                        || String(this.whyNow || '').replace(/^Suppressed:\s*/, '') || 'suppressed by the engine'),
                     text: ' The nightly run removed this record from the list. It comes back on its own when the rule no longer applies; nothing to do here.' };
             case 'closed':
                 return { cls: 'dstate dstate_closed', icon: 'utility:check',
