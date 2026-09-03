@@ -44,4 +44,11 @@ if ([SELECT count() FROM Task WHERE WhoId = :pw.Id AND Subject LIKE 'CA cadence 
 for (Lead dy : [SELECT Id FROM Lead WHERE Name = 'Delphine Yatesbury' AND Omnishift_Compliance_Status__c = 'Blocked' AND Omnishift_Disposition__c IN ('Approved and sent','Edited before send')]) {
     update new Lead(Id = dy.Id, Omnishift_Disposition__c = 'Snoozed', Omnishift_Disposition_Reason__c = 'Draft is blocked in compliance; parked until it is rewritten.', Omnishift_Next_Action_Date__c = Date.today().addDays(6));
 }
+// 6. Wren Ashcombe is #1 and unworked: a test "Approve" on her takes her off
+//    the list for two days. Undo it.
+Lead wren = [SELECT Id FROM Lead WHERE Name = 'Wren Ashcombe' AND IsConverted = false LIMIT 1];
+delete [SELECT Id FROM Task WHERE WhoId = :wren.Id AND CreatedDate = LAST_N_DAYS:2];
+update new Lead(Id = wren.Id, Omnishift_Disposition__c = null, Omnishift_Disposition_Reason__c = null, Omnishift_Dispositioned_On__c = null,
+    Omnishift_Outcome__c = null, Omnishift_Outcome_On__c = null, Omnishift_Next_Action_Date__c = Date.today(), Status = 'Open - Not Contacted',
+    Omnishift_Quarantined__c = false, Omnishift_Quarantine_Reason__c = null);
 System.debug(OmnishiftEngineBatch.runNow());
