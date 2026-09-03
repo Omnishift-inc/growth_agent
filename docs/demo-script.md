@@ -41,7 +41,7 @@ Pamela Whitaker: https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/l
 
 - She wrote "guaranteed income in retirement" in her SmartAsset enquiry. The agent did the natural thing and quoted her words back to her. The check stopped it: **Blocked: this draft cannot be sent as written**, with the sentence explaining whose words they are and why the firm may not repeat them (SEC marketing rule 206(4)-1), and a **Rewrite the draft** button.
 - Press it, delete the phrase, Save: the check runs on the edited text and the block lifts. The same check runs at the moment of sending, so an associate's last-minute edit is caught too.
-- Where the rules live today: in code, shipped as the SEC baseline. Where they will live: a Compliance Rule object your CCO owns, with your own lexicon imported in the first week and every change audited. (Describe; not built.)
+- Where the rules come from: the OmniShift compliance library, the same one that runs across our products, managed by your compliance officer. The SEC 206(4)-1 baseline is in it; your own lexicon and required disclosures go in during onboarding; every change is audited there. This Salesforce build runs that rule set on every draft, every save and every send.
 
 ## 4. The agent learns, and the advisor's decision wins (1 min)
 
@@ -79,4 +79,4 @@ Dashboard: https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightni
 - **What does the score mean?** Five weighted features - how they arrived, timing, fit, dormancy, and a confirmed event - adjusted by what outcomes have taught the loop, capped at 100.
 - **Why is someone not on the list?** Open the record; the Omnishift tab says the hold reason in words.
 - **Who wrote the draft?** The agent. Every draft is a template written to pass the check; personal lines come only from what the person themselves wrote, and those are checked too.
-- **Where do the compliance rules come from?** The SEC Marketing Rule baseline today; your CCO's lexicon and reviews tomorrow (see section 3).
+- **Where do the compliance rules come from?** The OmniShift compliance library your compliance officer manages: the SEC baseline plus the firm's own lexicon. The agent applies it; it does not define it.
