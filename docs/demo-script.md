@@ -64,7 +64,8 @@ Briefing card -> press the **"held back overnight"** tile (or the **Held** pill 
 http://127.0.0.1:8788 (separate window)
 
 - Run the research job on **Diane Okafor**. Watch it read WealthFeed (sudden-wealth event, est. $5.2M inheritance, 29 Aug), VisitIQ (one organic visit on 30 Aug, "/" then "/our-team", three minutes) and the public directory (Senior Counsel at Truist, Charlotte NC).
-- Switch to her Salesforce record: https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Lead/00Qg800000CQanJEAT/view -> Omnishift tab. Same three signals, same wording, same dates, scored and drafted. "This is what the integration writes. It does not matter what the source is; if it can be read, it becomes a reason on the list."
+- Switch to her Salesforce record: https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/r/Lead/00Qg800000CQanJEAT/view -> Omnishift tab. The research job writes its summary into her why-now ("Sudden-wealth event, est. $5.2M inheritance, 5 days ago (WealthFeed). Visited the site Aug 30..."); underneath it the same three signals sit in her engagement history with the same dates, and the engine has scored her and written her draft. "This is what the integration writes. It does not matter what the source is; if it can be read, it becomes a reason on the list."
+- Timing note: the nightly run at 02:00 (org time) rewrites the why-now in the engine's words from the same signals; running the research job again during the demo puts the integrator's summary back. Either reads correctly.
 
 ## 7. Is it working? (1 min)
 
