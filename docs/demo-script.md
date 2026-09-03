@@ -19,7 +19,7 @@ https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/page/hom
 - "Today you should work 25 people." Deana's phrase from the call, made literal. One merged, ranked list across Leads (prospects) and Contacts (existing clients), because both live in your Salesforce and both have reasons to be called.
 - Read row 1 aloud, Wren Ashcombe: the **why-now** is a specific event with the evidence behind it, in WealthFeed's words - the probate filing, the amount, how it was matched. Not "high intent". Something an associate can open the call with.
 - Every row ends in **Cleared to send**: the draft is already written and has already passed the compliance check. The top of the list is sendable as it stands.
-- Switch **Leads / Contacts**: same engine, the client side reads "review overdue", "role change", "answered the survey" - relationship reasons, not prospecting ones.
+- Press the **Contacts** pill above the list: same engine, client reasons - "business sale", "answered the survey", "changed role", "began with an introduction", and Dashiell Ainsleigh at #23 with no event at all, on the list because the annual review is a year overdue.
 - Briefing card on the right: 25 to work, how many handled today, how many drafts held by compliance, how many records **suppressed** - and the eight feeds the signals came from in the last 120 days (VisitIQ, WealthFeed, SmartAsset, Account Engagement, LinkedIn, Zoom, GetFeedback, public web). That last list is the point of the integrator: any source that can be read becomes a signal here.
 
 ## 2. A prospect record: the reasoning, then the action (3 min)
