@@ -15,10 +15,19 @@
             <template if:true={data}>
                 <div class="stats">
                     <template for:each={stats} for:item="s">
-                        <div key={s.key} class={s.cls}>
-                            <span class="stat__n">{s.n}</span>
-                            <span class="stat__l">{s.label}</span>
-                        </div>
+                        <template if:true={s.nav}>
+                            <button key={s.key} class={s.cls} data-segment={s.nav} onclick={openSegment} title={s.help}>
+                                <span class="stat__n">{s.n}</span>
+                                <span class="stat__l">{s.label}</span>
+                                <span class="stat__go">open list</span>
+                            </button>
+                        </template>
+                        <template if:false={s.nav}>
+                            <div key={s.key} class={s.cls} title={s.help}>
+                                <span class="stat__n">{s.n}</span>
+                                <span class="stat__l">{s.label}</span>
+                            </div>
+                        </template>
                     </template>
                 </div>
 

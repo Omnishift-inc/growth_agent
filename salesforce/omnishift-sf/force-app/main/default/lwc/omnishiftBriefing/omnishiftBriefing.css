@@ -40,3 +40,8 @@
 .cta__views { display: flex; align-items: center; flex-wrap: wrap; gap: .1rem .25rem; flex-basis: 100%; margin-top: .1rem; }
 .cta__lbl { font-size: .625rem; letter-spacing: .06em; text-transform: uppercase; color: #706e6b; margin-right: .35rem; white-space: nowrap; }
 .cta__views lightning-button { --slds-c-button-text-color: #0b5cab; }
+.stat_btn { text-align: left; font: inherit; cursor: pointer; position: relative; width: 100%; }
+.stat_btn:hover { border-color: #0b5cab; background: #eef4ff; }
+.stat_btn:focus-visible { outline: 2px solid #0176d3; outline-offset: 2px; }
+.stat__go { position: absolute; right: .55rem; top: .45rem; font-size: .5625rem; letter-spacing: .05em; text-transform: uppercase; color: #0b5cab; opacity: 0; }
+.stat_btn:hover .stat__go { opacity: 1; }

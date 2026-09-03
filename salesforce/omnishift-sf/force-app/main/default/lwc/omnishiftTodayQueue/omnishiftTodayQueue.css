@@ -114,3 +114,8 @@
 .seg_on, .seg_on:hover { background: #16325c; border-color: #16325c; color: #fff; box-shadow: 0 1px 2px rgba(22,50,92,.3); }
 .seg_on .seg__sub, .seg_on:hover .seg__sub { color: rgba(255,255,255,.75); }
 .seg_on .seg__n { background: rgba(255,255,255,.18); color: #fff; }
+
+/* held rows: no score to compare, the reason is the content */
+.sc_off { background: #f3f3f3; color: #a8a8a8; border-color: #e5e5e5; }
+.qrow_held .qrow__k { color: #8a5a0b; }
+.badge_held { background: #f3f3f3; color: #444; }

@@ -334,8 +334,11 @@ public with sharing class OmnishiftAction {
                          + [SELECT COUNT() FROM Contact WHERE Omnishift_Compliance_Status__c = 'Blocked'];
         Integer worked   = [SELECT COUNT() FROM Lead WHERE Omnishift_Dispositioned_On__c = TODAY]
                          + [SELECT COUNT() FROM Contact WHERE Omnishift_Dispositioned_On__c = TODAY];
-        Integer suppressed = [SELECT COUNT() FROM Lead
-                              WHERE Omnishift_Score__c = 0 AND IsConverted = false];
+        // The same population the Held segment on Today's list shows: every
+        // record the engine is holding, Lead or Contact, for any reason. The
+        // tile is the door to that list, so the two numbers must agree.
+        Integer suppressed = [SELECT COUNT() FROM Lead WHERE Omnishift_Quarantined__c = true AND IsConverted = false]
+                           + [SELECT COUNT() FROM Contact WHERE Omnishift_Quarantined__c = true];
 
         // Signal provenance, which is the part a prospective client asks about.
         Map<String, Integer> bySource = new Map<String, Integer>();

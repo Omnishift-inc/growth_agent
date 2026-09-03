@@ -1,6 +1,7 @@
 import { LightningElement, wire } from 'lwc';
 import { getListRecordsByName } from 'lightning/uiListsApi';
 import { NavigationMixin } from 'lightning/navigation';
+import { CurrentPageReference } from 'lightning/navigation';
 
 const LIST_LABEL = 'Growth Agent - Today';
 // A wire that has still not answered after this long deserves to be described.
@@ -26,8 +27,41 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
     checkedAt;
     slow = false;
     isRefreshing = false;
-    segment = 'all';   // all | prospects | clients
+    segment = 'all';   // all | prospects | clients | held
     slowTimer;
+    heldLeadRows = [];
+    heldContactRows = [];
+
+    // The briefing's "held back overnight" tile opens this page on the Held
+    // segment; the Today's list tab carries it as c__segment.
+    @wire(CurrentPageReference)
+    pageRef(ref) {
+        const s = ref && ref.state && ref.state.c__segment;
+        if (s && ['all', 'prospects', 'clients', 'held'].includes(s)) this.segment = s;
+    }
+
+    // What the engine removed overnight, with the reason on each record. Held,
+    // not deleted: the client's own worry was records disappearing into prose.
+    @wire(getListRecordsByName, {
+        objectApiName: 'Lead',
+        listViewApiName: 'Omnishift_Held',
+        fields: ['Lead.Name', 'Lead.Company', 'Lead.Omnishift_Quarantine_Reason__c', 'Lead.Omnishift_Disposition__c', 'Lead.Omnishift_Outcome__c'],
+        pageSize: 50
+    })
+    wiredHeldLeads(result) {
+        const r = this.readList(result);
+        this.heldLeadRows = r.rows || [];
+    }
+    @wire(getListRecordsByName, {
+        objectApiName: 'Contact',
+        listViewApiName: 'Omnishift_Held',
+        fields: ['Contact.Name', 'Contact.Account.Name', 'Contact.Omnishift_Quarantine_Reason__c', 'Contact.Omnishift_Disposition__c', 'Contact.Omnishift_Outcome__c'],
+        pageSize: 50
+    })
+    wiredHeldContacts(result) {
+        const r = this.readList(result);
+        this.heldContactRows = r.rows || [];
+    }
 
     connectedCallback() {
         this.slowTimer = setTimeout(() => {
@@ -169,8 +203,36 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
         return this.rows.length;
     }
     get headline() {
+        if (this.segment === 'held') {
+            const h = this.heldRows.length;
+            return h === 1 ? '1 record held back, with its reason' : `${h} records held back overnight, each with its reason`;
+        }
         const n = this.count;
         return n === 1 ? 'Today you should work 1 person' : `Today you should work ${n} people`;
+    }
+    get isHeldSegment() { return this.segment === 'held'; }
+    // Held rows: the reason instead of a why-now, no score, no rank.
+    get heldRows() {
+        const map = (r, isLead) => {
+            const f = r.fields;
+            const v = (k) => (f[k] ? (f[k].displayValue !== null && f[k].displayValue !== undefined ? f[k].displayValue : f[k].value) : '');
+            const account = f.Account && f.Account.value && f.Account.value.fields ? f.Account.value.fields.Name.value : '';
+            const reason = String(v('Omnishift_Quarantine_Reason__c') || 'Held');
+            const byAdvisor = /wrong person|Meeting booked/i.test(reason);
+            return {
+                id: r.id, isLead, objectApiName: isLead ? 'Lead' : 'Contact',
+                name: v('Name'), company: isLead ? v('Company') : account,
+                kind: isLead ? 'Lead' : 'Contact',
+                reason,
+                reasonKey: byAdvisor ? 'Advisor decision' : 'Engine rule',
+                statusClass: byAdvisor ? 'badge badge_info' : 'badge badge_held',
+                statusLabel: byAdvisor ? 'Held by advisor' : 'Held by rule',
+                statusHelp: byAdvisor ? 'The advisor recorded this; the nightly run does not override it. Undo it from the record.' : 'A suppression rule removed this record overnight. It comes back when the rule no longer applies.'
+            };
+        };
+        const all = (this.heldLeadRows || []).map((r) => map(r, true)).concat((this.heldContactRows || []).map((r) => map(r, false)));
+        all.sort((a, b) => a.reason.localeCompare(b.reason) || a.name.localeCompare(b.name));
+        return all.map((r, i) => ({ ...r, pos: String(i + 1).padStart(2, '0') }));
     }
 
     get rows() {
@@ -267,7 +329,8 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
             // words on the control, so nobody has to know that to use it.
             { key: 'all', label: 'All', n: c.all },
             { key: 'prospects', label: 'Leads', n: c.prospects },
-            { key: 'clients', label: 'Contacts', n: c.clients }
+            { key: 'clients', label: 'Contacts', n: c.clients },
+            { key: 'held', label: 'Held', n: this.heldRows.length }
         ].map((s) => ({
             ...s,
             cls: this.segment === s.key ? 'seg seg_on' : 'seg',

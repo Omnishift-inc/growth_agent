@@ -52,7 +52,11 @@ Any record footer -> **What happened after the email?** with the outcomes as pil
 
 ## 5. Suppression and quarantine: what was removed overnight and why (1 min)
 
-Briefing -> "15 suppressed". Any held record's Omnishift tab shows the reason in words: *Duplicate of an owned Contact - cross-reference* (Tom's team does this by hand today), *Closed*, *Contacted within 14 days - cooling period*, *Already being worked - an open follow-up is scheduled*, *Marketing has a send scheduled*, *Marked as the wrong person by the advisor*. Held, not deleted; a human can release it.
+Briefing card -> press the **"held back overnight"** tile (or the **Held** pill on Today's list): https://orgfarm-7c54862b2e-dev-ed.develop.lightning.force.com/lightning/n/Omnishift_Today?c__segment=held
+
+- One list of every record the engine removed, each with its reason in words: *Duplicate of an owned Contact - cross-reference* (what Tom's team does by hand today), *Closed*, *Contacted within 14 days - cooling period*, *Already being worked - an open follow-up is scheduled*, *Marketing has a send scheduled*, *Marked as the wrong person by the advisor*, *Meeting booked*.
+- Two kinds, labelled: **Held by rule** (the engine; comes back when the rule no longer applies) and **Held by advisor** (a decision; the nightly run never overrides it, undo it from the record).
+- Held, not deleted. Open one, press Undo, and it is back on the list and re-scored on the spot.
 
 ## 6. Universal Integrator: any source becomes a signal (2 min)
 

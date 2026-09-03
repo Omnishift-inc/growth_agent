@@ -35,11 +35,21 @@ export default class OmnishiftBriefing extends NavigationMixin(LightningElement)
         const d = this.data;
         if (!d) return [];
         return [
-            { key: 'due', n: d.due, label: 'to work today', cls: 'stat stat_lead' },
+            { key: 'due', n: d.due, label: 'to work today', cls: 'stat stat_lead stat_btn', nav: 'all', help: 'Everyone on today\'s list. Opens it.' },
             { key: 'worked', n: d.worked, label: 'handled today', cls: 'stat' },
             { key: 'blocked', n: d.blocked, label: 'blocked by compliance', cls: d.blocked > 0 ? 'stat stat_warn' : 'stat' },
-            { key: 'supp', n: d.suppressed, label: 'suppressed', cls: 'stat' }
+            { key: 'supp', n: d.suppressed, label: 'held back overnight', cls: 'stat stat_btn', nav: 'held',
+              help: 'Records the engine removed from the list, each with its reason on the record. Held, not deleted.' }
         ];
+    }
+    // The count is a door, not a number. Opens today's list on the Held segment.
+    openSegment(event) {
+        const segment = event.currentTarget.dataset.segment;
+        this[NavigationMixin.Navigate]({
+            type: 'standard__navItemPage',
+            attributes: { apiName: 'Omnishift_Today' },
+            state: { c__segment: segment }
+        });
     }
 
     get split() {

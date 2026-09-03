@@ -14,7 +14,7 @@ Everything runs inside Salesforce (Apex, Lightning Web Components, standard obje
 | Marketing calendar | `Omnishift_Marketing_Send__c` read for collisions; week grid on Home and Today's list; entries open to the people on them | `omnishiftMarketingCalendar` |
 | Escalation | Households at or above $10M notify holders of the Manager permission set once | `OmnishiftEscalation` |
 | Learning loop | Booking rate per reason, blended with the prior, bounded 0.85-1.15, applied nightly | `OmnishiftLearning` |
-| Home page | Merged ranked queue (Leads / Contacts), briefing (counts, feeds, list-view links), calendar | `omnishiftTodayQueue`, `omnishiftBriefing` |
+| Home page | Merged ranked queue (Leads / Contacts / Held, with the hold reason per row), briefing (counts as doors into the list, feeds, list-view links), calendar | `omnishiftTodayQueue`, `omnishiftBriefing` |
 | Today's list tab | The same queue full-page | app page `Omnishift_Today` |
 | Record page | Omnishift tab: score, why-now, facts strip, marketing note, compliance note, engagement history, next step, draft; footer that shows the record's state and only the actions left | `omnishiftPanel` on Lead and Contact pages |
 | Actions | Approve (send + task + status), Edit first, Log a call, Not now (date), Wrong person, outcomes, Undo / Bring back today. Every action writes the record, logs activity and moves the standard Lead status | `OmnishiftAction` |

@@ -112,6 +112,7 @@
                         ><span class="seg__l">{sg.label}</span><template if:true={sg.sub}><span class="seg__sub">{sg.sub}</span></template><span class="seg__n">{sg.n}</span></button>
                     </template>
                 </div>
+                <template if:false={isHeldSegment}>
                 <template for:each={rows} for:item="r">
                     <button key={r.id} class="qrow" data-id={r.id} data-object={r.objectApiName} onclick={handleOpen}>
                         <span class="qrow__pos">{r.pos}</span>
@@ -123,6 +124,21 @@
                         </span>
                         <span class={r.statusClass} title={r.statusHelp}>{r.statusLabel}</span>
                     </button>
+                </template>
+                </template>
+                <template if:true={isHeldSegment}>
+                <template for:each={heldRows} for:item="r">
+                    <button key={r.id} class="qrow qrow_held" data-id={r.id} data-object={r.objectApiName} onclick={handleOpen}>
+                        <span class="qrow__pos">{r.pos}</span>
+                        <span class="sc sc_off" aria-hidden="true">&ndash;</span>
+                        <span class="qrow__body">
+                            <span class="qrow__name">{r.name} <span class="qrow__co">&middot; {r.company}</span></span>
+                            <span class="qrow__why"><span class="qrow__k">Held because</span>{r.reason}</span>
+                            <span class="qrow__meta">{r.kind} &middot; {r.reasonKey}</span>
+                        </span>
+                        <span class={r.statusClass} title={r.statusHelp}>{r.statusLabel}</span>
+                    </button>
+                </template>
                 </template>
                 </div>
                 <p class="slds-text-body_small slds-text-color_weak slds-p-horizontal_medium slds-p-vertical_x-small">
