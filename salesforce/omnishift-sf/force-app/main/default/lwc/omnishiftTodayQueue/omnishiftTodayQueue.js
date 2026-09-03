@@ -34,8 +34,13 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
 
     // The briefing's "held back overnight" tile opens this page on the Held
     // segment; the Today's list tab carries it as c__segment.
+    onFullPage = false;
     @wire(CurrentPageReference)
     pageRef(ref) {
+        // Home is the advisor's working list; held records are not work. They
+        // get their segment on the full-page Today's list, which the
+        // briefing's tile opens, and nowhere else.
+        this.onFullPage = Boolean(ref && ref.type === 'standard__navItemPage');
         const s = ref && ref.state && ref.state.c__segment;
         if (s && ['all', 'prospects', 'clients', 'held'].includes(s)) this.segment = s;
     }
@@ -330,10 +335,10 @@ export default class OmnishiftTodayQueue extends NavigationMixin(LightningElemen
             { key: 'all', label: 'All', n: c.all },
             { key: 'prospects', label: 'Leads', n: c.prospects },
             { key: 'clients', label: 'Contacts', n: c.clients },
-            { key: 'held', label: 'Held', n: this.heldRows.length }
+            ...(this.onFullPage ? [{ key: 'held', label: 'Held', n: this.heldRows.length, quiet: true }] : [])
         ].map((s) => ({
             ...s,
-            cls: this.segment === s.key ? 'seg seg_on' : 'seg',
+            cls: (this.segment === s.key ? 'seg seg_on' : 'seg') + (s.quiet ? ' seg_quiet' : ''),
             pressed: this.segment === s.key ? 'true' : 'false'
         }));
     }

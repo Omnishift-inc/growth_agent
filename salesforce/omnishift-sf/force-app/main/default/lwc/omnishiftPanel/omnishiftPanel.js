@@ -404,12 +404,16 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
         const o = this.raw('Omnishift_Outcome__c');
         if (d === 'Wrong person') return 'wrong';
         if (o === 'Meeting booked') return 'booked';
+        // Held by a rule: nothing to approve, edit or snooze. The record is not
+        // on the list; the only thing to show is why, and when it comes back.
+        if (this.raw('Omnishift_Quarantined__c') === true) return 'held';
         if (d === 'Snoozed') return 'snoozed';
         if (o) return 'closed';
         if (d === 'Approved and sent' || d === 'Edited before send' || d === 'Call logged') return 'sent';
         return 'open';
     }
     get isOpenStage() { return this.stage === 'open'; }
+    get isHeldStage() { return this.stage === 'held'; }
     get isSentStage() { return this.stage === 'sent'; }
     get isSnoozedStage() { return this.stage === 'snoozed'; }
     get isWrongStage() { return this.stage === 'wrong'; }
@@ -440,6 +444,10 @@ export default class OmnishiftPanel extends NavigationMixin(LightningElement) {
                 return { cls: 'dstate dstate_booked', icon: 'utility:event',
                     title: 'Meeting booked' + (this.outcomeOn ? ` - recorded ${this.outcomeOn}` : ''),
                     text: ' Off the list until the outcome changes.' };
+            case 'held':
+                return { cls: 'dstate dstate_wrong', icon: 'utility:ban',
+                    title: 'Held back: ' + (this.val('Omnishift_Quarantine_Reason__c') || 'suppressed by the engine'),
+                    text: ' The nightly run removed this record from the list. It comes back on its own when the rule no longer applies; nothing to do here.' };
             case 'closed':
                 return { cls: 'dstate dstate_closed', icon: 'utility:check',
                     title: `Outcome: ${this.outcome}` + (this.outcomeOn ? ` - recorded ${this.outcomeOn}` : ''),

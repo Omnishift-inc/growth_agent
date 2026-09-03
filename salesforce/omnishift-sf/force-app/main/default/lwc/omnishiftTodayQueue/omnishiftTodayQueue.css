@@ -119,3 +119,6 @@
 .sc_off { background: #f3f3f3; color: #a8a8a8; border-color: #e5e5e5; }
 .qrow_held .qrow__k { color: #8a5a0b; }
 .badge_held { background: #f3f3f3; color: #444; }
+.seg_quiet { margin-left: auto; border-style: dashed; color: #706e6b; font-weight: 500; }
+.seg_quiet .seg__n { background: #f3f3f3; color: #706e6b; }
+.seg_quiet.seg_on { border-style: solid; }
